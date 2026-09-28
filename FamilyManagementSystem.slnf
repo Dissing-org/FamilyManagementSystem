@@ -1,0 +1,17 @@
+{
+  "solution": {
+    "path": "FamilyManagementSystem.slnx",
+    "projects": [
+      "src/FamilyManagement.Api/FamilyManagement.Api.csproj",
+      "src/FamilyManagement.AppHost/FamilyManagement.AppHost.csproj",
+      "src/FamilyManagement.Application/FamilyManagement.Application.csproj",
+      "src/FamilyManagement.Domain/FamilyManagement.Domain.csproj",
+      "src/FamilyManagement.Infrastructure/FamilyManagement.Infrastructure.csproj",
+      "src/FamilyManagement.ServiceDefaults/FamilyManagement.ServiceDefaults.csproj",
+      "src/FamilyManagement.UI.Shared/FamilyManagement.UI.Shared.csproj",
+      "src/FamilyManagement.Web/FamilyManagement.Web.csproj",
+      "tests/FamilyManagement.IntegrationTests/FamilyManagement.IntegrationTests.csproj",
+      "tests/FamilyManagement.UnitTests/FamilyManagement.UnitTests.csproj"
+    ]
+  }
+}
