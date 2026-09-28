@@ -1,0 +1,30 @@
+## .NET Core
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+TestResults/
+
+## Visual Studio / Rider / VSCode
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+
+## SQLite & Local files
+*.db
+*.db-shm
+*.db-wal
+receipts_storage/
+
+## Secrets, Credentials, and Environment Files
+credentials*.json
+*service-account*.json
+*.env
+*.env.*
+*.secret*
+*.key
+*.pem
+*.pfx
+appsettings.*.local.json

@@ -1,0 +1,42 @@
+using FastEndpoints;
+using FastEndpoints.Swagger;
+using Microsoft.EntityFrameworkCore;
+using FamilyManagement.Application;
+using FamilyManagement.Infrastructure;
+using FamilyManagement.Infrastructure.Persistence;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add Clean Architecture Layers
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// Add FastEndpoints & OpenAPI Swagger
+builder.Services.AddFastEndpoints();
+builder.Services.SwaggerDocument(o =>
+{
+    o.DocumentSettings = s =>
+    {
+        s.Title = "Family Management System - Receipts API";
+        s.Version = "v1";
+        s.Description = "API for uploading, archiving, and managing purchase receipts.";
+    };
+});
+
+var app = builder.Build();
+
+// Auto-create / migrate SQLite schema on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ReceiptDbContext>();
+    db.Database.EnsureCreated();
+}
+
+app.UseDefaultExceptionHandler();
+app.UseFastEndpoints();
+app.UseSwaggerGen();
+
+app.Run();
+
+// Make Program accessible for WebApplicationFactory in integration tests
+public partial class Program { }
