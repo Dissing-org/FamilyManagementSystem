@@ -29,6 +29,20 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ReceiptDbContext>();
+    var connStr = db.Database.GetConnectionString();
+    if (!string.IsNullOrWhiteSpace(connStr))
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(connStr, @"Data Source=([^;]+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        if (match.Success)
+        {
+            var dbPath = match.Groups[1].Value.Trim();
+            var dir = Path.GetDirectoryName(dbPath);
+            if (!string.IsNullOrEmpty(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+        }
+    }
     db.Database.EnsureCreated();
 }
 

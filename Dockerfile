@@ -27,9 +27,11 @@ EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Run under secure built-in non-root app user
-USER $APP_UID
+# Create data directory and set proper ownership for non-root user
+RUN mkdir -p /app/data /app/receipts_storage && chown -R $APP_UID:$APP_UID /app
 
-COPY --from=build /app/publish .
+COPY --from=build --chown=$APP_UID:$APP_UID /app/publish .
+
+USER $APP_UID
 
 ENTRYPOINT ["dotnet", "FamilyManagement.Api.dll"]
