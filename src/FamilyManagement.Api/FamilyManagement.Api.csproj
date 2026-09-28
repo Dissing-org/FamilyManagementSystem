@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FamilyManagement.Application\FamilyManagement.Application.csproj" />
     <ProjectReference Include="..\FamilyManagement.Infrastructure\FamilyManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\FamilyManagement.ServiceDefaults\FamilyManagement.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

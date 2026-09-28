@@ -56,6 +56,10 @@ public class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
                 .HasMaxLength(500);
         });
 
+        builder.Property(r => r.Category)
+            .HasMaxLength(100)
+            .IsRequired();
+
         builder.Property(r => r.Notes)
             .HasMaxLength(1000);
 

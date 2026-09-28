@@ -41,6 +41,13 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
                         "https://drive.google.com/file/d/mock-drive-id-999/view")));
 
                 services.AddSingleton(mockStorage);
+
+                // Ensure clean database schema for test run
+                var sp = services.BuildServiceProvider();
+                using var scope = sp.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<FamilyManagement.Infrastructure.Persistence.ReceiptDbContext>();
+                db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
             });
         });
     }
@@ -71,6 +78,7 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
         form.Add(new StringContent(DateTime.UtcNow.AddHours(-1).ToString("o")), "PurchaseDate");
         form.Add(new StringContent("84.35"), "Amount");
         form.Add(new StringContent("USD"), "Currency");
+        form.Add(new StringContent("Groceries"), "Category");
         form.Add(new StringContent("Organic groceries"), "Notes");
 
         var fileContent = new ByteArrayContent(Encoding.UTF8.GetBytes("Fake PDF receipt content"));
@@ -87,6 +95,7 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
         created.Should().NotBeNull();
         created!.Merchant.Should().Be("Whole Foods Market");
         created.Amount.Should().Be(84.35m);
+        created.Category.Should().Be("Groceries");
         created.GoogleDriveFileId.Should().Be("mock-drive-id-999");
         created.WebViewLink.Should().Contain("mock-drive-id-999");
 

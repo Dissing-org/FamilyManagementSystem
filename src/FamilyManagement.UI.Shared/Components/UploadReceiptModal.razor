@@ -1,0 +1,188 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+
+<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 text-slate-900 dark:text-slate-100">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Upload Purchase Receipt
+            </h2>
+            <button @onclick="Close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="mt-4 p-3 bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-700 dark:text-rose-300 text-sm">
+                @_errorMessage
+            </div>
+        }
+
+        <div class="mt-4 space-y-4">
+            <!-- File Picker -->
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Receipt Document or Photo *</label>
+                <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-4 text-center hover:border-indigo-500 transition-colors">
+                    <InputFile OnChange="HandleFileSelected" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                    @if (!string.IsNullOrEmpty(_model.FileName))
+                    {
+                        <p class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-2">
+                            Selected: @_model.FileName (@(_model.FileBytes?.Length / 1024 ?? 0) KB)
+                        </p>
+                    }
+                </div>
+            </div>
+
+            <!-- Merchant & Category -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Merchant / Store *</label>
+                    <input @bind="_model.Merchant" type="text" placeholder="e.g. Costco, Target" required
+                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Category</label>
+                    <select @bind="_model.Category" 
+                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        @foreach (var cat in ReceiptCategories.All)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Amount, Currency & Date -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Total Amount *</label>
+                    <div class="relative">
+                        <input @bind="_model.Amount" type="number" step="0.01" min="0" placeholder="0.00"
+                               class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Currency</label>
+                    <select @bind="_model.Currency" 
+                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="DKK">DKK (kr)</option>
+                        <option value="GBP">GBP (£)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Purchase Date</label>
+                <input @bind="_model.PurchaseDate" type="date"
+                       class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <!-- Notes -->
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Notes (Optional)</label>
+                <textarea @bind="_model.Notes" rows="2" placeholder="e.g. Weekly family dinner items"
+                          class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <button @onclick="Close" disabled="@_isSubmitting"
+                    class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                Cancel
+            </button>
+            <button @onclick="SubmitAsync" disabled="@_isSubmitting"
+                    class="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
+                @if (_isSubmitting)
+                {
+                    <span class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                    <span>Archiving...</span>
+                }
+                else
+                {
+                    <span>Save & Archive</span>
+                }
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public IReceiptApiClient ApiClient { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<ReceiptViewModel> OnReceiptUploaded { get; set; }
+
+    private UploadReceiptModel _model = new();
+    private bool _isSubmitting = false;
+    private string? _errorMessage;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file is not null)
+        {
+            _model.FileName = file.Name;
+            _model.ContentType = file.ContentType;
+
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 15 * 1024 * 1024).CopyToAsync(memoryStream);
+            _model.FileBytes = memoryStream.ToArray();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        _errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(_model.Merchant))
+        {
+            _errorMessage = "Merchant is required.";
+            return;
+        }
+
+        if (_model.Amount <= 0)
+        {
+            _errorMessage = "Amount must be greater than zero.";
+            return;
+        }
+
+        if (_model.FileBytes is null || _model.FileBytes.Length == 0)
+        {
+            _errorMessage = "Please choose a receipt file or image.";
+            return;
+        }
+
+        _isSubmitting = true;
+        try
+        {
+            var created = await ApiClient.UploadReceiptAsync(_model);
+            await OnReceiptUploaded.InvokeAsync(created);
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private async Task Close() => await OnClose.InvokeAsync();
+}

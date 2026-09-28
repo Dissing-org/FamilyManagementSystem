@@ -14,6 +14,7 @@ public record UploadReceiptCommand(
     string FileName,
     Stream FileContent,
     string ContentType,
+    string? Category = null,
     string? Notes = null);
 
 public class UploadReceiptCommandHandler
@@ -45,6 +46,7 @@ public class UploadReceiptCommandHandler
             command.PurchaseDate,
             money,
             fileReference,
+            command.Category,
             command.Notes);
 
         // 3. Persist to repository

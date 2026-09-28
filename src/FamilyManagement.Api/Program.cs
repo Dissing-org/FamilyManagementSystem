@@ -7,9 +7,23 @@ using FamilyManagement.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Aspire Service Defaults (OpenTelemetry, HealthChecks, Discovery)
+builder.AddServiceDefaults();
+
 // Add Clean Architecture Layers
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Add CORS for Web and Mobile clients
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Add FastEndpoints & OpenAPI Swagger
 builder.Services.AddFastEndpoints();
@@ -46,6 +60,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
 }
 
+app.MapDefaultEndpoints();
+
+app.UseCors();
 app.UseDefaultExceptionHandler();
 app.UseFastEndpoints();
 app.UseSwaggerGen();

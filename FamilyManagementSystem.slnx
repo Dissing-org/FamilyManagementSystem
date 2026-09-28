@@ -1,9 +1,14 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/FamilyManagement.Api/FamilyManagement.Api.csproj" />
+    <Project Path="src/FamilyManagement.AppHost/FamilyManagement.AppHost.csproj" />
     <Project Path="src/FamilyManagement.Application/FamilyManagement.Application.csproj" />
     <Project Path="src/FamilyManagement.Domain/FamilyManagement.Domain.csproj" />
     <Project Path="src/FamilyManagement.Infrastructure/FamilyManagement.Infrastructure.csproj" />
+    <Project Path="src/FamilyManagement.Mobile/FamilyManagement.Mobile.csproj" />
+    <Project Path="src/FamilyManagement.ServiceDefaults/FamilyManagement.ServiceDefaults.csproj" />
+    <Project Path="src/FamilyManagement.UI.Shared/FamilyManagement.UI.Shared.csproj" />
+    <Project Path="src/FamilyManagement.Web/FamilyManagement.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FamilyManagement.IntegrationTests/FamilyManagement.IntegrationTests.csproj" />

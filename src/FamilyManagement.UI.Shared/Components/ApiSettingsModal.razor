@@ -1,0 +1,73 @@
+@using FamilyManagement.UI.Shared.Services
+
+<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-md w-full p-6 text-slate-900 dark:text-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Server Connection Settings
+            </h3>
+            <button @onclick="Close" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="mt-4 space-y-3">
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+                Configure the backend server URL. For Android Emulator use <code class="bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">http://10.0.2.2:5270</code>. For a physical phone on Wi-Fi, use your PC's LAN IP.
+            </p>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider mb-1 text-slate-600 dark:text-slate-300">Backend API URL</label>
+                <input @bind="_url" type="url" placeholder="http://10.0.2.2:5270 or http://localhost:5270"
+                       class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <div class="flex gap-2 pt-1">
+                <button @onclick='() => _url = "http://10.0.2.2:5270"' class="text-xs px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 rounded-md">
+                    Android Emulator
+                </button>
+                <button @onclick='() => _url = "http://localhost:5270"' class="text-xs px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 rounded-md">
+                    Localhost
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+            <button @onclick="Close" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+            <button @onclick="Save" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm">Save & Reconnect</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public IApiBaseUrlProvider UrlProvider { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback OnSaved { get; set; }
+
+    private string _url = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _url = UrlProvider.GetBaseUrl();
+    }
+
+    private async Task Save()
+    {
+        UrlProvider.SetBaseUrl(_url);
+        await OnSaved.InvokeAsync();
+        await Close();
+    }
+
+    private async Task Close() => await OnClose.InvokeAsync();
+}

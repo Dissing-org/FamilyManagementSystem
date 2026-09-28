@@ -12,6 +12,7 @@ public class UploadReceiptRequest
     public DateTime? PurchaseDate { get; set; }
     public string Amount { get; set; } = string.Empty;
     public string Currency { get; set; } = "USD";
+    public string? Category { get; set; } = "Other";
     public string? Notes { get; set; }
 }
 
@@ -58,6 +59,7 @@ public class UploadReceiptEndpoint : Endpoint<UploadReceiptRequest, ReceiptRespo
             FileName: req.File.FileName,
             FileContent: stream,
             ContentType: req.File.ContentType ?? "application/octet-stream",
+            Category: req.Category,
             Notes: req.Notes);
 
         try

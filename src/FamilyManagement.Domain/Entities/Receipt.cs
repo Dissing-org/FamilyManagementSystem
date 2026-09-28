@@ -10,6 +10,7 @@ public class Receipt
     public DateTime PurchaseDate { get; private set; }
     public Money Amount { get; private set; }
     public GoogleDriveFileReference FileReference { get; private set; }
+    public string Category { get; private set; }
     public string? Notes { get; private set; }
     public ReceiptStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
@@ -22,6 +23,7 @@ public class Receipt
         Merchant = null!;
         Amount = null!;
         FileReference = null!;
+        Category = "Other";
     }
 
     private Receipt(
@@ -30,6 +32,7 @@ public class Receipt
         DateTime purchaseDate,
         Money amount,
         GoogleDriveFileReference fileReference,
+        string category,
         string? notes,
         ReceiptStatus status,
         DateTime createdAt)
@@ -39,6 +42,7 @@ public class Receipt
         PurchaseDate = purchaseDate;
         Amount = amount;
         FileReference = fileReference;
+        Category = category;
         Notes = notes;
         Status = status;
         CreatedAt = createdAt;
@@ -49,6 +53,7 @@ public class Receipt
         DateTime purchaseDate,
         Money amount,
         GoogleDriveFileReference fileReference,
+        string? category = null,
         string? notes = null)
     {
         if (string.IsNullOrWhiteSpace(merchant))
@@ -77,6 +82,7 @@ public class Receipt
             utcPurchaseDate,
             amount,
             fileReference,
+            string.IsNullOrWhiteSpace(category) ? "Other" : category.Trim(),
             notes?.Trim(),
             ReceiptStatus.Active,
             DateTime.UtcNow);

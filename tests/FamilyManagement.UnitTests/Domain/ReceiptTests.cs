@@ -18,7 +18,7 @@ public class ReceiptTests
         var fileRef = GoogleDriveFileReference.Create("drive-file-id-123", "receipt_123.pdf", "https://drive.google.com/file/d/123/view");
 
         // Act
-        var receipt = Receipt.Create(merchant, purchaseDate, money, fileRef, "Grocery shopping");
+        var receipt = Receipt.Create(merchant, purchaseDate, money, fileRef, "Groceries", "Grocery shopping");
 
         // Assert
         receipt.Id.Value.Should().NotBeEmpty();
@@ -26,6 +26,7 @@ public class ReceiptTests
         receipt.PurchaseDate.Should().Be(purchaseDate);
         receipt.Amount.Should().Be(money);
         receipt.FileReference.Should().Be(fileRef);
+        receipt.Category.Should().Be("Groceries");
         receipt.Notes.Should().Be("Grocery shopping");
         receipt.Status.Should().Be(ReceiptStatus.Active);
         receipt.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
