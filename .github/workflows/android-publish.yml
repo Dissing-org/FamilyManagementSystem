@@ -88,10 +88,15 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Attach to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Publish to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest-android' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'Family Management Mobile (Latest Build)' }}
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+          generate_release_notes: true
           files: |
             src/FamilyManagement.Mobile/bin/Release/net10.0-android/publish/*-Signed.apk
+            src/FamilyManagement.Mobile/bin/Release/net10.0-android/*-Signed.apk
+            src/FamilyManagement.Mobile/bin/Release/net10.0-android/publish/*.aab
             src/FamilyManagement.Mobile/bin/Release/net10.0-android/*.aab
