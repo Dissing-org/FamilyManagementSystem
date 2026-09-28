@@ -6,6 +6,7 @@ WORKDIR /src
 COPY ["src/FamilyManagement.Domain/FamilyManagement.Domain.csproj", "src/FamilyManagement.Domain/"]
 COPY ["src/FamilyManagement.Application/FamilyManagement.Application.csproj", "src/FamilyManagement.Application/"]
 COPY ["src/FamilyManagement.Infrastructure/FamilyManagement.Infrastructure.csproj", "src/FamilyManagement.Infrastructure/"]
+COPY ["src/FamilyManagement.ServiceDefaults/FamilyManagement.ServiceDefaults.csproj", "src/FamilyManagement.ServiceDefaults/"]
 COPY ["src/FamilyManagement.Api/FamilyManagement.Api.csproj", "src/FamilyManagement.Api/"]
 
 # Restore dependencies
@@ -15,6 +16,7 @@ RUN dotnet restore "src/FamilyManagement.Api/FamilyManagement.Api.csproj"
 COPY ["src/FamilyManagement.Domain/", "src/FamilyManagement.Domain/"]
 COPY ["src/FamilyManagement.Application/", "src/FamilyManagement.Application/"]
 COPY ["src/FamilyManagement.Infrastructure/", "src/FamilyManagement.Infrastructure/"]
+COPY ["src/FamilyManagement.ServiceDefaults/", "src/FamilyManagement.ServiceDefaults/"]
 COPY ["src/FamilyManagement.Api/", "src/FamilyManagement.Api/"]
 
 WORKDIR "/src/src/FamilyManagement.Api"
