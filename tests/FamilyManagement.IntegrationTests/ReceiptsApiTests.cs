@@ -18,8 +18,10 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
 
     public ReceiptsApiTests(WebApplicationFactory<Program> factory)
     {
+        var testDbName = $"test_receipts_{Guid.NewGuid():N}.db";
         _factory = factory.WithWebHostBuilder(builder =>
         {
+            builder.UseSetting("ConnectionStrings:ReceiptDatabase", $"Data Source={testDbName}");
             builder.ConfigureServices(services =>
             {
                 // Provide a mocked Google Drive storage service for deterministic integration tests
@@ -41,13 +43,6 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
                         "https://drive.google.com/file/d/mock-drive-id-999/view")));
 
                 services.AddSingleton(mockStorage);
-
-                // Ensure clean database schema for test run
-                var sp = services.BuildServiceProvider();
-                using var scope = sp.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<FamilyManagement.Infrastructure.Persistence.ReceiptDbContext>();
-                db.Database.EnsureDeleted();
-                db.Database.EnsureCreated();
             });
         });
     }

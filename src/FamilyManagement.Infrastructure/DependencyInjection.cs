@@ -21,6 +21,7 @@ public static class DependencyInjection
             options.UseSqlite(connectionString));
 
         services.AddScoped<IReceiptRepository, ReceiptRepository>();
+        services.AddScoped<IInsurancePolicyRepository, InsurancePolicyRepository>();
 
         services.Configure<GoogleDriveOptions>(
             configuration.GetSection(GoogleDriveOptions.SectionName));
