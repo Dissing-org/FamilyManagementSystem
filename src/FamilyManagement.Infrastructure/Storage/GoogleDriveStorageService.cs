@@ -216,6 +216,10 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         return GoogleDriveFileReference.Create(fileId, savedName, $"file://{destinationPath.Replace('\\', '/')}");
     }
 
+    private static readonly HashSet<char> DisallowedChars = new(
+        Path.GetInvalidFileNameChars()
+            .Concat(new[] { '/', '\\', ':', '*', '?', '"', '<', '>', '|', '\0' }));
+
     public static string SanitizeFolderName(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -223,8 +227,7 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
             return "Other";
         }
 
-        var invalidChars = Path.GetInvalidFileNameChars();
-        var cleaned = new string(name.Where(c => !invalidChars.Contains(c) && c != '/' && c != '\\').ToArray()).Trim();
+        var cleaned = new string(name.Where(c => !DisallowedChars.Contains(c)).ToArray()).Trim();
         return string.IsNullOrWhiteSpace(cleaned) ? "Other" : cleaned;
     }
 }
