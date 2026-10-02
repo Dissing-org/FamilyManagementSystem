@@ -62,10 +62,15 @@ using (var scope = app.Services.CreateScope())
 
 app.MapDefaultEndpoints();
 
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseCors();
 app.UseDefaultExceptionHandler();
 app.UseFastEndpoints();
 app.UseSwaggerGen();
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

@@ -7,6 +7,8 @@ COPY ["src/FamilyManagement.Domain/FamilyManagement.Domain.csproj", "src/FamilyM
 COPY ["src/FamilyManagement.Application/FamilyManagement.Application.csproj", "src/FamilyManagement.Application/"]
 COPY ["src/FamilyManagement.Infrastructure/FamilyManagement.Infrastructure.csproj", "src/FamilyManagement.Infrastructure/"]
 COPY ["src/FamilyManagement.ServiceDefaults/FamilyManagement.ServiceDefaults.csproj", "src/FamilyManagement.ServiceDefaults/"]
+COPY ["src/FamilyManagement.UI.Shared/FamilyManagement.UI.Shared.csproj", "src/FamilyManagement.UI.Shared/"]
+COPY ["src/FamilyManagement.Web/FamilyManagement.Web.csproj", "src/FamilyManagement.Web/"]
 COPY ["src/FamilyManagement.Api/FamilyManagement.Api.csproj", "src/FamilyManagement.Api/"]
 
 # Restore dependencies
@@ -17,6 +19,8 @@ COPY ["src/FamilyManagement.Domain/", "src/FamilyManagement.Domain/"]
 COPY ["src/FamilyManagement.Application/", "src/FamilyManagement.Application/"]
 COPY ["src/FamilyManagement.Infrastructure/", "src/FamilyManagement.Infrastructure/"]
 COPY ["src/FamilyManagement.ServiceDefaults/", "src/FamilyManagement.ServiceDefaults/"]
+COPY ["src/FamilyManagement.UI.Shared/", "src/FamilyManagement.UI.Shared/"]
+COPY ["src/FamilyManagement.Web/", "src/FamilyManagement.Web/"]
 COPY ["src/FamilyManagement.Api/", "src/FamilyManagement.Api/"]
 
 WORKDIR "/src/src/FamilyManagement.Api"

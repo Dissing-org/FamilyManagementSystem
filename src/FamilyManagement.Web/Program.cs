@@ -10,7 +10,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 var apiUrl = builder.Configuration["services:api:https:0"] 
           ?? builder.Configuration["services:api:http:0"] 
           ?? builder.Configuration["ApiSettings:BaseUrl"] 
-          ?? "http://localhost:5271";
+          ?? builder.HostEnvironment.BaseAddress;
 
 builder.Services.AddSingleton<IApiBaseUrlProvider>(new DefaultApiBaseUrlProvider(apiUrl));
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
