@@ -71,6 +71,19 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
             configured = _options.LocalStorageFallbackDirectory;
         }
 
+        // If running in a Linux container but configured with a Windows-style path (e.g. C:\... or C:/...),
+        // fall back to /app/receipts_storage if it exists
+        if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows) &&
+            !string.IsNullOrWhiteSpace(configured) &&
+            (configured.Length > 1 && configured[1] == ':'))
+        {
+            if (Directory.Exists("/app/receipts_storage"))
+            {
+                return "/app/receipts_storage";
+            }
+            configured = _options.LocalStorageFallbackDirectory ?? "receipts_storage";
+        }
+
         if (string.IsNullOrWhiteSpace(configured))
         {
             configured = Path.Combine(
