@@ -32,15 +32,25 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
                 }
 
                 var mockStorage = Substitute.For<IReceiptFileStorageService>();
+                var mockFileRef = GoogleDriveFileReference.Create(
+                    "mock-drive-id-999",
+                    "test_receipt.pdf",
+                    "https://drive.google.com/file/d/mock-drive-id-999/view");
+
+                mockStorage.UploadAsync(
+                    Arg.Any<string>(),
+                    Arg.Any<Stream>(),
+                    Arg.Any<string>(),
+                    Arg.Any<ReceiptUploadMetadata>(),
+                    Arg.Any<CancellationToken>())
+                    .Returns(Task.FromResult(mockFileRef));
+
                 mockStorage.UploadAsync(
                     Arg.Any<string>(),
                     Arg.Any<Stream>(),
                     Arg.Any<string>(),
                     Arg.Any<CancellationToken>())
-                    .Returns(Task.FromResult(GoogleDriveFileReference.Create(
-                        "mock-drive-id-999",
-                        "test_receipt.pdf",
-                        "https://drive.google.com/file/d/mock-drive-id-999/view")));
+                    .Returns(Task.FromResult(mockFileRef));
 
                 services.AddSingleton(mockStorage);
             });

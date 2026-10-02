@@ -15,6 +15,8 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
     private readonly ILogger<GoogleDriveStorageService> _logger;
     private DriveService? _driveService;
 
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _folderIdCache = new();
+
     public GoogleDriveStorageService(
         IOptions<GoogleDriveOptions> options,
         ILogger<GoogleDriveStorageService> logger)
@@ -48,10 +50,20 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         return _driveService;
     }
 
+    public Task<GoogleDriveFileReference> UploadAsync(
+        string fileName,
+        Stream fileStream,
+        string contentType,
+        CancellationToken cancellationToken = default)
+    {
+        return UploadAsync(fileName, fileStream, contentType, metadata: null, cancellationToken);
+    }
+
     public async Task<GoogleDriveFileReference> UploadAsync(
         string fileName,
         Stream fileStream,
         string contentType,
+        ReceiptUploadMetadata? metadata,
         CancellationToken cancellationToken = default)
     {
         // Check if fallback to local storage is enabled and credentials are not present
@@ -59,20 +71,30 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
             && _options.UseLocalStorageFallbackWhenUnconfigured)
         {
             _logger.LogWarning("Google Drive credentials not found. Using local fallback directory '{Dir}'", _options.LocalStorageFallbackDirectory);
-            return await SaveLocallyAsync(fileName, fileStream, cancellationToken);
+            return await SaveLocallyAsync(fileName, fileStream, metadata, cancellationToken);
         }
 
         var driveService = GetDriveService();
 
+        // 1. Resolve Root Folder
+        var rootFolderName = string.IsNullOrWhiteSpace(_options.RootFolderName) ? "Family Receipts" : _options.RootFolderName;
+        var rootFolderId = !string.IsNullOrWhiteSpace(_options.RootFolderId)
+            ? _options.RootFolderId
+            : await GetOrCreateFolderAsync(driveService, rootFolderName, parentFolderId: null, cancellationToken);
+
+        // 2. Resolve Year Subfolder (e.g. "2026")
+        var year = (metadata?.Year ?? DateTime.UtcNow.Year).ToString();
+        var yearFolderId = await GetOrCreateFolderAsync(driveService, year, rootFolderId, cancellationToken);
+
+        // 3. Resolve Category Subfolder (e.g. "Groceries")
+        var category = SanitizeFolderName(metadata?.Category);
+        var targetFolderId = await GetOrCreateFolderAsync(driveService, category, yearFolderId, cancellationToken);
+
         var fileMetadata = new Google.Apis.Drive.v3.Data.File
         {
-            Name = $"{DateTime.UtcNow:yyyyMMdd_HHmmss}_{fileName}"
+            Name = $"{DateTime.UtcNow:yyyyMMdd_HHmmss}_{fileName}",
+            Parents = new List<string> { targetFolderId }
         };
-
-        if (!string.IsNullOrWhiteSpace(_options.FolderId))
-        {
-            fileMetadata.Parents = new List<string> { _options.FolderId };
-        }
 
         var request = driveService.Files.Create(fileMetadata, fileStream, contentType);
         request.Fields = "id, name, webViewLink";
@@ -84,7 +106,9 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         }
 
         var uploadedFile = request.ResponseBody;
-        _logger.LogInformation("Uploaded receipt '{FileName}' to Google Drive with FileId '{FileId}'", fileName, uploadedFile.Id);
+        _logger.LogInformation(
+            "Uploaded receipt '{FileName}' to Google Drive in folder '{Root}/{Year}/{Category}' (FolderId: '{FolderId}') with FileId '{FileId}'",
+            fileName, rootFolderName, year, category, targetFolderId, uploadedFile.Id);
 
         return GoogleDriveFileReference.Create(
             uploadedFile.Id,
@@ -105,9 +129,75 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         await driveService.Files.Delete(fileId).ExecuteAsync(cancellationToken);
     }
 
-    private async Task<GoogleDriveFileReference> SaveLocallyAsync(string fileName, Stream stream, CancellationToken cancellationToken)
+    private async Task<string> GetOrCreateFolderAsync(
+        DriveService service,
+        string folderName,
+        string? parentFolderId,
+        CancellationToken cancellationToken)
     {
-        var localDir = Path.Combine(AppContext.BaseDirectory, _options.LocalStorageFallbackDirectory);
+        var cacheKey = $"{parentFolderId ?? "root"}::{folderName}";
+        if (_folderIdCache.TryGetValue(cacheKey, out var cachedId))
+        {
+            return cachedId;
+        }
+
+        var escapedName = folderName.Replace("'", "\\'");
+        var query = $"mimeType = 'application/vnd.google-apps.folder' and name = '{escapedName}' and trashed = false";
+        if (!string.IsNullOrWhiteSpace(parentFolderId))
+        {
+            query += $" and '{parentFolderId}' in parents";
+        }
+
+        var listRequest = service.Files.List();
+        listRequest.Q = query;
+        listRequest.Fields = "files(id, name)";
+        listRequest.Spaces = "drive";
+
+        var response = await listRequest.ExecuteAsync(cancellationToken);
+        var existing = response.Files?.FirstOrDefault();
+        if (existing is not null)
+        {
+            _folderIdCache[cacheKey] = existing.Id;
+            return existing.Id;
+        }
+
+        // Folder not found; create it
+        var newFolder = new Google.Apis.Drive.v3.Data.File
+        {
+            Name = folderName,
+            MimeType = "application/vnd.google-apps.folder"
+        };
+
+        if (!string.IsNullOrWhiteSpace(parentFolderId))
+        {
+            newFolder.Parents = new List<string> { parentFolderId };
+        }
+
+        var createRequest = service.Files.Create(newFolder);
+        createRequest.Fields = "id, name";
+
+        var created = await createRequest.ExecuteAsync(cancellationToken);
+        _logger.LogInformation("Created Google Drive folder '{Name}' under parent '{Parent}' with ID '{Id}'",
+            folderName, parentFolderId ?? "root", created.Id);
+
+        _folderIdCache[cacheKey] = created.Id;
+        return created.Id;
+    }
+
+    private async Task<GoogleDriveFileReference> SaveLocallyAsync(
+        string fileName,
+        Stream stream,
+        ReceiptUploadMetadata? metadata,
+        CancellationToken cancellationToken)
+    {
+        var year = (metadata?.Year ?? DateTime.UtcNow.Year).ToString();
+        var category = SanitizeFolderName(metadata?.Category);
+
+        var localDir = Path.Combine(
+            AppContext.BaseDirectory,
+            _options.LocalStorageFallbackDirectory,
+            year,
+            category);
         Directory.CreateDirectory(localDir);
 
         var fileId = Guid.NewGuid().ToString("N");
@@ -124,5 +214,17 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         }
 
         return GoogleDriveFileReference.Create(fileId, savedName, $"file://{destinationPath.Replace('\\', '/')}");
+    }
+
+    public static string SanitizeFolderName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "Other";
+        }
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var cleaned = new string(name.Where(c => !invalidChars.Contains(c) && c != '/' && c != '\\').ToArray()).Trim();
+        return string.IsNullOrWhiteSpace(cleaned) ? "Other" : cleaned;
     }
 }

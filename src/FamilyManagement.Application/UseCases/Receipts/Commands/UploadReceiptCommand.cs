@@ -32,11 +32,17 @@ public class UploadReceiptCommandHandler
 
     public async Task<ReceiptResponseDto> HandleAsync(UploadReceiptCommand command, CancellationToken cancellationToken = default)
     {
-        // 1. Upload file to Google Drive
+        // 1. Upload file to Google Drive with folder metadata (Year/Category)
+        var metadata = new ReceiptUploadMetadata(
+            Category: command.Category,
+            Year: command.PurchaseDate.Year,
+            Merchant: command.Merchant);
+
         var fileReference = await _storageService.UploadAsync(
             command.FileName,
             command.FileContent,
             command.ContentType,
+            metadata,
             cancellationToken);
 
         // 2. Create Domain Aggregate Root

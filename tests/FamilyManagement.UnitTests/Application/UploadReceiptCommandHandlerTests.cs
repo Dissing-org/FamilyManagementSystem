@@ -39,6 +39,7 @@ public class UploadReceiptCommandHandlerTests
             command.FileName,
             Arg.Any<Stream>(),
             command.ContentType,
+            Arg.Is<ReceiptUploadMetadata>(m => m.Category == command.Category && m.Year == 2026 && m.Merchant == command.Merchant),
             Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(fileRef));
 
@@ -59,6 +60,7 @@ public class UploadReceiptCommandHandlerTests
             command.FileName,
             Arg.Any<Stream>(),
             command.ContentType,
+            Arg.Is<ReceiptUploadMetadata>(m => m.Category == command.Category && m.Year == 2026 && m.Merchant == command.Merchant),
             Arg.Any<CancellationToken>());
 
         await _repository.Received(1).AddAsync(
