@@ -23,8 +23,16 @@ COPY ["src/FamilyManagement.UI.Shared/", "src/FamilyManagement.UI.Shared/"]
 COPY ["src/FamilyManagement.Web/", "src/FamilyManagement.Web/"]
 COPY ["src/FamilyManagement.Api/", "src/FamilyManagement.Api/"]
 
+# Publish Blazor WebAssembly frontend (processes asset fingerprint placeholders and importmaps)
+WORKDIR "/src/src/FamilyManagement.Web"
+RUN dotnet publish "FamilyManagement.Web.csproj" -c Release -o /app/publish_web /p:UseAppHost=false
+
+# Publish Backend API
 WORKDIR "/src/src/FamilyManagement.Api"
 RUN dotnet publish "FamilyManagement.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Merge fully processed Blazor WebAssembly assets into API wwwroot
+RUN cp -r /app/publish_web/wwwroot/* /app/publish/wwwroot/
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
