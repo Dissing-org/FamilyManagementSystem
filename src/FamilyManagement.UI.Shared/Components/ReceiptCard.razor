@@ -1,4 +1,5 @@
 @using FamilyManagement.UI.Shared.Models
+@inject FamilyManagement.UI.Shared.Services.IApiBaseUrlProvider ApiBaseUrlProvider
 
 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200 p-5 flex flex-col justify-between">
     <div>
@@ -31,12 +32,12 @@
     <div class="pt-3 border-t border-slate-100 dark:border-slate-700/70 flex items-center justify-between gap-2 mt-2">
         @if (!string.IsNullOrWhiteSpace(Receipt.WebViewLink))
         {
-            <a href="@Receipt.WebViewLink" target="_blank" rel="noopener noreferrer" 
+            <a href="@GetResolvedViewLink()" target="_blank" rel="noopener noreferrer" 
                class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                 </svg>
-                View in Drive
+                @(Receipt.WebViewLink.Contains("drive.google.com") ? "View in Drive" : "View Receipt")
             </a>
         }
         else
@@ -58,4 +59,15 @@
 
     [Parameter]
     public EventCallback<Guid> OnDelete { get; set; }
+
+    private string GetResolvedViewLink()
+    {
+        if (string.IsNullOrWhiteSpace(Receipt.WebViewLink)) return string.Empty;
+        if (Receipt.WebViewLink.StartsWith("/api/"))
+        {
+            var baseUri = ApiBaseUrlProvider.GetBaseUrl()?.TrimEnd('/') ?? "";
+            return $"{baseUri}{Receipt.WebViewLink}";
+        }
+        return Receipt.WebViewLink;
+    }
 }

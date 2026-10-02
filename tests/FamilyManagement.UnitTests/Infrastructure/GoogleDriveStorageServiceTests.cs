@@ -69,7 +69,7 @@ public class GoogleDriveStorageServiceTests : IDisposable
         result.Should().NotBeNull();
         result.FileId.Should().NotBeNullOrWhiteSpace();
         result.FileName.Should().Contain("receipt.pdf");
-        result.WebViewLink.Should().StartWith("file://");
+        result.WebViewLink.Should().Be($"/api/receipts/files/{result.FileId}");
 
         var expectedFolderPath = Path.Combine(AppContext.BaseDirectory, relativeDir, "2026", "Groceries");
         Directory.Exists(expectedFolderPath).Should().BeTrue();
@@ -77,5 +77,39 @@ public class GoogleDriveStorageServiceTests : IDisposable
         var savedFiles = Directory.GetFiles(expectedFolderPath);
         savedFiles.Should().HaveCount(1);
         savedFiles[0].Should().Contain("receipt.pdf");
+    }
+
+    [Fact]
+    public async Task UploadAsync_WithLocalStorageProvider_ShouldSaveDirectlyToConfiguredLocalDirectory()
+    {
+        // Arrange
+        var options = Options.Create(new GoogleDriveOptions
+        {
+            StorageProvider = "Local",
+            LocalStorageDirectory = _testDir
+        });
+
+        var service = new GoogleDriveStorageService(options, NullLogger<GoogleDriveStorageService>.Instance);
+        var metadata = new ReceiptUploadMetadata(Category: "Dining", Year: 2026, Merchant: "Pizzeria");
+        var content = new MemoryStream(Encoding.UTF8.GetBytes("pizza receipt content"));
+
+        // Act
+        var result = await service.UploadAsync("pizza.pdf", content, "application/pdf", metadata);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.FileId.Should().NotBeNullOrWhiteSpace();
+        result.WebViewLink.Should().Be($"/api/receipts/files/{result.FileId}");
+
+        var expectedFolderPath = Path.Combine(_testDir, "2026", "Dining");
+        Directory.Exists(expectedFolderPath).Should().BeTrue();
+
+        var savedFiles = Directory.GetFiles(expectedFolderPath);
+        savedFiles.Should().HaveCount(1);
+        savedFiles[0].Should().Contain("pizza.pdf");
+
+        // Delete test
+        await service.DeleteAsync(result.FileId);
+        Directory.GetFiles(expectedFolderPath).Should().BeEmpty();
     }
 }

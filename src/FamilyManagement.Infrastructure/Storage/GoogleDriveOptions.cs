@@ -19,6 +19,9 @@ public class GoogleDriveOptions
         get => RootFolderId;
         set => RootFolderId = value;
     }
+    // Storage Mode: "Local" or "GoogleDrive"
+    public string StorageProvider { get; set; } = "Local";
+    public string? LocalStorageDirectory { get; set; }
     public bool UseLocalStorageFallbackWhenUnconfigured { get; set; } = true;
     public string LocalStorageFallbackDirectory { get; set; } = "receipts_storage";
 }
