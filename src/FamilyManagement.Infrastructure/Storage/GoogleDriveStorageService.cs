@@ -13,41 +13,45 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
 {
     private readonly GoogleDriveOptions _options;
     private readonly ILogger<GoogleDriveStorageService> _logger;
-    private DriveService? _driveService;
-
+    private readonly IGoogleDriveAuthService? _authService;
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _folderIdCache = new();
 
     public GoogleDriveStorageService(
         IOptions<GoogleDriveOptions> options,
-        ILogger<GoogleDriveStorageService> logger)
+        ILogger<GoogleDriveStorageService> logger,
+        IGoogleDriveAuthService? authService = null)
     {
         _options = options.Value;
         _logger = logger;
+        _authService = authService;
     }
 
-    private DriveService GetDriveService()
+    private async Task<DriveService?> TryGetDriveServiceAsync(CancellationToken cancellationToken)
     {
-        if (_driveService is not null)
+        // 1. Try OAuth 2.0 User Credential (preferred for personal Google Drive)
+        if (_authService is GoogleDriveAuthService concreteAuth)
         {
-            return _driveService;
+            var userDrive = await concreteAuth.TryCreateUserDriveServiceAsync(cancellationToken);
+            if (userDrive is not null)
+            {
+                return userDrive;
+            }
         }
 
-        if (string.IsNullOrWhiteSpace(_options.CredentialsJsonPath) || !File.Exists(_options.CredentialsJsonPath))
+        // 2. Try Service Account (for Workspace Shared Drives)
+        if (!string.IsNullOrWhiteSpace(_options.CredentialsJsonPath) && File.Exists(_options.CredentialsJsonPath))
         {
-            throw new InvalidOperationException(
-                $"Google Drive credentials JSON file not found at '{_options.CredentialsJsonPath}'. Please configure GoogleDrive:CredentialsJsonPath in appsettings.json.");
+            var credential = GoogleCredential.FromFile(_options.CredentialsJsonPath)
+                .CreateScoped(DriveService.Scope.DriveFile);
+
+            return new DriveService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "FamilyManagementSystem"
+            });
         }
 
-        var credential = GoogleCredential.FromFile(_options.CredentialsJsonPath)
-            .CreateScoped(DriveService.Scope.DriveFile);
-
-        _driveService = new DriveService(new BaseClientService.Initializer
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = "FamilyManagementSystem"
-        });
-
-        return _driveService;
+        return null;
     }
 
     public Task<GoogleDriveFileReference> UploadAsync(
@@ -66,15 +70,17 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         ReceiptUploadMetadata? metadata,
         CancellationToken cancellationToken = default)
     {
-        // Check if fallback to local storage is enabled and credentials are not present
-        if ((string.IsNullOrWhiteSpace(_options.CredentialsJsonPath) || !File.Exists(_options.CredentialsJsonPath)) 
-            && _options.UseLocalStorageFallbackWhenUnconfigured)
+        var driveService = await TryGetDriveServiceAsync(cancellationToken);
+        if (driveService is null)
         {
-            _logger.LogWarning("Google Drive credentials not found. Using local fallback directory '{Dir}'", _options.LocalStorageFallbackDirectory);
-            return await SaveLocallyAsync(fileName, fileStream, metadata, cancellationToken);
-        }
+            if (_options.UseLocalStorageFallbackWhenUnconfigured)
+            {
+                _logger.LogWarning("Google Drive is not configured or not authorized. Using local fallback directory '{Dir}'", _options.LocalStorageFallbackDirectory);
+                return await SaveLocallyAsync(fileName, fileStream, metadata, cancellationToken);
+            }
 
-        var driveService = GetDriveService();
+            throw new InvalidOperationException("Google Drive is not authorized or configured.");
+        }
 
         // 1. Resolve Root Folder
         var rootFolderName = string.IsNullOrWhiteSpace(_options.RootFolderName) ? "Family Receipts" : _options.RootFolderName;
@@ -118,14 +124,18 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
 
     public async Task DeleteAsync(string fileId, CancellationToken cancellationToken = default)
     {
-        if ((string.IsNullOrWhiteSpace(_options.CredentialsJsonPath) || !File.Exists(_options.CredentialsJsonPath))
-            && _options.UseLocalStorageFallbackWhenUnconfigured)
+        var driveService = await TryGetDriveServiceAsync(cancellationToken);
+        if (driveService is null)
         {
-            _logger.LogInformation("Simulated deletion of local file reference '{FileId}'", fileId);
-            return;
+            if (_options.UseLocalStorageFallbackWhenUnconfigured)
+            {
+                _logger.LogInformation("Simulated deletion of local file reference '{FileId}'", fileId);
+                return;
+            }
+
+            throw new InvalidOperationException("Google Drive is not authorized or configured.");
         }
 
-        var driveService = GetDriveService();
         await driveService.Files.Delete(fileId).ExecuteAsync(cancellationToken);
     }
 

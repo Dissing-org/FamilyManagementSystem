@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.Configure<GoogleDriveOptions>(
             configuration.GetSection(GoogleDriveOptions.SectionName));
 
+        services.AddSingleton<IGoogleDriveAuthService, GoogleDriveAuthService>();
         services.AddScoped<IReceiptFileStorageService, GoogleDriveStorageService>();
 
         return services;

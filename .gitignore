@@ -17,10 +17,13 @@ TestResults/
 *.db-shm
 *.db-wal
 receipts_storage/
+google_drive_tokens/
 
 ## Secrets, Credentials, and Environment Files
 credentials*.json
 *service-account*.json
+*client_secret*.json
+client_secret*.json
 *.env
 *.env.*
 *.secret*
