@@ -9,14 +9,11 @@
             <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">@Receipt.FormattedDate</span>
         </div>
 
-        <!-- Merchant & Amount -->
+        <!-- Merchant -->
         <div class="mb-3">
             <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 truncate" title="@Receipt.Merchant">
                 @Receipt.Merchant
             </h3>
-            <div class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">
-                @Receipt.FormattedAmount
-            </div>
         </div>
 
         <!-- Notes if present -->

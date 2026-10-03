@@ -14,17 +14,15 @@ public class ReceiptTests
         // Arrange
         var merchant = "Supermarket ABC";
         var purchaseDate = new DateTime(2026, 3, 15, 14, 30, 0, DateTimeKind.Utc);
-        var money = Money.Create(49.99m, "USD");
         var fileRef = GoogleDriveFileReference.Create("drive-file-id-123", "receipt_123.pdf", "https://drive.google.com/file/d/123/view");
 
         // Act
-        var receipt = Receipt.Create(merchant, purchaseDate, money, fileRef, "Groceries", "Grocery shopping");
+        var receipt = Receipt.Create(merchant, purchaseDate, fileRef, "Groceries", "Grocery shopping");
 
         // Assert
         receipt.Id.Value.Should().NotBeEmpty();
         receipt.Merchant.Should().Be(merchant);
         receipt.PurchaseDate.Should().Be(purchaseDate);
-        receipt.Amount.Should().Be(money);
         receipt.FileReference.Should().Be(fileRef);
         receipt.Category.Should().Be("Groceries");
         receipt.Notes.Should().Be("Grocery shopping");
@@ -40,11 +38,10 @@ public class ReceiptTests
     {
         // Arrange
         var purchaseDate = DateTime.UtcNow.AddDays(-1);
-        var money = Money.Create(10m, "USD");
         var fileRef = GoogleDriveFileReference.Create("drive-id", "receipt.pdf", "https://drive.google.com/file/d/123/view");
 
         // Act
-        var act = () => Receipt.Create(invalidMerchant!, purchaseDate, money, fileRef);
+        var act = () => Receipt.Create(invalidMerchant!, purchaseDate, fileRef);
 
         // Assert
         act.Should().Throw<ArgumentException>()
@@ -56,11 +53,10 @@ public class ReceiptTests
     {
         // Arrange
         var futureDate = DateTime.UtcNow.AddDays(5);
-        var money = Money.Create(10m, "USD");
         var fileRef = GoogleDriveFileReference.Create("drive-id", "receipt.pdf", "https://drive.google.com/file/d/123/view");
 
         // Act
-        var act = () => Receipt.Create("Merchant", futureDate, money, fileRef);
+        var act = () => Receipt.Create("Merchant", futureDate, fileRef);
 
         // Assert
         act.Should().Throw<ArgumentException>()
@@ -74,7 +70,6 @@ public class ReceiptTests
         var receipt = Receipt.Create(
             "Merchant",
             DateTime.UtcNow.AddDays(-1),
-            Money.Create(25m, "USD"),
             GoogleDriveFileReference.Create("id", "name.jpg", "https://drive.google.com/view"));
 
         // Act

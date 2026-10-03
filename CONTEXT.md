@@ -5,11 +5,11 @@ A server and domain model to manage household finances, schedules, and operation
 ## Language
 
 **Receipt**:
-A digital or scanned record of a purchase transaction, consisting of metadata and a referenced file archived in Google Drive.
+A digital or scanned record of a purchase, consisting of who it is from (the Merchant), when it happened, a Category, optional notes, and a referenced file archived in external storage. Receipts deliberately do not record amounts or currency.
 _Avoid_: Ticket, invoice, bill
 
 **Purchase**:
-The exchange of money for goods or services represented by a receipt.
+The event of obtaining goods or services from a Merchant, documented by a receipt.
 _Avoid_: Transaction, order
 
 **Merchant**:

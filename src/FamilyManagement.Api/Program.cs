@@ -60,31 +60,47 @@ using (var scope = app.Services.CreateScope())
     }
     db.Database.EnsureCreated();
 
-    // Auto-migrate SQLite schema if columns are missing from existing database volumes
+    // Auto-migrate SQLite schema for databases created by older versions of the app
     try
     {
         var connection = db.Database.GetDbConnection();
-        connection.Open();
-        using var cmd = connection.CreateCommand();
-        cmd.CommandText = "PRAGMA table_info(\"Receipts\");";
-        using var reader = cmd.ExecuteReader();
-        var hasCategory = false;
-        while (reader.Read())
+        if (connection.State != System.Data.ConnectionState.Open)
         {
-            var colName = reader.GetString(1);
-            if (string.Equals(colName, "Category", StringComparison.OrdinalIgnoreCase))
+            connection.Open();
+        }
+
+        var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var cmd = connection.CreateCommand())
+        {
+            cmd.CommandText = "PRAGMA table_info(\"Receipts\");";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
-                hasCategory = true;
-                break;
+                columns.Add(reader.GetString(1));
             }
         }
-        reader.Close();
 
-        if (!hasCategory)
+        var migrations = new List<string>();
+        if (!columns.Contains("Category"))
         {
-            using var alterCmd = connection.CreateCommand();
-            alterCmd.CommandText = "ALTER TABLE \"Receipts\" ADD COLUMN \"Category\" TEXT NOT NULL DEFAULT 'Other';";
-            alterCmd.ExecuteNonQuery();
+            migrations.Add("ALTER TABLE \"Receipts\" ADD COLUMN \"Category\" TEXT NOT NULL DEFAULT 'Other';");
+        }
+
+        // Receipts only record who they are from; amount and currency are intentionally not tracked.
+        foreach (var legacyColumn in new[] { "Amount", "Currency" })
+        {
+            if (columns.Contains(legacyColumn))
+            {
+                migrations.Add($"ALTER TABLE \"Receipts\" DROP COLUMN \"{legacyColumn}\";");
+            }
+        }
+
+        foreach (var sql in migrations)
+        {
+            using var migrationCmd = connection.CreateCommand();
+            migrationCmd.CommandText = sql;
+            migrationCmd.ExecuteNonQuery();
+            app.Logger.LogInformation("Applied SQLite schema migration: {Sql}", sql);
         }
     }
     catch (Exception ex)

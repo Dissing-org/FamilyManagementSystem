@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FamilyManagement.UI.Shared.Models;
@@ -71,8 +70,6 @@ public class ReceiptApiClient : IReceiptApiClient
         using var form = new MultipartFormDataContent();
         form.Add(new StringContent(model.Merchant), "Merchant");
         form.Add(new StringContent(model.PurchaseDate.ToString("o")), "PurchaseDate");
-        form.Add(new StringContent(model.Amount.ToString("F2", CultureInfo.InvariantCulture)), "Amount");
-        form.Add(new StringContent(model.Currency), "Currency");
         form.Add(new StringContent(model.Category), "Category");
 
         if (!string.IsNullOrWhiteSpace(model.Notes))

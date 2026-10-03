@@ -23,8 +23,6 @@ public class UploadReceiptCommandHandlerTests
         var command = new UploadReceiptCommand(
             Merchant: "Costco Wholesale",
             PurchaseDate: new DateTime(2026, 3, 20, 10, 0, 0, DateTimeKind.Utc),
-            Amount: 125.50m,
-            Currency: "USD",
             FileName: "costco_receipt.pdf",
             FileContent: new MemoryStream(Encoding.UTF8.GetBytes("fake-pdf-content")),
             ContentType: "application/pdf",
@@ -51,8 +49,6 @@ public class UploadReceiptCommandHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Merchant.Should().Be("Costco Wholesale");
-        result.Amount.Should().Be(125.50m);
-        result.Currency.Should().Be("USD");
         result.GoogleDriveFileId.Should().Be("drive-file-id-456");
         result.WebViewLink.Should().Be("https://drive.google.com/file/d/456/view");
 
@@ -64,7 +60,7 @@ public class UploadReceiptCommandHandlerTests
             Arg.Any<CancellationToken>());
 
         await _repository.Received(1).AddAsync(
-            Arg.Is<Receipt>(r => r.Merchant == "Costco Wholesale" && r.Amount.Amount == 125.50m),
+            Arg.Is<Receipt>(r => r.Merchant == "Costco Wholesale"),
             Arg.Any<CancellationToken>());
 
         await _repository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());

@@ -24,7 +24,6 @@ public class ReceiptQueryAndCommandHandlersTests
         var receipt = Receipt.Create(
             "Target",
             DateTime.UtcNow.AddDays(-2),
-            Money.Create(35.20m, "USD"),
             GoogleDriveFileReference.Create("drive-id-1", "target.jpg", "https://drive.google.com/view/1"));
 
         _repository.GetByIdAsync(receipt.Id, Arg.Any<CancellationToken>())
@@ -39,7 +38,6 @@ public class ReceiptQueryAndCommandHandlersTests
         result.Should().NotBeNull();
         result!.Id.Should().Be(receipt.Id.Value);
         result.Merchant.Should().Be("Target");
-        result.Amount.Should().Be(35.20m);
     }
 
     [Fact]
@@ -63,8 +61,8 @@ public class ReceiptQueryAndCommandHandlersTests
     public async Task ListReceipts_ShouldReturnMappedDtos()
     {
         // Arrange
-        var receipt1 = Receipt.Create("Store A", DateTime.UtcNow.AddDays(-1), Money.Create(10m, "USD"), GoogleDriveFileReference.Create("id-1", "a.pdf"));
-        var receipt2 = Receipt.Create("Store B", DateTime.UtcNow.AddDays(-2), Money.Create(20m, "USD"), GoogleDriveFileReference.Create("id-2", "b.pdf"));
+        var receipt1 = Receipt.Create("Store A", DateTime.UtcNow.AddDays(-1), GoogleDriveFileReference.Create("id-1", "a.pdf"));
+        var receipt2 = Receipt.Create("Store B", DateTime.UtcNow.AddDays(-2), GoogleDriveFileReference.Create("id-2", "b.pdf"));
 
         _repository.ListAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Receipt>>(new List<Receipt> { receipt1, receipt2 }));
@@ -83,7 +81,7 @@ public class ReceiptQueryAndCommandHandlersTests
     public async Task DeleteReceipt_WhenExists_ShouldArchiveAndSave()
     {
         // Arrange
-        var receipt = Receipt.Create("Store C", DateTime.UtcNow.AddDays(-1), Money.Create(15m, "USD"), GoogleDriveFileReference.Create("id-3", "c.pdf"));
+        var receipt = Receipt.Create("Store C", DateTime.UtcNow.AddDays(-1), GoogleDriveFileReference.Create("id-3", "c.pdf"));
         _repository.GetByIdAsync(receipt.Id, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Receipt?>(receipt));
 

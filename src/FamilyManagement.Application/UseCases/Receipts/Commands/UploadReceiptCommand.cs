@@ -9,8 +9,6 @@ namespace FamilyManagement.Application.UseCases.Receipts.Commands;
 public record UploadReceiptCommand(
     string Merchant,
     DateTime PurchaseDate,
-    decimal Amount,
-    string Currency,
     string FileName,
     Stream FileContent,
     string ContentType,
@@ -46,11 +44,9 @@ public class UploadReceiptCommandHandler
             cancellationToken);
 
         // 2. Create Domain Aggregate Root
-        var money = Money.Create(command.Amount, command.Currency);
         var receipt = Receipt.Create(
             command.Merchant,
             command.PurchaseDate,
-            money,
             fileReference,
             command.Category,
             command.Notes);

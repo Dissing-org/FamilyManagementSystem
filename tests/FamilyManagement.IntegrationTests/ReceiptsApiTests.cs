@@ -81,8 +81,6 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
         using var form = new MultipartFormDataContent();
         form.Add(new StringContent("Whole Foods Market"), "Merchant");
         form.Add(new StringContent(DateTime.UtcNow.AddHours(-1).ToString("o")), "PurchaseDate");
-        form.Add(new StringContent("84.35"), "Amount");
-        form.Add(new StringContent("USD"), "Currency");
         form.Add(new StringContent("Groceries"), "Category");
         form.Add(new StringContent("Organic groceries"), "Notes");
 
@@ -99,7 +97,6 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
         var created = await postResponse.Content.ReadFromJsonAsync<ReceiptResponseDto>();
         created.Should().NotBeNull();
         created!.Merchant.Should().Be("Whole Foods Market");
-        created.Amount.Should().Be(84.35m);
         created.Category.Should().Be("Groceries");
         created.GoogleDriveFileId.Should().Be("mock-drive-id-999");
         created.WebViewLink.Should().Contain("mock-drive-id-999");

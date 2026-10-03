@@ -26,19 +26,6 @@ public class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
         builder.Property(r => r.PurchaseDate)
             .IsRequired();
 
-        builder.OwnsOne(r => r.Amount, amountBuilder =>
-        {
-            amountBuilder.Property(m => m.Amount)
-                .HasColumnName("Amount")
-                .HasPrecision(18, 2)
-                .IsRequired();
-
-            amountBuilder.Property(m => m.Currency)
-                .HasColumnName("Currency")
-                .HasMaxLength(3)
-                .IsRequired();
-        });
-
         builder.OwnsOne(r => r.FileReference, fileBuilder =>
         {
             fileBuilder.Property(f => f.FileId)

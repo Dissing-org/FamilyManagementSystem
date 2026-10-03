@@ -1,4 +1,3 @@
-using System.Globalization;
 using FastEndpoints;
 using FamilyManagement.Application.DTOs;
 using FamilyManagement.Application.UseCases.Receipts.Commands;
@@ -10,8 +9,6 @@ public class UploadReceiptRequest
     public IFormFile File { get; set; } = null!;
     public string Merchant { get; set; } = string.Empty;
     public DateTime? PurchaseDate { get; set; }
-    public string Amount { get; set; } = string.Empty;
-    public string Currency { get; set; } = "USD";
     public string? Category { get; set; } = "Other";
     public string? Notes { get; set; }
 }
@@ -44,18 +41,11 @@ public class UploadReceiptEndpoint : Endpoint<UploadReceiptRequest, ReceiptRespo
             ThrowError("A receipt file must be provided.");
         }
 
-        if (!decimal.TryParse(req.Amount.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedAmount))
-        {
-            ThrowError("Invalid amount format. Please provide a valid decimal number.");
-        }
-
         using var stream = req.File.OpenReadStream();
 
         var command = new UploadReceiptCommand(
             Merchant: req.Merchant,
             PurchaseDate: req.PurchaseDate ?? DateTime.UtcNow,
-            Amount: parsedAmount,
-            Currency: req.Currency,
             FileName: req.File.FileName,
             FileContent: stream,
             ContentType: req.File.ContentType ?? "application/octet-stream",
