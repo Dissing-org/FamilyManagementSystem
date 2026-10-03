@@ -102,6 +102,38 @@ using (var scope = app.Services.CreateScope())
             migrationCmd.ExecuteNonQuery();
             app.Logger.LogInformation("Applied SQLite schema migration: {Sql}", sql);
         }
+
+        // Ensure InsurancePolicies table exists for databases created by older versions of the app
+        using (var tableCmd = connection.CreateCommand())
+        {
+            tableCmd.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='InsurancePolicies';";
+            var tableCount = Convert.ToInt32(tableCmd.ExecuteScalar());
+            if (tableCount == 0)
+            {
+                tableCmd.CommandText = """
+                    CREATE TABLE "InsurancePolicies" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_InsurancePolicies" PRIMARY KEY,
+                        "Insurer" TEXT NOT NULL,
+                        "PolicyNumber" TEXT NULL,
+                        "Category" TEXT NOT NULL,
+                        "InsuredParty" TEXT NOT NULL,
+                        "PremiumAmount" TEXT NOT NULL,
+                        "PremiumCurrency" TEXT NOT NULL,
+                        "Frequency" TEXT NOT NULL,
+                        "StartDate" TEXT NOT NULL,
+                        "RenewalDate" TEXT NULL,
+                        "DeductibleAmount" TEXT NULL,
+                        "DeductibleCurrency" TEXT NULL,
+                        "Notes" TEXT NULL,
+                        "Status" TEXT NOT NULL,
+                        "CreatedAt" TEXT NOT NULL,
+                        "UpdatedAt" TEXT NULL
+                    );
+                """;
+                tableCmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created missing InsurancePolicies table in SQLite database.");
+            }
+        }
     }
     catch (Exception ex)
     {
