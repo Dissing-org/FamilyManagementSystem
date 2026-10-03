@@ -1,0 +1,84 @@
+@using Microsoft.AspNetCore.Components.Routing
+
+<header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-6">
+            <a href="" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:bg-indigo-700 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold tracking-tight">Family Hub</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">@CurrentSectionSubtitle</p>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-1">
+                <NavLink href="" Match="NavLinkMatch.All" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" ActiveClass="bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold">
+                    Home
+                </NavLink>
+                <NavLink href="receipts" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" ActiveClass="bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold">
+                    Receipts
+                </NavLink>
+                <NavLink href="insurances" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" ActiveClass="bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold">
+                    Insurances
+                </NavLink>
+            </nav>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button @onclick="() => _showSettingsModal = true" 
+                    class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    title="Server Settings">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </button>
+
+            @if (ActionContent is not null)
+            {
+                @ActionContent
+            }
+        </div>
+    </div>
+
+    <!-- Mobile Nav Bar (visible on small screens) -->
+    <div class="md:hidden flex border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 px-2 py-1 gap-1">
+        <NavLink href="" Match="NavLinkMatch.All" class="flex-1 text-center py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 rounded-lg" ActiveClass="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 font-bold">
+            Home
+        </NavLink>
+        <NavLink href="receipts" class="flex-1 text-center py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 rounded-lg" ActiveClass="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 font-bold">
+            Receipts
+        </NavLink>
+        <NavLink href="insurances" class="flex-1 text-center py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 rounded-lg" ActiveClass="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 font-bold">
+            Insurances
+        </NavLink>
+    </div>
+</header>
+
+@if (_showSettingsModal)
+{
+    <ApiSettingsModal OnClose="() => _showSettingsModal = false" OnSaved="HandleSettingsSaved" />
+}
+
+@code {
+    [Parameter]
+    public string CurrentSectionSubtitle { get; set; } = "Family Management";
+
+    [Parameter]
+    public RenderFragment? ActionContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnSettingsSaved { get; set; }
+
+    private bool _showSettingsModal = false;
+
+    private async Task HandleSettingsSaved()
+    {
+        await OnSettingsSaved.InvokeAsync();
+    }
+}

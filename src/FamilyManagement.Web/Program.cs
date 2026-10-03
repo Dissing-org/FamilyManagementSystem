@@ -23,6 +23,7 @@ builder.Services.AddScoped(sp =>
     return new HttpClient(cookieHandler) { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
 });
 builder.Services.AddScoped<IReceiptApiClient, ReceiptApiClient>();
+builder.Services.AddScoped<IInsuranceApiClient, InsuranceApiClient>();
 
 await builder.Build().RunAsync();
 

@@ -31,6 +31,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IApiBaseUrlProvider>(new DefaultApiBaseUrlProvider(defaultApiUrl));
 		builder.Services.AddScoped(sp => new HttpClient());
 		builder.Services.AddScoped<IReceiptApiClient, ReceiptApiClient>();
+		builder.Services.AddScoped<IInsuranceApiClient, InsuranceApiClient>();
 
 		return builder.Build();
 	}

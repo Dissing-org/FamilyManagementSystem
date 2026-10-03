@@ -1,0 +1,167 @@
+@using FamilyManagement.UI.Shared.Models
+
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between group">
+    <!-- Header: Insurer & Category -->
+    <div>
+        <div class="flex items-start justify-between gap-3 mb-2">
+            <div class="flex-1 min-w-0">
+                <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 truncate" title="@Policy.Insurer">
+                    @Policy.Insurer
+                </h3>
+                @if (!string.IsNullOrWhiteSpace(Policy.PolicyNumber))
+                {
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate">
+                        #@Policy.PolicyNumber
+                    </p>
+                }
+            </div>
+
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold @GetCategoryBadgeClass(Policy.Category)">
+                @Policy.Category
+            </span>
+        </div>
+
+        <!-- Insured Party -->
+        <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 mt-2 mb-3 bg-slate-50 dark:bg-slate-700/50 px-2.5 py-1.5 rounded-lg">
+            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            <span class="font-medium truncate">Insured: @Policy.InsuredParty</span>
+        </div>
+
+        <!-- Costs Breakdown -->
+        <div class="bg-indigo-50/50 dark:bg-indigo-950/30 rounded-xl p-3 mb-3 border border-indigo-100/80 dark:border-indigo-900/30">
+            <div class="flex items-baseline justify-between">
+                <span class="text-xs text-slate-500 dark:text-slate-400">Monthly</span>
+                <span class="text-lg font-black text-indigo-700 dark:text-indigo-400">
+                    @Policy.MonthlyCost.ToString("N0") @Policy.Currency
+                </span>
+            </div>
+            <div class="flex items-baseline justify-between text-xs text-slate-500 dark:text-slate-400 mt-1 pt-1 border-t border-indigo-100/50 dark:border-indigo-900/20">
+                <span>Premium (@InsuranceConstants.FormatFrequency(Policy.Frequency))</span>
+                <span class="font-medium text-slate-700 dark:text-slate-300">
+                    @Policy.PremiumAmount.ToString("N0") @Policy.Currency
+                </span>
+            </div>
+        </div>
+
+        <!-- Deductible & Notes -->
+        <div class="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-3">
+            @if (Policy.DeductibleAmount.HasValue && Policy.DeductibleAmount.Value > 0)
+            {
+                <div class="flex items-center justify-between">
+                    <span>Deductible:</span>
+                    <span class="font-medium text-slate-700 dark:text-slate-300">@Policy.DeductibleAmount.Value.ToString("N0") @Policy.Currency</span>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Policy.Notes))
+            {
+                <p class="text-xs text-slate-500 dark:text-slate-400 italic line-clamp-2 mt-1">
+                    "@Policy.Notes"
+                </p>
+            }
+        </div>
+    </div>
+
+    <!-- Footer: Renewal status & Actions -->
+    <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+        <!-- Renewal Tag -->
+        <div>
+            @if (Policy.RenewalDate.HasValue)
+            {
+                var daysRemaining = (Policy.RenewalDate.Value.Date - DateTime.Today).Days;
+                if (daysRemaining < 0)
+                {
+                    <span class="inline-flex items-center gap-1 text-[11px] font-medium text-rose-600 dark:text-rose-400">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        Expired (@Policy.RenewalDate.Value.ToString("MMM d, yyyy"))
+                    </span>
+                }
+                else if (daysRemaining <= 30)
+                {
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        Renews in @daysRemaining d (@Policy.RenewalDate.Value.ToString("MMM d"))
+                    </span>
+                }
+                else
+                {
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">
+                        Renewal: @Policy.RenewalDate.Value.ToString("MMM d, yyyy")
+                    </span>
+                }
+            }
+            else
+            {
+                <span class="text-[11px] text-slate-400 dark:text-slate-500">No renewal date</span>
+            }
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-1">
+            <button @onclick="() => OnEdit.InvokeAsync(Policy)" 
+                    class="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    title="Edit policy">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+            </button>
+
+            @if (_confirmingDelete)
+            {
+                <button @onclick="ConfirmDeleteAsync" 
+                        class="px-2 py-1 text-[11px] font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors shadow-sm">
+                    Confirm?
+                </button>
+                <button @onclick="() => _confirmingDelete = false" 
+                        class="p-1 text-slate-400 hover:text-slate-600 rounded">
+                    ✕
+                </button>
+            }
+            else
+            {
+                <button @onclick="() => _confirmingDelete = true" 
+                        class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        title="Delete policy">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public InsurancePolicyViewModel Policy { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<InsurancePolicyViewModel> OnEdit { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnDelete { get; set; }
+
+    private bool _confirmingDelete = false;
+
+    private async Task ConfirmDeleteAsync()
+    {
+        _confirmingDelete = false;
+        await OnDelete.InvokeAsync(Policy.Id);
+    }
+
+    private static string GetCategoryBadgeClass(string category) => category.ToLowerInvariant() switch
+    {
+        "home" => "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+        "health" => "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+        "auto" => "bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+        "life" => "bg-rose-50 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+        "travel" => "bg-cyan-50 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+        "liability" => "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
+        "pet" => "bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+        "dental" => "bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+        "disability" => "bg-violet-50 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+        _ => "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+    };
+}

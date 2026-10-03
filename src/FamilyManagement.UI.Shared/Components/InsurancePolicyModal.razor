@@ -1,0 +1,230 @@
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+
+<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 text-slate-900 dark:text-slate-100">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <span>@(IsEditMode ? "Edit Insurance Policy" : "Add Insurance Policy")</span>
+            </h2>
+            <button @onclick="Close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="mt-4 p-3 bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-700 dark:text-rose-300 text-sm">
+                @_errorMessage
+            </div>
+        }
+
+        <!-- Form Body -->
+        <div class="mt-4 space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+            <!-- Insurer & Policy Number -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Insurer / Company *</label>
+                    <input @bind="_model.Insurer" type="text" placeholder="e.g. Topdanmark, Tryg" required
+                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Policy Number</label>
+                    <input @bind="_model.PolicyNumber" type="text" placeholder="e.g. POL-98421"
+                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                </div>
+            </div>
+
+            <!-- Category & Insured Party -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Category *</label>
+                    <select @bind="_model.Category"
+                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                        @foreach (var cat in InsuranceConstants.Categories)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Insured Person / Item *</label>
+                    <input @bind="_model.InsuredParty" type="text" placeholder="e.g. Home, Mathias, Tesla" required
+                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                </div>
+            </div>
+
+            <!-- Premium & Currency & Frequency -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Premium *</label>
+                    <input @bind="_model.PremiumAmount" type="number" step="0.01" min="0" required
+                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Currency</label>
+                    <select @bind="_model.Currency"
+                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                        @foreach (var curr in InsuranceConstants.Currencies)
+                        {
+                            <option value="@curr">@curr</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Frequency</label>
+                    <select @bind="_model.Frequency"
+                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                        @foreach (var freq in InsuranceConstants.Frequencies)
+                        {
+                            <option value="@freq">@InsuranceConstants.FormatFrequency(freq)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Start Date</label>
+                    <input @bind="_model.StartDate" type="date"
+                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Renewal Date (Optional)</label>
+                    <input @bind="_model.RenewalDate" type="date"
+                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                </div>
+            </div>
+
+            <!-- Deductible -->
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Deductible (Self-risk) Amount (Optional)</label>
+                <input @bind="_model.DeductibleAmount" type="number" step="0.01" min="0" placeholder="e.g. 2500"
+                       class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+            </div>
+
+            <!-- Notes -->
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Notes (Optional)</label>
+                <textarea @bind="_model.Notes" rows="2" placeholder="e.g. Includes roadside assistance and glass damage"
+                          class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm"></textarea>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <button @onclick="Close" disabled="@_isSubmitting"
+                    class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                Cancel
+            </button>
+            <button @onclick="SubmitAsync" disabled="@_isSubmitting"
+                    class="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
+                @if (_isSubmitting)
+                {
+                    <span class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>@(IsEditMode ? "Update Policy" : "Save Policy")</span>
+                }
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public IInsuranceApiClient ApiClient { get; set; } = null!;
+
+    [Parameter]
+    public InsurancePolicyViewModel? PolicyToEdit { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<InsurancePolicyViewModel> OnSaved { get; set; }
+
+    private bool IsEditMode => PolicyToEdit != null;
+    private CreateOrUpdateInsurancePolicyModel _model = new();
+    private bool _isSubmitting = false;
+    private string? _errorMessage;
+
+    protected override void OnInitialized()
+    {
+        if (PolicyToEdit != null)
+        {
+            _model = CreateOrUpdateInsurancePolicyModel.FromViewModel(PolicyToEdit);
+        }
+        else
+        {
+            _model = new CreateOrUpdateInsurancePolicyModel
+            {
+                Currency = "DKK",
+                Category = "Home",
+                Frequency = "Monthly",
+                StartDate = DateTime.Today
+            };
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        _errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(_model.Insurer))
+        {
+            _errorMessage = "Insurer name is required.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_model.InsuredParty))
+        {
+            _errorMessage = "Insured party (person or item covered) is required.";
+            return;
+        }
+
+        if (_model.PremiumAmount < 0)
+        {
+            _errorMessage = "Premium amount cannot be negative.";
+            return;
+        }
+
+        _isSubmitting = true;
+        try
+        {
+            InsurancePolicyViewModel saved;
+            if (IsEditMode)
+            {
+                saved = await ApiClient.UpdatePolicyAsync(_model);
+            }
+            else
+            {
+                saved = await ApiClient.CreatePolicyAsync(_model);
+            }
+
+            await OnSaved.InvokeAsync(saved);
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private async Task Close() => await OnClose.InvokeAsync();
+}
