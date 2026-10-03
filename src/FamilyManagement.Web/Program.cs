@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using FamilyManagement.Web;
 using FamilyManagement.UI.Shared.Services;
 
@@ -13,7 +14,23 @@ var apiUrl = builder.Configuration["services:api:https:0"]
           ?? builder.HostEnvironment.BaseAddress;
 
 builder.Services.AddSingleton<IApiBaseUrlProvider>(new DefaultApiBaseUrlProvider(apiUrl));
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+builder.Services.AddTransient<CookieHandler>();
+builder.Services.AddScoped(sp =>
+{
+    var cookieHandler = sp.GetRequiredService<CookieHandler>();
+    cookieHandler.InnerHandler = new HttpClientHandler();
+    return new HttpClient(cookieHandler) { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
+});
 builder.Services.AddScoped<IReceiptApiClient, ReceiptApiClient>();
 
 await builder.Build().RunAsync();
+
+public class CookieHandler : DelegatingHandler
+{
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+        return base.SendAsync(request, cancellationToken);
+    }
+}

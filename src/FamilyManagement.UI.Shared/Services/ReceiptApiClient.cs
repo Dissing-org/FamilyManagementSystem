@@ -29,7 +29,15 @@ public class ReceiptApiClient : IReceiptApiClient
         var baseUri = _baseUrlProvider.GetBaseUrl();
         if (string.IsNullOrWhiteSpace(baseUri))
         {
-            return relativePath;
+            return relativePath.TrimStart('/');
+        }
+
+        // If the configured baseUri matches the current host or BaseAddress, use relative path for strictly same-origin browser calls
+        if (_httpClient.BaseAddress != null &&
+            Uri.TryCreate(baseUri, UriKind.Absolute, out var parsedBase) &&
+            string.Equals(parsedBase.Host, _httpClient.BaseAddress.Host, StringComparison.OrdinalIgnoreCase))
+        {
+            return relativePath.TrimStart('/');
         }
 
         return $"{baseUri.TrimEnd('/')}/{relativePath.TrimStart('/')}";
