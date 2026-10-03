@@ -15,6 +15,14 @@
                 extend: {
                     colors: {
                         wada: {
+                            bg: {
+                                light: '#faf7f2',
+                                dark: '#131427',
+                                cardLight: '#ffffff',
+                                cardDark: '#1b1c36',
+                                borderLight: '#ebdcd0',
+                                borderDark: '#2c2f57'
+                            },
                             violet: {
                                 DEFAULT: '#4d52de',
                                 50: '#f1f1fe',
@@ -89,11 +97,11 @@
     </style>
 </head>
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+<body class="bg-[#faf7f2] dark:bg-[#131427] text-slate-800 dark:text-slate-100 min-h-screen">
     <div id="app">
-        <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div class="min-h-screen flex items-center justify-center bg-[#faf7f2] dark:bg-[#131427]">
             <div class="text-center">
-                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent"></div>
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#4d52de] border-t-transparent"></div>
                 <p class="mt-4 text-sm font-medium text-slate-600 dark:text-slate-400">Loading Family Management System...</p>
             </div>
         </div>

@@ -1,12 +1,12 @@
 @using FamilyManagement.UI.Shared.Models
 @using FamilyManagement.UI.Shared.Services
 
-<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 text-slate-900 dark:text-slate-100">
+<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-[#1b1c36] rounded-2xl shadow-xl border border-[#ebdcd0] dark:border-[#2c2f57] max-w-lg w-full p-6 text-slate-900 dark:text-slate-100">
         <!-- Header -->
-        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+        <div class="flex items-center justify-between pb-4 border-b border-[#ebdcd0] dark:border-[#2c2f57]">
             <h2 class="text-xl font-bold flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                <div class="w-8 h-8 rounded-lg bg-[#4d52de]/15 text-[#4d52de] dark:text-[#a7abf8] flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                     </svg>
@@ -34,12 +34,12 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Insurer / Company *</label>
                     <input @bind="_model.Insurer" type="text" placeholder="e.g. Topdanmark, Tryg" required
-                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                           class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100" />
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Policy Number</label>
                     <input @bind="_model.PolicyNumber" type="text" placeholder="e.g. POL-98421"
-                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                           class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100" />
                 </div>
             </div>
 
@@ -48,7 +48,7 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Category *</label>
                     <select @bind="_model.Category"
-                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100">
                         @foreach (var cat in InsuranceConstants.Categories)
                         {
                             <option value="@cat">@cat</option>
@@ -58,7 +58,7 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Insured Person / Item *</label>
                     <input @bind="_model.InsuredParty" type="text" placeholder="e.g. Home, Mathias, Tesla" required
-                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                           class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100" />
                 </div>
             </div>
 
@@ -67,12 +67,12 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Premium *</label>
                     <input @bind="_model.PremiumAmount" type="number" step="0.01" min="0" required
-                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                           class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100" />
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Currency</label>
                     <select @bind="_model.Currency"
-                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100">
                         @foreach (var curr in InsuranceConstants.Currencies)
                         {
                             <option value="@curr">@curr</option>
@@ -82,7 +82,7 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Frequency</label>
                     <select @bind="_model.Frequency"
-                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100">
                         @foreach (var freq in InsuranceConstants.Frequencies)
                         {
                             <option value="@freq">@InsuranceConstants.FormatFrequency(freq)</option>
@@ -96,12 +96,12 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Start Date</label>
                     <input @bind="_model.StartDate" type="date"
-                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                           class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100" />
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Renewal Date (Optional)</label>
                     <input @bind="_model.RenewalDate" type="date"
-                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                           class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100" />
                 </div>
             </div>
 
@@ -109,25 +109,25 @@
             <div>
                 <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Deductible (Self-risk) Amount (Optional)</label>
                 <input @bind="_model.DeductibleAmount" type="number" step="0.01" min="0" placeholder="e.g. 2500"
-                       class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" />
+                       class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100" />
             </div>
 
             <!-- Notes -->
             <div>
                 <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Notes (Optional)</label>
                 <textarea @bind="_model.Notes" rows="2" placeholder="e.g. Includes roadside assistance and glass damage"
-                          class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm"></textarea>
+                          class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-sm text-slate-900 dark:text-slate-100"></textarea>
             </div>
         </div>
 
         <!-- Buttons -->
-        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#ebdcd0] dark:border-[#2c2f57]">
             <button @onclick="Close" disabled="@_isSubmitting"
                     class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                 Cancel
             </button>
             <button @onclick="SubmitAsync" disabled="@_isSubmitting"
-                    class="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
+                    class="px-5 py-2 text-sm font-semibold text-white bg-[#4d52de] hover:bg-[#3d41c4] rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
                 @if (_isSubmitting)
                 {
                     <span class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>

@@ -3,14 +3,14 @@
 @using FamilyManagement.UI.Shared.Models
 @using FamilyManagement.UI.Shared.Services
 
-<div class="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans pb-16">
+<div class="min-h-screen bg-[#faf7f2] dark:bg-[#131427] text-slate-800 dark:text-slate-100 font-sans pb-16">
     <!-- Top Navigation Bar -->
     <AppHeader CurrentSectionSubtitle="Archived to Google Drive" OnSettingsSaved="LoadReceiptsAsync">
         <ActionContent>
             <button @onclick="() => _showUploadModal = true" 
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm shadow-indigo-600/30 transition-all hover:shadow-md">
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#ffbf6e] hover:bg-[#f5b35e] text-[#241300] text-sm font-black rounded-xl shadow-md shadow-[#ffbf6e]/20 transition-all hover:shadow-lg">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
                 <span>Upload</span>
             </button>
@@ -21,39 +21,42 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-wada-pistachio-100 dark:bg-wada-pistachio-950/60 text-wada-pistachio-600 dark:text-wada-pistachio-400 flex items-center justify-center">
+            <!-- 1. Pistachio Green: This Month -->
+            <div class="bg-[#56aa69]/15 border-2 border-[#56aa69]/40 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#56aa69] text-white flex items-center justify-center shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <div>
-                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">This Month</p>
-                    <p class="text-2xl font-black text-wada-pistachio-600 dark:text-wada-pistachio-400">@ReceiptsThisMonth</p>
+                    <p class="text-xs font-bold text-[#56aa69] uppercase tracking-wider">This Month</p>
+                    <p class="text-3xl font-black text-[#56aa69]">@ReceiptsThisMonth</p>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <!-- 2. Dark Soft Violet: Total Receipts -->
+            <div class="bg-[#4d52de]/15 border-2 border-[#4d52de]/40 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#4d52de] text-white flex items-center justify-center shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                 </div>
                 <div>
-                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Receipts</p>
-                    <p class="text-2xl font-black text-slate-900 dark:text-slate-100">@_receipts.Count</p>
+                    <p class="text-xs font-bold text-[#868aee] dark:text-[#a7abf8] uppercase tracking-wider">Total Receipts</p>
+                    <p class="text-3xl font-black text-[#4d52de] dark:text-[#b4b7f5]">@_receipts.Count</p>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-wada-cinnamon-100 dark:bg-wada-cinnamon-950/60 text-wada-cinnamon-700 dark:text-wada-cinnamon-400 flex items-center justify-center">
+            <!-- 3. Cinnamon Buff: Top Category -->
+            <div class="bg-[#ffbf6e]/15 border-2 border-[#ffbf6e]/40 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#ffbf6e] text-[#241300] flex items-center justify-center shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                     </svg>
                 </div>
                 <div>
-                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Top Category</p>
-                    <p class="text-xl font-bold text-slate-900 dark:text-slate-100">@TopCategory</p>
+                    <p class="text-xs font-bold text-[#c0792b] dark:text-[#ffdfad] uppercase tracking-wider">Top Category</p>
+                    <p class="text-2xl font-black text-[#995d24] dark:text-[#ffbf6e]">@TopCategory</p>
                 </div>
             </div>
         </div>
@@ -68,7 +71,7 @@
                     </svg>
                 </div>
                 <input @bind="_searchQuery" @bind:event="oninput" list="dashboard-merchants" type="text" placeholder="Search by merchant..."
-                       class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm" />
+                       class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-[#1b1c36] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-xl focus:ring-2 focus:ring-[#4d52de] focus:outline-none shadow-sm" />
                 <datalist id="dashboard-merchants">
                     @foreach (var m in _distinctMerchants)
                     {
@@ -80,13 +83,13 @@
             <!-- Category Filter Pills -->
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
                 <button @onclick='() => _selectedCategory = null'
-                        class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap @(_selectedCategory == null ? "bg-indigo-600 text-white" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700")">
+                        class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap @(_selectedCategory == null ? "bg-[#4d52de] text-white shadow-sm" : "bg-white dark:bg-[#1b1c36] text-slate-600 dark:text-slate-300 border border-[#ebdcd0] dark:border-[#2c2f57] hover:border-[#ffbf6e]")">
                     All
                 </button>
                 @foreach (var cat in ReceiptCategories.All)
                 {
                     <button @onclick="() => _selectedCategory = cat"
-                            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap @(_selectedCategory == cat ? "bg-indigo-600 text-white" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700")">
+                            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap @(_selectedCategory == cat ? "bg-[#4d52de] text-white shadow-sm" : "bg-white dark:bg-[#1b1c36] text-slate-600 dark:text-slate-300 border border-[#ebdcd0] dark:border-[#2c2f57] hover:border-[#ffbf6e]")">
                         @cat
                     </button>
                 }
@@ -99,7 +102,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @for (int i = 0; i < 6; i++)
                 {
-                    <div class="h-44 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-2xl"></div>
+                    <div class="h-44 bg-slate-200/60 dark:bg-[#1b1c36]/60 animate-pulse rounded-2xl"></div>
                 }
             </div>
         }
@@ -116,8 +119,8 @@
         }
         else if (FilteredReceipts.Count == 0)
         {
-            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-12 text-center">
-                <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div class="bg-white dark:bg-[#1b1c36] rounded-2xl border border-[#ebdcd0] dark:border-[#2c2f57] p-12 text-center shadow-sm">
+                <div class="w-16 h-16 bg-[#4d52de]/10 text-[#4d52de] rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
@@ -126,7 +129,7 @@
                 <p class="text-sm text-slate-500 mt-1 mb-6">
                     @(_receipts.Count == 0 ? "You haven't uploaded any receipts yet. Add your first purchase receipt!" : "No receipts match your search filter.")
                 </p>
-                <button @onclick="() => _showUploadModal = true" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm">
+                <button @onclick="() => _showUploadModal = true" class="px-5 py-2.5 bg-[#4d52de] hover:bg-[#3d41c4] text-white text-sm font-semibold rounded-xl shadow-md shadow-[#4d52de]/30">
                     Upload First Receipt
                 </button>
             </div>

@@ -2,12 +2,12 @@
 @using FamilyManagement.UI.Shared.Models
 @using FamilyManagement.UI.Shared.Services
 
-<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 text-slate-900 dark:text-slate-100">
+<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-[#1b1c36] rounded-2xl shadow-xl border border-[#ebdcd0] dark:border-[#2c2f57] max-w-lg w-full p-6 text-slate-900 dark:text-slate-100">
         <!-- Header -->
-        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+        <div class="flex items-center justify-between pb-4 border-b border-[#ebdcd0] dark:border-[#2c2f57]">
             <h2 class="text-xl font-bold flex items-center gap-2">
-                <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 text-[#4d52de] dark:text-[#a7abf8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
                 Upload Purchase Receipt
@@ -30,11 +30,11 @@
             <!-- File Picker -->
             <div>
                 <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Receipt Document or Photo *</label>
-                <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-4 text-center hover:border-indigo-500 transition-colors">
-                    <InputFile OnChange="HandleFileSelected" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                <div class="border-2 border-dashed border-[#ebdcd0] dark:border-[#2c2f57] rounded-xl p-4 text-center hover:border-[#4d52de] transition-colors">
+                    <InputFile OnChange="HandleFileSelected" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#4d52de]/10 file:text-[#4d52de] dark:file:bg-[#4d52de]/20 dark:file:text-[#a7abf8] hover:file:bg-[#4d52de]/20" />
                     @if (!string.IsNullOrEmpty(_model.FileName))
                     {
-                        <p class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mt-2">
+                        <p class="text-xs text-[#4d52de] dark:text-[#a7abf8] font-medium mt-2">
                             Selected: @_model.FileName (@(_model.FileBytes?.Length / 1024 ?? 0) KB)
                         </p>
                     }
@@ -46,7 +46,7 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Merchant / Store *</label>
                     <input @bind="_model.Merchant" list="modal-merchants" type="text" placeholder="e.g. Costco, Target" required autocomplete="off"
-                           class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                           class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-slate-900 dark:text-slate-100" />
                     <datalist id="modal-merchants">
                         @foreach (var m in _merchants)
                         {
@@ -57,7 +57,7 @@
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Category</label>
                     <select @bind="_model.Category" 
-                            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-slate-900 dark:text-slate-100">
                         @foreach (var cat in ReceiptCategories.All)
                         {
                             <option value="@cat">@cat</option>
@@ -70,25 +70,25 @@
             <div>
                 <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Purchase Date</label>
                 <input @bind="_model.PurchaseDate" type="date"
-                       class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                       class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-slate-900 dark:text-slate-100" />
             </div>
 
             <!-- Notes -->
             <div>
                 <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Notes (Optional)</label>
                 <textarea @bind="_model.Notes" rows="2" placeholder="e.g. Weekly family dinner items"
-                          class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                          class="w-full px-3 py-2 bg-[#faf7f2] dark:bg-[#131427] border border-[#ebdcd0] dark:border-[#2c2f57] rounded-lg focus:ring-2 focus:ring-[#4d52de] focus:outline-none text-slate-900 dark:text-slate-100"></textarea>
             </div>
         </div>
 
         <!-- Buttons -->
-        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#ebdcd0] dark:border-[#2c2f57]">
             <button @onclick="Close" disabled="@_isSubmitting"
                     class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                 Cancel
             </button>
             <button @onclick="SubmitAsync" disabled="@_isSubmitting"
-                    class="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
+                    class="px-5 py-2 text-sm font-semibold text-white bg-[#4d52de] hover:bg-[#3d41c4] rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
                 @if (_isSubmitting)
                 {
                     <span class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
