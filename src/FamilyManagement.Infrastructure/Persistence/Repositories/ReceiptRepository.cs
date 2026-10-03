@@ -33,6 +33,21 @@ public class ReceiptRepository : IReceiptRepository
         return await query.OrderByDescending(r => r.PurchaseDate).ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<string>> GetDistinctMerchantsAsync(CancellationToken cancellationToken = default)
+    {
+        var rawMerchants = await _context.Receipts
+            .Where(r => r.Status == ReceiptStatus.Active && !string.IsNullOrWhiteSpace(r.Merchant))
+            .Select(r => r.Merchant)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        return rawMerchants
+            .GroupBy(m => m.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.First().Trim())
+            .OrderBy(m => m, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
     public async Task AddAsync(Receipt receipt, CancellationToken cancellationToken = default)
     {
         await _context.Receipts.AddAsync(receipt, cancellationToken);

@@ -12,6 +12,7 @@ public static class DependencyInjection
         services.AddScoped<DeleteReceiptCommandHandler>();
         services.AddScoped<GetReceiptByIdQueryHandler>();
         services.AddScoped<ListReceiptsQueryHandler>();
+        services.AddScoped<GetDistinctMerchantsQueryHandler>();
 
         // Insurance use cases
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Commands.CreateInsurancePolicyCommandHandler>();

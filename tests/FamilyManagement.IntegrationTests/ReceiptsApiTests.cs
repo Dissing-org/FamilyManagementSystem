@@ -121,4 +121,40 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
         var getAfterDelete = await client.GetAsync($"/api/receipts/{created.Id}");
         getAfterDelete.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task GetDistinctMerchants_ShouldReturnUniqueSortedMerchants()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+
+        async Task UploadAsync(string merchant)
+        {
+            using var form = new MultipartFormDataContent();
+            form.Add(new StringContent(merchant), "Merchant");
+            form.Add(new StringContent(DateTime.UtcNow.AddMinutes(-5).ToString("o")), "PurchaseDate");
+            form.Add(new StringContent("Other"), "Category");
+            var file = new ByteArrayContent(Encoding.UTF8.GetBytes("Test receipt"));
+            file.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+            form.Add(file, "File", "receipt.pdf");
+
+            var response = await client.PostAsync("/api/receipts", form);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        await UploadAsync("Costco");
+        await UploadAsync("IKEA");
+        await UploadAsync("costco"); // duplicate case-insensitive
+
+        // Act
+        var response = await client.GetAsync("/api/receipts/merchants");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var merchants = await response.Content.ReadFromJsonAsync<List<string>>();
+        merchants.Should().NotBeNull();
+        merchants.Should().Contain(new[] { "Costco", "IKEA" });
+        // Ensure no duplicate Costco
+        merchants!.Count(m => string.Equals(m, "costco", StringComparison.OrdinalIgnoreCase)).Should().Be(1);
+    }
 }

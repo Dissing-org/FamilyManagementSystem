@@ -7,6 +7,7 @@ namespace FamilyManagement.UI.Shared.Services;
 public interface IReceiptApiClient
 {
     Task<List<ReceiptViewModel>> GetReceiptsAsync(string? merchant = null, CancellationToken ct = default);
+    Task<List<string>> GetMerchantsAsync(CancellationToken ct = default);
     Task<ReceiptViewModel?> GetReceiptByIdAsync(Guid id, CancellationToken ct = default);
     Task<ReceiptViewModel> UploadReceiptAsync(UploadReceiptModel model, CancellationToken ct = default);
     Task<bool> DeleteReceiptAsync(Guid id, CancellationToken ct = default);
@@ -50,6 +51,13 @@ public class ReceiptApiClient : IReceiptApiClient
 
         var response = await _httpClient.GetFromJsonAsync<List<ReceiptViewModel>>(url, ct);
         return response ?? new List<ReceiptViewModel>();
+    }
+
+    public async Task<List<string>> GetMerchantsAsync(CancellationToken ct = default)
+    {
+        var url = BuildUrl("api/receipts/merchants");
+        var response = await _httpClient.GetFromJsonAsync<List<string>>(url, ct);
+        return response ?? new List<string>();
     }
 
     public async Task<ReceiptViewModel?> GetReceiptByIdAsync(Guid id, CancellationToken ct = default)

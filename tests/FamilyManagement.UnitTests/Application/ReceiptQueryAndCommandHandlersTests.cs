@@ -95,4 +95,21 @@ public class ReceiptQueryAndCommandHandlersTests
         receipt.Status.Should().Be(ReceiptStatus.Archived);
         await _repository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task GetDistinctMerchants_ShouldReturnMerchantsFromRepository()
+    {
+        // Arrange
+        var merchants = new List<string> { "Costco", "IKEA", "Target" };
+        _repository.GetDistinctMerchantsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<string>>(merchants));
+
+        var handler = new GetDistinctMerchantsQueryHandler(_repository);
+
+        // Act
+        var result = await handler.HandleAsync(new GetDistinctMerchantsQuery());
+
+        // Assert
+        result.Should().BeEquivalentTo(new[] { "Costco", "IKEA", "Target" });
+    }
 }
