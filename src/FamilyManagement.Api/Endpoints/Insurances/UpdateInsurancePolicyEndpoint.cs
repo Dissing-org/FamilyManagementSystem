@@ -10,10 +10,12 @@ public class UpdateInsurancePolicyRequest
     public Guid Id { get; set; }
     public string Insurer { get; set; } = string.Empty;
     public string? PolicyNumber { get; set; }
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
     public InsuranceCategory Category { get; set; }
     public string InsuredParty { get; set; } = string.Empty;
     public decimal PremiumAmount { get; set; }
     public string Currency { get; set; } = "USD";
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
     public PaymentFrequency Frequency { get; set; }
     public DateTime? RenewalDate { get; set; }
     public decimal? DeductibleAmount { get; set; }

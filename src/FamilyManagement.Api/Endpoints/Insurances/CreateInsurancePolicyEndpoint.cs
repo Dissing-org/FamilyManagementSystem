@@ -9,10 +9,12 @@ public class CreateInsurancePolicyRequest
 {
     public string Insurer { get; set; } = string.Empty;
     public string? PolicyNumber { get; set; }
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
     public InsuranceCategory Category { get; set; } = InsuranceCategory.Other;
     public string InsuredParty { get; set; } = string.Empty;
     public decimal PremiumAmount { get; set; }
     public string Currency { get; set; } = "USD";
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
     public PaymentFrequency Frequency { get; set; } = PaymentFrequency.Monthly;
     public DateTime StartDate { get; set; } = DateTime.UtcNow;
     public DateTime? RenewalDate { get; set; }
