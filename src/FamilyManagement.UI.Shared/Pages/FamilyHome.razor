@@ -12,8 +12,8 @@
         <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-6 sm:p-8 text-white shadow-lg mb-8 relative overflow-hidden">
             <div class="absolute -right-8 -bottom-8 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
             <div class="relative z-10 max-w-2xl">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md mb-3 border border-white/10">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md mb-3 border border-white/10 text-wada-cinnamon-200">
+                    <span class="w-2 h-2 rounded-full bg-wada-cinnamon-400 animate-pulse"></span>
                     Family Cloud System
                 </span>
                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">
@@ -37,10 +37,10 @@
             <!-- Upcoming Renewal Alert Banner (if any) -->
             @if (_insuranceOverview?.UpcomingRenewals is not null && _insuranceOverview.UpcomingRenewals.Count > 0)
             {
-                <div class="mb-8 p-5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-3xl shadow-sm">
+                <div class="mb-8 p-5 bg-wada-cinnamon-50 dark:bg-wada-cinnamon-950/40 border border-wada-cinnamon-200 dark:border-wada-cinnamon-800/60 rounded-3xl shadow-sm">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-bold text-sm sm:text-base">
-                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex items-center gap-2 text-wada-cinnamon-800 dark:text-wada-cinnamon-300 font-bold text-sm sm:text-base">
+                            <svg class="w-5 h-5 text-wada-cinnamon-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
                             <span>Action Required: @(_insuranceOverview.UpcomingRenewals.Count) Policy Renewals Approaching</span>
@@ -52,13 +52,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         @foreach (var alert in _insuranceOverview.UpcomingRenewals)
                         {
-                            <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-amber-200/80 dark:border-amber-700/50 flex items-center justify-between shadow-xs">
+                            <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-wada-cinnamon-200/80 dark:border-wada-cinnamon-700/50 flex items-center justify-between shadow-xs">
                                 <div>
                                     <h4 class="font-bold text-sm text-slate-900 dark:text-slate-100">@alert.Insurer</h4>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">@alert.InsuredParty (@alert.Category)</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-bold @(alert.IsUrgent ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300")">
+                                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-bold @(alert.IsUrgent ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-wada-cinnamon-100 text-wada-cinnamon-800 dark:bg-wada-cinnamon-900/40 dark:text-wada-cinnamon-300")">
                                         @alert.DaysRemaining days left
                                     </span>
                                 </div>
@@ -97,7 +97,7 @@
                             </div>
                             <div>
                                 <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">This Month</p>
-                                <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400">@ReceiptsThisMonth</p>
+                                <p class="text-2xl font-black text-wada-pistachio-600 dark:text-wada-pistachio-400">@ReceiptsThisMonth</p>
                             </div>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                 <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-indigo-300 dark:hover:border-indigo-700 transition-all group">
                     <div>
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <div class="w-12 h-12 rounded-2xl bg-wada-pistachio-100 dark:bg-wada-pistachio-950/60 text-wada-pistachio-600 dark:text-wada-pistachio-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                 </svg>
