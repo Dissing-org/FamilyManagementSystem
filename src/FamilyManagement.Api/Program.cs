@@ -59,19 +59,46 @@ using (var scope = app.Services.CreateScope())
         }
     }
     db.Database.EnsureCreated();
+
+    // Auto-migrate SQLite schema if columns are missing from existing database volumes
+    try
+    {
+        var connection = db.Database.GetDbConnection();
+        connection.Open();
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = "PRAGMA table_info(\"Receipts\");";
+        using var reader = cmd.ExecuteReader();
+        var hasCategory = false;
+        while (reader.Read())
+        {
+            var colName = reader.GetString(1);
+            if (string.Equals(colName, "Category", StringComparison.OrdinalIgnoreCase))
+            {
+                hasCategory = true;
+                break;
+            }
+        }
+        reader.Close();
+
+        if (!hasCategory)
+        {
+            using var alterCmd = connection.CreateCommand();
+            alterCmd.CommandText = "ALTER TABLE \"Receipts\" ADD COLUMN \"Category\" TEXT NOT NULL DEFAULT 'Other';";
+            alterCmd.ExecuteNonQuery();
+        }
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "SQLite schema migration check failed or skipped.");
+    }
 }
 
 app.MapDefaultEndpoints();
-
-app.UseBlazorFrameworkFiles();
-app.UseStaticFiles();
 
 app.UseCors();
 app.UseDefaultExceptionHandler();
 app.UseFastEndpoints();
 app.UseSwaggerGen();
-
-app.MapFallbackToFile("index.html");
 
 app.Run();
 

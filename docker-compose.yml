@@ -1,10 +1,10 @@
 services:
-  family-management:
+  family-management-api:
     image: angelrush91/family-management-api:latest
-    container_name: family-management
+    container_name: family-management-api
     restart: unless-stopped
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__ReceiptDatabase=Data Source=/app/data/receipts.db
@@ -13,6 +13,15 @@ services:
     volumes:
       - family_data:/app/data
       - C:\Users\mathi\Documents\FamilyManagementReceipts:/app/receipts_storage
+
+  family-management:
+    image: angelrush91/family-management-web:latest
+    container_name: family-management
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - family-management-api
 
   cloudflared:
     image: cloudflare/cloudflared:latest

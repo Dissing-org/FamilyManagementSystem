@@ -1,0 +1,30 @@
+# Stage 1: Build Blazor WebAssembly SPA
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Copy project files for layer caching
+COPY ["src/FamilyManagement.UI.Shared/FamilyManagement.UI.Shared.csproj", "src/FamilyManagement.UI.Shared/"]
+COPY ["src/FamilyManagement.Web/FamilyManagement.Web.csproj", "src/FamilyManagement.Web/"]
+
+# Restore dependencies
+RUN dotnet restore "src/FamilyManagement.Web/FamilyManagement.Web.csproj"
+
+# Copy source code and publish
+COPY ["src/FamilyManagement.UI.Shared/", "src/FamilyManagement.UI.Shared/"]
+COPY ["src/FamilyManagement.Web/", "src/FamilyManagement.Web/"]
+
+WORKDIR "/src/src/FamilyManagement.Web"
+RUN dotnet publish "FamilyManagement.Web.csproj" -c Release -o /app/publish_web /p:UseAppHost=false
+
+# Stage 2: Runtime with lightweight Nginx
+FROM nginx:alpine AS runtime
+
+# Copy custom Nginx reverse proxy configuration
+COPY src/FamilyManagement.Web/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy static published WebAssembly assets
+COPY --from=build /app/publish_web/wwwroot /usr/share/nginx/html
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]

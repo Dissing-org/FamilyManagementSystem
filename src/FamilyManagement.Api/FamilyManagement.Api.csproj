@@ -4,13 +4,11 @@
     <ProjectReference Include="..\FamilyManagement.Application\FamilyManagement.Application.csproj" />
     <ProjectReference Include="..\FamilyManagement.Infrastructure\FamilyManagement.Infrastructure.csproj" />
     <ProjectReference Include="..\FamilyManagement.ServiceDefaults\FamilyManagement.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\FamilyManagement.Web\FamilyManagement.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FastEndpoints" Version="8.3.0" />
     <PackageReference Include="FastEndpoints.Swagger" Version="8.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
