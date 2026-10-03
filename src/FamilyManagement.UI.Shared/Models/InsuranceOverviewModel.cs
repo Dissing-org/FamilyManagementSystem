@@ -15,9 +15,14 @@ public class InsuranceRenewalAlertModel
 {
     public Guid Id { get; set; }
     public string Insurer { get; set; } = string.Empty;
+    public string? PolicyNumber { get; set; }
     public string Category { get; set; } = string.Empty;
     public string InsuredParty { get; set; } = string.Empty;
     public DateTime RenewalDate { get; set; }
-    public int DaysRemaining { get; set; }
-    public bool IsUrgent { get; set; }
+    public int DaysUntilRenewal { get; set; }
+    public decimal EstimatedRenewalAmount { get; set; }
+    public string Currency { get; set; } = "DKK";
+
+    public int DaysRemaining => DaysUntilRenewal;
+    public bool IsUrgent => DaysUntilRenewal <= 14;
 }
