@@ -14,7 +14,6 @@ public static class DependencyInjection
         services.AddScoped<ListReceiptsQueryHandler>();
         services.AddScoped<GetDistinctMerchantsQueryHandler>();
 
-        // Insurance use cases
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Commands.CreateInsurancePolicyCommandHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Commands.UpdateInsurancePolicyCommandHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Commands.DeleteInsurancePolicyCommandHandler>();
@@ -22,7 +21,6 @@ public static class DependencyInjection
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Queries.GetInsurancePolicyByIdQueryHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Queries.GetInsuranceOverviewQueryHandler>();
 
-        // Child development use cases
         services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.CreateChildProfileCommandHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.UpdateChildSizesCommandHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.RecordGrowthMeasurementCommandHandler>();

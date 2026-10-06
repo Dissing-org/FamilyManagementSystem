@@ -44,8 +44,6 @@ public class GetChildDashboardQueryHandler
             .Select(ChildMilestoneDto.FromDomain)
             .ToList();
 
-        var childAgeMonths = child.GetAge().TotalMonths;
-
         var upcoming = allMilestones
             .Where(m => m.Status == MilestoneStatus.Expected)
             .OrderBy(m => m.ExpectedAgeMonths)

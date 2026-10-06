@@ -11,12 +11,10 @@ public class ChildMilestone
     public string? Description { get; private set; }
     public MilestoneCategory Category { get; private set; }
 
-    // Prospective Guideline properties (when is it expected)
     public int? ExpectedAgeMonths { get; private set; }
     public int? ExpectedWindowMaxMonths { get; private set; }
     public bool IsStandardGuideline { get; private set; }
 
-    // Retrospective Achievement properties (when did it happen)
     public MilestoneStatus Status { get; private set; }
     public DateTime? AchievedDate { get; private set; }
     public int? AchievedAgeMonths { get; private set; }
