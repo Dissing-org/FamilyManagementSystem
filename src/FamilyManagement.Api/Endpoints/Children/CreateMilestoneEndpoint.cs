@@ -88,5 +88,9 @@ public class CreateMilestoneEndpoint : Endpoint<CreateMilestoneRequest, ChildMil
         {
             await HttpContext.Response.SendResultAsync(TypedResults.NotFound());
         }
+        catch (ArgumentException ex)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.BadRequest(new { error = ex.Message }));
+        }
     }
 }

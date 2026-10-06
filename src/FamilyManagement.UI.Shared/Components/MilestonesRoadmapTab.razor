@@ -227,8 +227,9 @@
 
     private IEnumerable<IGrouping<string, ChildMilestoneModel>> GroupedByAge =>
         _expectations
-            .OrderBy(e => e.ExpectedAgeMonths ?? 999)
-            .GroupBy(e => FormatAgeBracket(e.ExpectedAgeMonths ?? 0));
+            .Where(e => e.ExpectedAgeMonths.HasValue)
+            .OrderBy(e => e.ExpectedAgeMonths!.Value)
+            .GroupBy(e => FormatAgeBracket(e.ExpectedAgeMonths!.Value));
 
     private string FormatAgeBracket(int months) => months switch
     {

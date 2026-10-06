@@ -44,13 +44,10 @@ public record ChildAge(
 
         var years = asOfDate.Year - dateOfBirth.Year;
         var months = asOfDate.Month - dateOfBirth.Month;
-        var days = asOfDate.Day - dateOfBirth.Day;
 
-        if (days < 0)
+        if (asOfDate.Day < dateOfBirth.Day)
         {
             months--;
-            var previousMonth = asOfDate.AddMonths(-1);
-            days += DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
         }
 
         if (months < 0)
@@ -59,6 +56,8 @@ public record ChildAge(
             months += 12;
         }
 
+        var lastAnchor = dateOfBirth.AddYears(years).AddMonths(months);
+        var days = (int)(asOfDate.Date - lastAnchor.Date).TotalDays;
         var totalMonths = (years * 12) + months;
 
         return new ChildAge(years, months, days, totalMonths, totalWeeks, totalDays);

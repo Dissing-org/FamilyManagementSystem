@@ -121,7 +121,7 @@ public class ChildMilestone
             throw new ArgumentException("Title is required.", nameof(title));
         }
 
-        if (achievedDate > DateTime.UtcNow)
+        if (achievedDate.Date > DateTime.UtcNow.Date.AddDays(1))
         {
             throw new ArgumentException("Achieved date cannot be in the future.", nameof(achievedDate));
         }
@@ -145,7 +145,7 @@ public class ChildMilestone
 
     public void MarkAchieved(DateTime achievedDate, int achievedAgeMonths, string? notes = null, string? photoUrl = null)
     {
-        if (achievedDate > DateTime.UtcNow)
+        if (achievedDate.Date > DateTime.UtcNow.Date.AddDays(1))
         {
             throw new ArgumentException("Achieved date cannot be in the future.", nameof(achievedDate));
         }

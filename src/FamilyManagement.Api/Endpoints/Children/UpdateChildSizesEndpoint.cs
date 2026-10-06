@@ -51,5 +51,9 @@ public class UpdateChildSizesEndpoint : Endpoint<UpdateChildSizesRequest, ChildP
         {
             await HttpContext.Response.SendResultAsync(TypedResults.NotFound());
         }
+        catch (ArgumentException ex)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.BadRequest(new { error = ex.Message }));
+        }
     }
 }

@@ -83,5 +83,9 @@ public class RecordGrowthMeasurementEndpoint : Endpoint<RecordGrowthMeasurementR
         {
             await HttpContext.Response.SendResultAsync(TypedResults.NotFound());
         }
+        catch (ArgumentException ex)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.BadRequest(new { error = ex.Message }));
+        }
     }
 }

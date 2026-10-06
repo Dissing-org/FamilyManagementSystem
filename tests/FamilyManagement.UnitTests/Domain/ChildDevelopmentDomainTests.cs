@@ -83,4 +83,27 @@ public class ChildDevelopmentDomainTests
         act.Should().Throw<ArgumentException>()
            .WithMessage("*At least one measurement*");
     }
+
+    [Theory]
+    [InlineData("2023-01-31", "2023-03-01", 0, 1, 29, 1)] // Jan 31 to March 1 (non-leap year Feb 28 days) -> 1 mo 1 day or 29 days depending on calendar month advancement
+    [InlineData("2024-01-31", "2024-03-01", 0, 1, 30, 1)] // Leap year (Feb 29)
+    [InlineData("2025-05-31", "2025-07-01", 0, 1, 31, 1)] // May 31 to July 1
+    public void ChildAge_MonthEndEdgeCases_NeverYieldsNegativeDays(
+        string dobStr,
+        string asOfStr,
+        int expectedYears,
+        int expectedMonths,
+        int expectedTotalDaysMin,
+        int expectedDaysMin)
+    {
+        var dob = DateTime.Parse(dobStr);
+        var asOf = DateTime.Parse(asOfStr);
+
+        var age = ChildAge.Calculate(dob, asOf);
+
+        age.Years.Should().Be(expectedYears);
+        age.Months.Should().Be(expectedMonths);
+        age.Days.Should().BeGreaterThanOrEqualTo(expectedDaysMin);
+        age.TotalDays.Should().BeGreaterThanOrEqualTo(expectedTotalDaysMin);
+    }
 }

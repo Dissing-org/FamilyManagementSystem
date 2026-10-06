@@ -56,7 +56,7 @@ public class ChildProfile
             throw new ArgumentException("First name is required.", nameof(firstName));
         }
 
-        if (dateOfBirth > DateTime.UtcNow)
+        if (dateOfBirth.Date > DateTime.UtcNow.Date.AddDays(1))
         {
             throw new ArgumentException("Date of birth cannot be in the future.", nameof(dateOfBirth));
         }
@@ -84,7 +84,7 @@ public class ChildProfile
             throw new ArgumentException("First name is required.", nameof(firstName));
         }
 
-        if (dateOfBirth > DateTime.UtcNow)
+        if (dateOfBirth.Date > DateTime.UtcNow.Date.AddDays(1))
         {
             throw new ArgumentException("Date of birth cannot be in the future.", nameof(dateOfBirth));
         }

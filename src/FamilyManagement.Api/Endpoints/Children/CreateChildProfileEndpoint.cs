@@ -63,18 +63,25 @@ public class CreateChildProfileEndpoint : Endpoint<CreateChildProfileRequest, Ch
 
     public override async Task HandleAsync(CreateChildProfileRequest req, CancellationToken ct)
     {
-        var command = new CreateChildProfileCommand(
-            req.FirstName,
-            req.LastName,
-            req.DateOfBirth,
-            req.Gender,
-            req.AvatarUrl,
-            req.ClothesSize,
-            req.ShoeSize,
-            req.HatSize,
-            req.DiaperSize);
+        try
+        {
+            var command = new CreateChildProfileCommand(
+                req.FirstName,
+                req.LastName,
+                req.DateOfBirth,
+                req.Gender,
+                req.AvatarUrl,
+                req.ClothesSize,
+                req.ShoeSize,
+                req.HatSize,
+                req.DiaperSize);
 
-        var result = await _handler.HandleAsync(command, ct);
-        await HttpContext.Response.SendResultAsync(TypedResults.Created($"/api/children/{result.Id}", result));
+            var result = await _handler.HandleAsync(command, ct);
+            await HttpContext.Response.SendResultAsync(TypedResults.Created($"/api/children/{result.Id}", result));
+        }
+        catch (ArgumentException ex)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.BadRequest(new { error = ex.Message }));
+        }
     }
 }
