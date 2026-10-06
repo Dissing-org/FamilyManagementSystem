@@ -1,0 +1,318 @@
+@using FamilyManagement.UI.Shared.Models.Children
+@using FamilyManagement.UI.Shared.Services
+@inject ChildApiClient ChildApi
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Developmental Roadmap</h3>
+            <p class="text-xs text-slate-500">Expected milestones by age window (e.g. "at 12 months should be able to walk")</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <button @onclick="SeedGuidelinesAsync" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-[#122b3b] hover:bg-slate-50 dark:hover:bg-[#1a3b50] border border-[#e2d8c7] dark:border-[#1a3b50] text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl shadow-2xs transition-colors">
+                <svg class="w-3.5 h-3.5 text-[#064f6e] dark:text-[#abf5ed]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                Load Standard Guidelines
+            </button>
+            <button @onclick="() => _showAddExpectationModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-xs transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Target
+            </button>
+        </div>
+    </div>
+
+    @if (_loading)
+    {
+        <div class="py-12 text-center text-slate-400 text-sm">Loading developmental roadmap...</div>
+    }
+    else if (_expectations.Count == 0)
+    {
+        <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-[#064f6e]/10 dark:bg-[#abf5ed]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <h4 class="text-base font-bold text-slate-800 dark:text-slate-200">No developmental targets configured</h4>
+            <p class="text-sm text-slate-500 mt-1 mb-6">Load standard WHO/CDC milestones or create your own custom targets.</p>
+            <div class="flex justify-center gap-3">
+                <button @onclick="SeedGuidelinesAsync" class="px-5 py-2.5 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:text-[#042838] text-white text-sm font-semibold rounded-xl shadow-xs">
+                    Load Standard Guidelines
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Grouped by Age Brackets -->
+        <div class="space-y-8">
+            @foreach (var group in GroupedByAge)
+            {
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <h4 class="text-sm font-black text-[#064f6e] dark:text-[#abf5ed] uppercase tracking-wider">
+                            @group.Key
+                        </h4>
+                        <div class="flex-1 h-px bg-[#e2d8c7] dark:border-[#1a3b50]"></div>
+                        <span class="text-xs font-semibold text-slate-400">
+                            @group.Count(m => m.IsAchieved) / @group.Count() completed
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        @foreach (var m in group)
+                        {
+                            <div class="bg-white dark:bg-[#122b3b] border @(m.IsAchieved ? "border-emerald-300 dark:border-emerald-800/60 bg-emerald-50/20" : "border-[#e2d8c7] dark:border-[#1a3b50]") rounded-2xl p-4 shadow-2xs flex items-start justify-between gap-3">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold @GetCategoryBadgeColor(m.Category)">
+                                            @FormatCategory(m.Category)
+                                        </span>
+                                        <h5 class="text-sm font-bold @(m.IsAchieved ? "text-slate-500 line-through" : "text-slate-900 dark:text-slate-100")">
+                                            @m.Title
+                                        </h5>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(m.Description))
+                                    {
+                                        <p class="text-xs text-slate-500 leading-relaxed">
+                                            @m.Description
+                                        </p>
+                                    }
+
+                                    <div class="flex items-center gap-2 pt-1 text-[11px] text-slate-400">
+                                        <span>Target: ~@m.ExpectedAgeMonths mos</span>
+                                        @if (m.ExpectedWindowMaxMonths.HasValue)
+                                        {
+                                            <span>(up to @m.ExpectedWindowMaxMonths mos)</span>
+                                        }
+                                        @if (m.IsAchieved && m.AchievedDate.HasValue)
+                                        {
+                                            <span class="text-emerald-600 dark:text-emerald-400 font-semibold">• Achieved on @m.AchievedDate.Value.ToString("MMM d, yyyy")</span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div>
+                                    @if (m.IsAchieved)
+                                    {
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Done
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <button @onclick="() => OpenAchieveModal(m)" class="px-3 py-1.5 bg-[#064f6e]/10 hover:bg-[#064f6e]/20 text-[#064f6e] dark:bg-[#abf5ed]/15 dark:hover:bg-[#abf5ed]/25 dark:text-[#abf5ed] font-bold text-xs rounded-lg transition-colors whitespace-nowrap">
+                                            Mark Done
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal: Mark Done -->
+@if (_targetToAchieve != null)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+        <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1">Mark Milestone Achieved</h3>
+            <p class="text-xs text-slate-500 mb-4 font-semibold">@_targetToAchieve.Title</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Achieved</label>
+                    <input @bind="_achieveDate" type="date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Memory Note (optional)</label>
+                    <textarea @bind="_achieveNote" rows="2" placeholder="e.g. Took 5 steps across the living room!" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button @onclick="() => _targetToAchieve = null" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancel</button>
+                <button @onclick="ConfirmAchieveAsync" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs">Complete</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal: Add Expectation Target -->
+@if (_showAddExpectationModal)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+        <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-md w-full shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Add Developmental Target</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Milestone Title</label>
+                    <input @bind="_newTitle" placeholder="e.g. Hop on one foot or Count to 10" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Expected Age (Months)</label>
+                        <input @bind="_newExpectedMonths" type="number" placeholder="e.g. 12" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
+                        <select @bind="_newCategory" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
+                            <option value="GrossMotor">Gross Motor</option>
+                            <option value="FineMotor">Fine Motor</option>
+                            <option value="LanguageSpeech">Speech & Language</option>
+                            <option value="Cognitive">Cognitive</option>
+                            <option value="SocialEmotional">Social</option>
+                            <option value="Dental">Dental</option>
+                            <option value="HealthSelfCare">Self Care</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Guideline Details (optional)</label>
+                    <textarea @bind="_newDescription" rows="2" placeholder="e.g. Can walk across room without support" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button @onclick="() => _showAddExpectationModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancel</button>
+                <button @onclick="SaveExpectationAsync" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs">Add Target</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public Guid ChildId { get; set; }
+    [Parameter] public EventCallback OnExpectationsChanged { get; set; }
+
+    private List<ChildMilestoneModel> _expectations = new();
+    private bool _loading = true;
+
+    // Modals
+    private ChildMilestoneModel? _targetToAchieve;
+    private DateTime _achieveDate = DateTime.Today;
+    private string? _achieveNote;
+
+    private bool _showAddExpectationModal;
+    private string _newTitle = string.Empty;
+    private int _newExpectedMonths = 12;
+    private string _newCategory = "GrossMotor";
+    private string? _newDescription;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadExpectationsAsync();
+    }
+
+    private async Task LoadExpectationsAsync()
+    {
+        _loading = true;
+        _expectations = await ChildApi.GetMilestonesAsync(ChildId);
+        _loading = false;
+    }
+
+    private IEnumerable<IGrouping<string, ChildMilestoneModel>> GroupedByAge =>
+        _expectations
+            .OrderBy(e => e.ExpectedAgeMonths ?? 999)
+            .GroupBy(e => FormatAgeBracket(e.ExpectedAgeMonths ?? 0));
+
+    private string FormatAgeBracket(int months) => months switch
+    {
+        <= 3 => "0 – 3 Months (Early Infancy)",
+        <= 6 => "4 – 6 Months (Rolling & Babbles)",
+        <= 9 => "7 – 9 Months (Sitting & Crawling)",
+        <= 12 => "10 – 12 Months (Walking & Words)",
+        <= 18 => "13 – 18 Months (Toddler Steps)",
+        <= 24 => "19 – 24 Months (2-Word Phrases)",
+        <= 36 => "2 – 3 Years (Play & Running)",
+        <= 48 => "3 – 4 Years (Preschool Skills)",
+        _ => "5+ Years (Early Childhood)"
+    };
+
+    private void OpenAchieveModal(ChildMilestoneModel target)
+    {
+        _targetToAchieve = target;
+        _achieveDate = DateTime.Today;
+        _achieveNote = null;
+    }
+
+    private async Task ConfirmAchieveAsync()
+    {
+        if (_targetToAchieve == null) return;
+        var ok = await ChildApi.MarkMilestoneAchievedAsync(_targetToAchieve.Id, _achieveDate, _achieveNote);
+        if (ok)
+        {
+            _targetToAchieve = null;
+            await LoadExpectationsAsync();
+            await OnExpectationsChanged.InvokeAsync();
+        }
+    }
+
+    private async Task SaveExpectationAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newTitle)) return;
+        var result = await ChildApi.CreateMilestoneAsync(
+            ChildId,
+            _newTitle,
+            _newCategory,
+            isAchieved: false,
+            expectedAgeMonths: _newExpectedMonths,
+            expectedWindowMaxMonths: null,
+            achievedDate: null,
+            description: _newDescription,
+            notes: null,
+            photoUrl: null);
+
+        if (result != null)
+        {
+            _showAddExpectationModal = false;
+            _newTitle = string.Empty;
+            _newDescription = null;
+            await LoadExpectationsAsync();
+            await OnExpectationsChanged.InvokeAsync();
+        }
+    }
+
+    private async Task SeedGuidelinesAsync()
+    {
+        await ChildApi.SeedStandardMilestonesAsync(ChildId);
+        await LoadExpectationsAsync();
+        await OnExpectationsChanged.InvokeAsync();
+    }
+
+    private string FormatCategory(string cat) => cat switch
+    {
+        "GrossMotor" => "Motor",
+        "FineMotor" => "Fine Motor",
+        "LanguageSpeech" => "Speech",
+        "Cognitive" => "Cognitive",
+        "SocialEmotional" => "Social",
+        "Dental" => "Dental",
+        "HealthSelfCare" => "Self Care",
+        _ => cat
+    };
+
+    private string GetCategoryBadgeColor(string cat) => cat switch
+    {
+        "GrossMotor" => "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+        "FineMotor" => "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+        "LanguageSpeech" => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+        "Dental" => "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+        "SocialEmotional" => "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+        _ => "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+    };
+}

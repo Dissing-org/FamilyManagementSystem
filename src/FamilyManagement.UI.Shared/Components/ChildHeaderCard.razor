@@ -1,0 +1,129 @@
+@using FamilyManagement.UI.Shared.Models.Children
+@using FamilyManagement.UI.Shared.Services
+@inject ChildApiClient ChildApi
+
+<div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-6 shadow-sm mb-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <!-- Avatar & Core Info -->
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-[#064f6e]/10 dark:bg-[#abf5ed]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center font-black text-2xl border border-[#064f6e]/20 shadow-xs">
+                @Child.FirstName.Substring(0, 1).ToUpper()
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-2xl font-black text-slate-900 dark:text-slate-100">@Child.FullName</h1>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold @(Child.Gender == "Boy" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" : "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300")">
+                        @Child.Gender
+                    </span>
+                </div>
+                <div class="flex items-center gap-3 mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    <span class="inline-flex items-center gap-1 font-semibold text-[#064f6e] dark:text-[#abf5ed]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Born @Child.DateOfBirth.ToString("MMMM d, yyyy")
+                    </span>
+                    <span>•</span>
+                    <span class="px-2 py-0.5 rounded-md bg-[#c0b490]/20 text-[#71644c] dark:text-[#ddd0b2] font-bold text-xs">
+                        @Child.Age.Formatted
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Wardrobe Sizes Bar -->
+        <div class="bg-[#fbf9f5] dark:bg-[#0b1a24] p-3 rounded-xl border border-[#e2d8c7] dark:border-[#1a3b50] flex flex-wrap items-center gap-3">
+            <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">
+                Current Sizes
+            </div>
+            
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] text-xs">
+                <span class="text-slate-400">Clothes:</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200">@(string.IsNullOrEmpty(Child.Sizes?.ClothesSize) ? "—" : Child.Sizes.ClothesSize)</span>
+            </div>
+
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] text-xs">
+                <span class="text-slate-400">Shoes:</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200">@(string.IsNullOrEmpty(Child.Sizes?.ShoeSize) ? "—" : Child.Sizes.ShoeSize)</span>
+            </div>
+
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] text-xs">
+                <span class="text-slate-400">Hat:</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200">@(string.IsNullOrEmpty(Child.Sizes?.HatSize) ? "—" : Child.Sizes.HatSize)</span>
+            </div>
+
+            <button @onclick="() => _showEditSizesModal = true" class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-slate-500 transition-colors" title="Edit Sizes">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (_showEditSizesModal)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+        <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Edit Wardrobe Sizes</h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Clothes Size</label>
+                    <input @bind="_clothesSize" placeholder="e.g. 86 / 92 or 2T" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Shoe Size</label>
+                    <input @bind="_shoeSize" placeholder="e.g. 23 EU or 7 US" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Hat Size</label>
+                    <input @bind="_hatSize" placeholder="e.g. 50 cm" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Diaper Size</label>
+                    <input @bind="_diaperSize" placeholder="e.g. Size 4 or Pants" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button @onclick="() => _showEditSizesModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancel</button>
+                <button @onclick="SaveSizesAsync" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs">Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public ChildProfileModel Child { get; set; } = null!;
+    [Parameter] public EventCallback OnSizesUpdated { get; set; }
+
+    private bool _showEditSizesModal;
+    private string? _clothesSize;
+    private string? _shoeSize;
+    private string? _hatSize;
+    private string? _diaperSize;
+
+    protected override void OnParametersSet()
+    {
+        _clothesSize = Child.Sizes?.ClothesSize;
+        _shoeSize = Child.Sizes?.ShoeSize;
+        _hatSize = Child.Sizes?.HatSize;
+        _diaperSize = Child.Sizes?.DiaperSize;
+    }
+
+    private async Task SaveSizesAsync()
+    {
+        var ok = await ChildApi.UpdateSizesAsync(Child.Id, _clothesSize, _shoeSize, _hatSize, _diaperSize);
+        if (ok)
+        {
+            if (Child.Sizes == null) Child.Sizes = new ChildWardrobeSizesModel();
+            Child.Sizes.ClothesSize = _clothesSize;
+            Child.Sizes.ShoeSize = _shoeSize;
+            Child.Sizes.HatSize = _hatSize;
+            Child.Sizes.DiaperSize = _diaperSize;
+            _showEditSizesModal = false;
+            await OnSizesUpdated.InvokeAsync();
+        }
+    }
+}

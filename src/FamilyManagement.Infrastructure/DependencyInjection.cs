@@ -22,6 +22,9 @@ public static class DependencyInjection
 
         services.AddScoped<IReceiptRepository, ReceiptRepository>();
         services.AddScoped<IInsurancePolicyRepository, InsurancePolicyRepository>();
+        services.AddScoped<IChildProfileRepository, FamilyManagement.Infrastructure.Repositories.ChildProfileRepository>();
+        services.AddScoped<IGrowthMeasurementRepository, FamilyManagement.Infrastructure.Repositories.GrowthMeasurementRepository>();
+        services.AddScoped<IChildMilestoneRepository, FamilyManagement.Infrastructure.Repositories.ChildMilestoneRepository>();
 
         services.Configure<GoogleDriveOptions>(
             configuration.GetSection(GoogleDriveOptions.SectionName));

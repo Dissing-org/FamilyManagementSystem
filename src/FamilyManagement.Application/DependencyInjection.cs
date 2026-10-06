@@ -22,6 +22,18 @@ public static class DependencyInjection
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Queries.GetInsurancePolicyByIdQueryHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Insurances.Queries.GetInsuranceOverviewQueryHandler>();
 
+        // Child development use cases
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.CreateChildProfileCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.UpdateChildSizesCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.RecordGrowthMeasurementCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.DeleteGrowthMeasurementCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.CreateMilestoneCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.MarkMilestoneAchievedCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Commands.SeedStandardMilestonesCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Queries.GetChildDashboardQueryHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Queries.GetGrowthHistoryQueryHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Children.Queries.GetMilestonesQueryHandler>();
+
         return services;
     }
 }

@@ -134,6 +134,62 @@ using (var scope = app.Services.CreateScope())
                 app.Logger.LogInformation("Created missing InsurancePolicies table in SQLite database.");
             }
         }
+
+        // Ensure Child Development tables exist
+        using (var tableCmd = connection.CreateCommand())
+        {
+            tableCmd.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='ChildProfiles';";
+            var tableCount = Convert.ToInt32(tableCmd.ExecuteScalar());
+            if (tableCount == 0)
+            {
+                tableCmd.CommandText = """
+                    CREATE TABLE "ChildProfiles" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_ChildProfiles" PRIMARY KEY,
+                        "FirstName" TEXT NOT NULL,
+                        "LastName" TEXT NULL,
+                        "DateOfBirth" TEXT NOT NULL,
+                        "Gender" TEXT NOT NULL,
+                        "AvatarUrl" TEXT NULL,
+                        "ClothesSize" TEXT NULL,
+                        "ShoeSize" TEXT NULL,
+                        "HatSize" TEXT NULL,
+                        "DiaperSize" TEXT NULL,
+                        "CreatedAt" TEXT NOT NULL,
+                        "UpdatedAt" TEXT NULL
+                    );
+                    CREATE TABLE "GrowthMeasurements" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_GrowthMeasurements" PRIMARY KEY,
+                        "ChildId" TEXT NOT NULL,
+                        "RecordedDate" TEXT NOT NULL,
+                        "HeightCm" TEXT NULL,
+                        "WeightKg" TEXT NULL,
+                        "HeadCircumferenceCm" TEXT NULL,
+                        "Notes" TEXT NULL,
+                        "CreatedAt" TEXT NOT NULL,
+                        "UpdatedAt" TEXT NULL
+                    );
+                    CREATE TABLE "ChildMilestones" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_ChildMilestones" PRIMARY KEY,
+                        "ChildId" TEXT NOT NULL,
+                        "Title" TEXT NOT NULL,
+                        "Description" TEXT NULL,
+                        "Category" TEXT NOT NULL,
+                        "Status" TEXT NOT NULL,
+                        "ExpectedAgeMonths" INTEGER NULL,
+                        "ExpectedWindowMaxMonths" INTEGER NULL,
+                        "IsStandardGuideline" INTEGER NOT NULL,
+                        "AchievedDate" TEXT NULL,
+                        "AchievedAgeMonths" INTEGER NULL,
+                        "Notes" TEXT NULL,
+                        "PhotoUrl" TEXT NULL,
+                        "CreatedAt" TEXT NOT NULL,
+                        "UpdatedAt" TEXT NULL
+                    );
+                """;
+                tableCmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created Child Development tables in SQLite database.");
+            }
+        }
     }
     catch (Exception ex)
     {

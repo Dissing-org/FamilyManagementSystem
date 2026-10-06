@@ -1,0 +1,240 @@
+@using FamilyManagement.UI.Shared.Models.Children
+@using FamilyManagement.UI.Shared.Services
+@inject ChildApiClient ChildApi
+
+<div class="space-y-6">
+    <!-- Quick Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Height Card -->
+        <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Height</span>
+                <span class="w-8 h-8 rounded-lg bg-[#064f6e]/10 text-[#064f6e] dark:bg-[#abf5ed]/15 dark:text-[#abf5ed] flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10M12 3v18m0-18l-3 3m3-3l3 3"/>
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-black text-slate-900 dark:text-slate-100">
+                    @(LatestMeasurement?.HeightCm.HasValue == true ? $"{LatestMeasurement.HeightCm:N1}" : "—")
+                </span>
+                <span class="text-sm font-semibold text-slate-500">cm</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+                @(LatestMeasurement?.HeightCm.HasValue == true ? $"Recorded on {LatestMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
+            </p>
+        </div>
+
+        <!-- Weight Card -->
+        <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Weight</span>
+                <span class="w-8 h-8 rounded-lg bg-[#c0b490]/20 text-[#71644c] dark:text-[#ddd0b2] flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-black text-slate-900 dark:text-slate-100">
+                    @(LatestMeasurement?.WeightKg.HasValue == true ? $"{LatestMeasurement.WeightKg:N2}" : "—")
+                </span>
+                <span class="text-sm font-semibold text-slate-500">kg</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+                @(LatestMeasurement?.WeightKg.HasValue == true ? $"Recorded on {LatestMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
+            </p>
+        </div>
+
+        <!-- Head Circumference Card -->
+        <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Head Circumference</span>
+                <span class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-black text-slate-900 dark:text-slate-100">
+                    @(LatestMeasurement?.HeadCircumferenceCm.HasValue == true ? $"{LatestMeasurement.HeadCircumferenceCm:N1}" : "—")
+                </span>
+                <span class="text-sm font-semibold text-slate-500">cm</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+                @(LatestMeasurement?.HeadCircumferenceCm.HasValue == true ? $"Recorded on {LatestMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
+            </p>
+        </div>
+    </div>
+
+    <!-- Action Bar & History Table -->
+    <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Growth Log</h3>
+                <p class="text-xs text-slate-500">Historical height and weight entries</p>
+            </div>
+            <button @onclick="() => _showRecordModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-xs transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Record Measurement
+            </button>
+        </div>
+
+        @if (_loading)
+        {
+            <div class="py-12 text-center text-slate-400 text-sm">Loading measurements...</div>
+        }
+        else if (_measurements.Count == 0)
+        {
+            <div class="py-12 text-center text-slate-400">
+                <svg class="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <p class="text-sm font-medium">No growth measurements recorded yet</p>
+                <p class="text-xs text-slate-400 mt-1">Start by recording your child's current height and weight.</p>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="border-b border-[#e2d8c7] dark:border-[#1a3b50] text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                            <th class="py-3 px-4">Date</th>
+                            <th class="py-3 px-4">Height</th>
+                            <th class="py-3 px-4">Weight</th>
+                            <th class="py-3 px-4">Head Circ.</th>
+                            <th class="py-3 px-4">Notes</th>
+                            <th class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#e2d8c7]/50 dark:divide-[#1a3b50]/50">
+                        @foreach (var m in _measurements)
+                        {
+                            <tr class="hover:bg-slate-50 dark:hover:bg-[#0b1a24]/50 transition-colors">
+                                <td class="py-3 px-4 font-semibold text-slate-800 dark:text-slate-200">
+                                    @m.RecordedDate.ToString("MMM d, yyyy")
+                                </td>
+                                <td class="py-3 px-4 text-slate-700 dark:text-slate-300">
+                                    @(m.HeightCm.HasValue ? $"{m.HeightCm:N1} cm" : "—")
+                                </td>
+                                <td class="py-3 px-4 text-slate-700 dark:text-slate-300">
+                                    @(m.WeightKg.HasValue ? $"{m.WeightKg:N2} kg" : "—")
+                                </td>
+                                <td class="py-3 px-4 text-slate-700 dark:text-slate-300">
+                                    @(m.HeadCircumferenceCm.HasValue ? $"{m.HeadCircumferenceCm:N1} cm" : "—")
+                                </td>
+                                <td class="py-3 px-4 text-xs text-slate-500">
+                                    @(string.IsNullOrEmpty(m.Notes) ? "—" : m.Notes)
+                                </td>
+                                <td class="py-3 px-4 text-right">
+                                    <button @onclick="() => DeleteMeasurementAsync(m.Id)" class="text-red-500 hover:text-red-700 text-xs font-semibold">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@if (_showRecordModal)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+        <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-md w-full shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Record Growth Measurement</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label>
+                    <input @bind="_newDate" type="date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Height (cm)</label>
+                        <input @bind="_newHeight" type="number" step="0.1" placeholder="e.g. 84.5" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (kg)</label>
+                        <input @bind="_newWeight" type="number" step="0.01" placeholder="e.g. 11.4" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Head Circumference (cm, optional)</label>
+                    <input @bind="_newHead" type="number" step="0.1" placeholder="e.g. 47.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes (optional)</label>
+                    <textarea @bind="_newNotes" rows="2" placeholder="e.g. 1-year pediatrician checkup" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button @onclick="() => _showRecordModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancel</button>
+                <button @onclick="SaveMeasurementAsync" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs">Record</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public Guid ChildId { get; set; }
+    [Parameter] public GrowthMeasurementModel? LatestMeasurement { get; set; }
+    [Parameter] public EventCallback OnMeasurementsChanged { get; set; }
+
+    private List<GrowthMeasurementModel> _measurements = new();
+    private bool _loading = true;
+    private bool _showRecordModal;
+
+    private DateTime _newDate = DateTime.Today;
+    private decimal? _newHeight;
+    private decimal? _newWeight;
+    private decimal? _newHead;
+    private string? _newNotes;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadMeasurementsAsync();
+    }
+
+    private async Task LoadMeasurementsAsync()
+    {
+        _loading = true;
+        _measurements = await ChildApi.GetGrowthHistoryAsync(ChildId);
+        _loading = false;
+    }
+
+    private async Task SaveMeasurementAsync()
+    {
+        if (!_newHeight.HasValue && !_newWeight.HasValue && !_newHead.HasValue) return;
+
+        var result = await ChildApi.RecordGrowthAsync(ChildId, _newDate, _newHeight, _newWeight, _newHead, _newNotes);
+        if (result != null)
+        {
+            _showRecordModal = false;
+            _newHeight = null;
+            _newWeight = null;
+            _newHead = null;
+            _newNotes = null;
+            await LoadMeasurementsAsync();
+            await OnMeasurementsChanged.InvokeAsync();
+        }
+    }
+
+    private async Task DeleteMeasurementAsync(Guid id)
+    {
+        var ok = await ChildApi.DeleteGrowthAsync(id);
+        if (ok)
+        {
+            await LoadMeasurementsAsync();
+            await OnMeasurementsChanged.InvokeAsync();
+        }
+    }
+}

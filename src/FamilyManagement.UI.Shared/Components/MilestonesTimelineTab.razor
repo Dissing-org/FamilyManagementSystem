@@ -1,0 +1,207 @@
+@using FamilyManagement.UI.Shared.Models.Children
+@using FamilyManagement.UI.Shared.Services
+@inject ChildApiClient ChildApi
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Memories & Accomplishments</h3>
+            <p class="text-xs text-slate-500">Cherished moments and developmental achievements</p>
+        </div>
+        <button @onclick="() => _showAddMemoryModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-xs transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Memory / Milestone
+        </button>
+    </div>
+
+    @if (_loading)
+    {
+        <div class="py-12 text-center text-slate-400 text-sm">Loading memories...</div>
+    }
+    else if (_milestones.Count == 0)
+    {
+        <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-[#c0b490]/20 text-[#71644c] dark:text-[#ddd0b2] flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                </svg>
+            </div>
+            <h4 class="text-base font-bold text-slate-800 dark:text-slate-200">No memories recorded yet</h4>
+            <p class="text-sm text-slate-500 mt-1 mb-6">Celebrate your child's first smile, first steps, lost baby tooth, or funny moments.</p>
+            <button @onclick="() => _showAddMemoryModal = true" class="px-5 py-2.5 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:text-[#042838] text-white text-sm font-semibold rounded-xl shadow-xs">
+                Record First Memory
+            </button>
+        </div>
+    }
+    else
+    {
+        <!-- Chronological Timeline Stream -->
+        <div class="relative pl-6 sm:pl-8 border-l-2 border-[#e2d8c7] dark:border-[#1a3b50] space-y-6 my-4">
+            @foreach (var m in _milestones)
+            {
+                <div class="relative group">
+                    <!-- Timeline Dot -->
+                    <div class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-[#064f6e] dark:bg-[#abf5ed] border-4 border-white dark:border-[#0b1a24] shadow-xs"></div>
+
+                    <!-- Memory Card -->
+                    <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-5 shadow-xs transition-shadow hover:shadow-md">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold @GetCategoryBadgeColor(m.Category)">
+                                    @FormatCategory(m.Category)
+                                </span>
+                                <h4 class="text-base font-bold text-slate-900 dark:text-slate-100">@m.Title</h4>
+                            </div>
+
+                            <div class="flex items-center gap-2 text-xs font-medium text-slate-500">
+                                @if (m.AchievedDate.HasValue)
+                                {
+                                    <span class="inline-flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        @m.AchievedDate.Value.ToString("MMM d, yyyy")
+                                    </span>
+                                }
+                                @if (m.AchievedAgeMonths.HasValue)
+                                {
+                                    <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-[#0b1a24] text-slate-600 dark:text-slate-400 font-semibold text-[11px]">
+                                        at @m.AchievedAgeMonths mos
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(m.Notes))
+                        {
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-2 whitespace-pre-wrap leading-relaxed">
+                                @m.Notes
+                            </p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (_showAddMemoryModal)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+        <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-md w-full shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Record Achieved Milestone / Memory</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Title</label>
+                    <input @bind="_newTitle" placeholder="e.g. Started walking independently or Lost first tooth" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Category</label>
+                        <select @bind="_newCategory" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
+                            <option value="GrossMotor">Gross Motor (Walking, Sitting)</option>
+                            <option value="FineMotor">Fine Motor (Hands, Pincer)</option>
+                            <option value="LanguageSpeech">Speech & Language</option>
+                            <option value="Cognitive">Cognitive & Play</option>
+                            <option value="SocialEmotional">Social & Emotional</option>
+                            <option value="Dental">Dental & Teeth</option>
+                            <option value="HealthSelfCare">Health & Self Care</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Date Achieved</label>
+                        <input @bind="_newAchievedDate" type="date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Memories / Story (optional)</label>
+                    <textarea @bind="_newNotes" rows="3" placeholder="Where did it happen? Any funny reaction?" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button @onclick="() => _showAddMemoryModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancel</button>
+                <button @onclick="SaveMemoryAsync" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs">Save Memory</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public Guid ChildId { get; set; }
+    [Parameter] public EventCallback OnMilestonesChanged { get; set; }
+
+    private List<ChildMilestoneModel> _milestones = new();
+    private bool _loading = true;
+    private bool _showAddMemoryModal;
+
+    private string _newTitle = string.Empty;
+    private string _newCategory = "GrossMotor";
+    private DateTime _newAchievedDate = DateTime.Today;
+    private string? _newNotes;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadMilestonesAsync();
+    }
+
+    private async Task LoadMilestonesAsync()
+    {
+        _loading = true;
+        _milestones = await ChildApi.GetMilestonesAsync(ChildId, status: "Achieved");
+        _loading = false;
+    }
+
+    private async Task SaveMemoryAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newTitle)) return;
+
+        var result = await ChildApi.CreateMilestoneAsync(
+            ChildId,
+            _newTitle,
+            _newCategory,
+            isAchieved: true,
+            expectedAgeMonths: null,
+            expectedWindowMaxMonths: null,
+            achievedDate: _newAchievedDate,
+            description: null,
+            notes: _newNotes,
+            photoUrl: null);
+
+        if (result != null)
+        {
+            _showAddMemoryModal = false;
+            _newTitle = string.Empty;
+            _newNotes = null;
+            await LoadMilestonesAsync();
+            await OnMilestonesChanged.InvokeAsync();
+        }
+    }
+
+    private string FormatCategory(string cat) => cat switch
+    {
+        "GrossMotor" => "Motor",
+        "FineMotor" => "Fine Motor",
+        "LanguageSpeech" => "Speech",
+        "Cognitive" => "Cognitive",
+        "SocialEmotional" => "Social",
+        "Dental" => "Dental",
+        "HealthSelfCare" => "Self Care",
+        _ => cat
+    };
+
+    private string GetCategoryBadgeColor(string cat) => cat switch
+    {
+        "GrossMotor" => "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+        "FineMotor" => "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+        "LanguageSpeech" => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+        "Dental" => "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+        "SocialEmotional" => "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+        _ => "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+    };
+}

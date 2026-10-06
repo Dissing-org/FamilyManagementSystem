@@ -7,6 +7,9 @@ public class ReceiptDbContext : DbContext
 {
     public DbSet<Receipt> Receipts => Set<Receipt>();
     public DbSet<InsurancePolicy> InsurancePolicies => Set<InsurancePolicy>();
+    public DbSet<ChildProfile> ChildProfiles => Set<ChildProfile>();
+    public DbSet<GrowthMeasurement> GrowthMeasurements => Set<GrowthMeasurement>();
+    public DbSet<ChildMilestone> ChildMilestones => Set<ChildMilestone>();
 
     public ReceiptDbContext(DbContextOptions<ReceiptDbContext> options) : base(options)
     {
