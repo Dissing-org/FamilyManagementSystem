@@ -1,5 +1,11 @@
 namespace FamilyManagement.UI.Shared.Models;
 
+public class CurrencyTotalModel
+{
+    public decimal TotalMonthlyCost { get; set; }
+    public decimal TotalAnnualCost { get; set; }
+}
+
 public class InsuranceOverviewModel
 {
     public decimal TotalMonthlyCost { get; set; }
@@ -9,6 +15,7 @@ public class InsuranceOverviewModel
     public int ActivePolicies { get; set; }
     public Dictionary<string, decimal> CostByCategory { get; set; } = new();
     public List<InsuranceRenewalAlertModel> UpcomingRenewals { get; set; } = new();
+    public Dictionary<string, CurrencyTotalModel> TotalsByCurrency { get; set; } = new();
 }
 
 public class InsuranceRenewalAlertModel

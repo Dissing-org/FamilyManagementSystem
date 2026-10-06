@@ -17,6 +17,7 @@ public class UpdateInsurancePolicyRequest
     public string Currency { get; set; } = "USD";
     [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
     public PaymentFrequency Frequency { get; set; }
+    public DateTime StartDate { get; set; }
     public DateTime? RenewalDate { get; set; }
     public decimal? DeductibleAmount { get; set; }
     public string? Notes { get; set; }
@@ -55,6 +56,7 @@ public class UpdateInsurancePolicyEndpoint : Endpoint<UpdateInsurancePolicyReque
                 req.PremiumAmount,
                 req.Currency,
                 req.Frequency,
+                req.StartDate,
                 req.RenewalDate,
                 req.DeductibleAmount,
                 req.Notes);

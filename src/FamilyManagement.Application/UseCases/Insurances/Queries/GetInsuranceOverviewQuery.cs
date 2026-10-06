@@ -22,12 +22,25 @@ public class GetInsuranceOverviewQueryHandler
         var allPolicies = await _repository.ListAsync(cancellationToken: cancellationToken);
         var activePolicies = allPolicies.Where(p => p.Status == InsurancePolicyStatus.Active).ToList();
 
-        var currency = activePolicies.FirstOrDefault()?.Premium.Currency ?? "USD";
+        var totalsByCurrency = activePolicies
+            .GroupBy(p => p.Premium.Currency)
+            .ToDictionary(
+                g => g.Key,
+                g => new CurrencyTotalDto(
+                    g.Sum(p => p.CalculateMonthlyCost()),
+                    g.Sum(p => p.CalculateAnnualCost())));
 
-        var totalMonthly = activePolicies.Sum(p => p.CalculateMonthlyCost());
-        var totalAnnual = activePolicies.Sum(p => p.CalculateAnnualCost());
+        var primaryGroup = activePolicies
+            .GroupBy(p => p.Premium.Currency)
+            .OrderByDescending(g => g.Count())
+            .FirstOrDefault();
+
+        var currency = primaryGroup?.Key ?? "DKK";
+        var totalMonthly = primaryGroup != null ? totalsByCurrency[currency].TotalMonthlyCost : 0m;
+        var totalAnnual = primaryGroup != null ? totalsByCurrency[currency].TotalAnnualCost : 0m;
 
         var costByCategory = activePolicies
+            .Where(p => p.Premium.Currency == currency)
             .GroupBy(p => p.Category.ToString())
             .ToDictionary(g => g.Key, g => g.Sum(p => p.CalculateAnnualCost()));
 
@@ -35,7 +48,7 @@ public class GetInsuranceOverviewQueryHandler
         var upcomingThreshold = now.AddDays(query.DaysAhead);
 
         var upcomingRenewals = activePolicies
-            .Where(p => p.RenewalDate.HasValue && p.RenewalDate.Value >= now && p.RenewalDate.Value <= upcomingThreshold)
+            .Where(p => p.RenewalDate.HasValue && p.RenewalDate.Value.Date >= now.Date && p.RenewalDate.Value.Date <= upcomingThreshold.Date)
             .OrderBy(p => p.RenewalDate!.Value)
             .Select(p => new InsuranceRenewalAlertDto(
                 p.Id.Value,
@@ -44,7 +57,7 @@ public class GetInsuranceOverviewQueryHandler
                 p.Category.ToString(),
                 p.InsuredParty,
                 p.RenewalDate!.Value,
-                (int)Math.Ceiling((p.RenewalDate!.Value - now).TotalDays),
+                (int)Math.Ceiling((p.RenewalDate!.Value.Date - now.Date).TotalDays),
                 p.Premium.Amount,
                 p.Premium.Currency))
             .ToList();
@@ -56,6 +69,7 @@ public class GetInsuranceOverviewQueryHandler
             allPolicies.Count,
             activePolicies.Count,
             costByCategory,
-            upcomingRenewals);
+            upcomingRenewals,
+            totalsByCurrency);
     }
 }

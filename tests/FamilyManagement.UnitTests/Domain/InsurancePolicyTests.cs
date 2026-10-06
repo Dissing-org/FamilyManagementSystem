@@ -136,6 +136,7 @@ public class InsurancePolicyTests
     [Fact]
     public void UpdateDetails_ShouldModifyEditableFields()
     {
+        var originalStart = DateTime.UtcNow.AddMonths(-6);
         var policy = InsurancePolicy.Create(
             "Original Insurer",
             "POL-ORIG",
@@ -143,14 +144,16 @@ public class InsurancePolicyTests
             "Apartment 1",
             Money.Create(200m, "EUR"),
             PaymentFrequency.Monthly,
-            DateTime.UtcNow.AddMonths(-6));
+            originalStart);
 
+        var newStart = DateTime.UtcNow.AddMonths(-1);
         var newRenewal = DateTime.UtcNow.AddMonths(6);
         policy.UpdateDetails(
             "Updated Insurer",
             "POL-NEW",
             InsuranceCategory.Liability,
             "Apartment 2",
+            newStart,
             newRenewal,
             Money.Create(500m, "EUR"),
             "New updated policy terms");
@@ -159,9 +162,36 @@ public class InsurancePolicyTests
         policy.PolicyNumber.Should().Be("POL-NEW");
         policy.Category.Should().Be(InsuranceCategory.Liability);
         policy.InsuredParty.Should().Be("Apartment 2");
+        policy.StartDate.Should().Be(newStart);
         policy.RenewalDate.Should().Be(newRenewal);
         policy.Deductible!.Amount.Should().Be(500m);
         policy.Notes.Should().Be("New updated policy terms");
         policy.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void UpdateDetails_WhenRenewalDateBeforeStartDate_ShouldThrowArgumentException()
+    {
+        var policy = InsurancePolicy.Create(
+            "Insurer",
+            "POL-1",
+            InsuranceCategory.Auto,
+            "Car",
+            Money.Create(100m, "USD"),
+            PaymentFrequency.Monthly,
+            DateTime.UtcNow);
+
+        var act = () => policy.UpdateDetails(
+            "Insurer",
+            "POL-1",
+            InsuranceCategory.Auto,
+            "Car",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(-1),
+            null,
+            null);
+
+        act.Should().Throw<ArgumentException>()
+           .WithMessage("*Renewal date cannot be earlier than start date*");
     }
 }

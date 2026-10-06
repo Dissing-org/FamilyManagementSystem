@@ -107,6 +107,7 @@ public class InsurancePolicy
         string? policyNumber,
         InsuranceCategory category,
         string insuredParty,
+        DateTime startDate,
         DateTime? renewalDate,
         Money? deductible,
         string? notes)
@@ -121,10 +122,16 @@ public class InsurancePolicy
             throw new ArgumentException("Insured party or asset is required.", nameof(insuredParty));
         }
 
+        if (renewalDate.HasValue && renewalDate.Value < startDate)
+        {
+            throw new ArgumentException("Renewal date cannot be earlier than start date.", nameof(renewalDate));
+        }
+
         Insurer = insurer.Trim();
         PolicyNumber = policyNumber?.Trim();
         Category = category;
         InsuredParty = insuredParty.Trim();
+        StartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
         RenewalDate = renewalDate.HasValue ? DateTime.SpecifyKind(renewalDate.Value, DateTimeKind.Utc) : null;
         Deductible = deductible;
         Notes = notes?.Trim();

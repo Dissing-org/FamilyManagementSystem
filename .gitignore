@@ -31,3 +31,6 @@ client_secret*.json
 *.pem
 *.pfx
 appsettings.*.local.json
+
+## Local Agents & Plugins
+.agents/

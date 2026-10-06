@@ -1,5 +1,9 @@
 namespace FamilyManagement.Application.DTOs.Insurances;
 
+public record CurrencyTotalDto(
+    decimal TotalMonthlyCost,
+    decimal TotalAnnualCost);
+
 public record InsuranceOverviewDto(
     decimal TotalMonthlyCost,
     decimal TotalAnnualCost,
@@ -7,4 +11,5 @@ public record InsuranceOverviewDto(
     int TotalPolicies,
     int ActivePolicies,
     Dictionary<string, decimal> CostByCategory,
-    List<InsuranceRenewalAlertDto> UpcomingRenewals);
+    List<InsuranceRenewalAlertDto> UpcomingRenewals,
+    Dictionary<string, CurrencyTotalDto>? TotalsByCurrency = null);

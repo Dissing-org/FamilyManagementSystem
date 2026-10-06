@@ -14,6 +14,7 @@ public record UpdateInsurancePolicyCommand(
     decimal PremiumAmount,
     string Currency,
     PaymentFrequency Frequency,
+    DateTime StartDate,
     DateTime? RenewalDate = null,
     decimal? DeductibleAmount = null,
     string? Notes = null);
@@ -46,6 +47,7 @@ public class UpdateInsurancePolicyCommandHandler
             command.PolicyNumber,
             command.Category,
             command.InsuredParty,
+            command.StartDate,
             command.RenewalDate,
             deductible,
             command.Notes);
