@@ -4,142 +4,150 @@
 @using FamilyManagement.UI.Shared.Components
 @inject ChildApiClient ChildApi
 
-<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-    @if (_loading)
-    {
-        <div class="py-24 text-center">
-            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#064f6e] border-t-transparent"></div>
-            <p class="mt-4 text-sm font-medium text-slate-500">Loading child development dashboard...</p>
-        </div>
-    }
-    else if (_children.Count == 0)
-    {
-        <!-- Empty State: Register First Child -->
-        <div class="max-w-lg mx-auto bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-3xl p-8 sm:p-10 text-center shadow-lg my-12">
-            <div class="w-20 h-20 rounded-3xl bg-[#064f6e]/10 dark:bg-[#abf5ed]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center mx-auto mb-6">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+<div class="min-h-screen bg-[#fbf9f5] dark:bg-[#0b1a24] text-slate-800 dark:text-slate-100 font-sans pb-16">
+    <AppHeader CurrentSectionSubtitle="Child Development & Milestones" OnSettingsSaved="LoadChildrenAsync">
+        <ActionContent>
+            <button @onclick="() => _showRegisterChildModal = true" 
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#abf5ed] hover:bg-[#8eebe0] text-[#042838] text-sm font-black rounded-xl shadow-md shadow-[#abf5ed]/20 transition-all hover:shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
-            </div>
-            <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100">Welcome to Child Tracker</h2>
-            <p class="text-sm text-slate-500 mt-2 mb-8 leading-relaxed">
-                Track your child's age, growth milestones, shoe and clothing sizes, memories, and developmental targets.
-            </p>
-
-            <button @onclick="() => _showRegisterChildModal = true" class="w-full py-3.5 px-6 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-md transition-all">
-                Register Your Child
+                <span>Add Child</span>
             </button>
-        </div>
-    }
-    else
-    {
-        <!-- Child Selector / Switcher if multiple children exist -->
-        @if (_children.Count > 1)
+        </ActionContent>
+    </AppHeader>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        @if (_loading)
         {
-            <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-                @foreach (var c in _children)
-                {
-                    <button @onclick="() => SelectChild(c.Id)" class="px-4 py-2 rounded-xl text-xs font-bold transition-all @(c.Id == _selectedChildId ? "bg-[#064f6e] text-white dark:bg-[#abf5ed] dark:text-[#042838] shadow-xs" : "bg-white dark:bg-[#122b3b] text-slate-600 dark:text-slate-300 border border-[#e2d8c7] dark:border-[#1a3b50]")">
-                        @c.FirstName
+            <div class="py-24 text-center">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#064f6e] border-t-transparent"></div>
+                <p class="mt-4 text-sm font-medium text-slate-500">Loading child development dashboard...</p>
+            </div>
+        }
+        else if (_children.Count == 0)
+        {
+            <div class="max-w-lg mx-auto bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-3xl p-8 sm:p-10 text-center shadow-lg my-12">
+                <div class="w-20 h-20 rounded-3xl bg-[#064f6e]/10 dark:bg-[#abf5ed]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100">Welcome to Child Tracker</h2>
+                <p class="text-sm text-slate-500 mt-2 mb-8 leading-relaxed">
+                    Track your child's age, growth milestones, shoe and clothing sizes, memories, and developmental targets.
+                </p>
+
+                <button @onclick="() => _showRegisterChildModal = true" class="w-full py-3.5 px-6 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-md transition-all">
+                    Register Your Child
+                </button>
+            </div>
+        }
+        else
+        {
+            @if (_children.Count > 1)
+            {
+                <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                    @foreach (var c in _children)
+                    {
+                        <button @onclick="() => SelectChild(c.Id)" class="px-4 py-2 rounded-xl text-xs font-bold transition-all @(c.Id == _selectedChildId ? "bg-[#064f6e] text-white dark:bg-[#abf5ed] dark:text-[#042838] shadow-xs" : "bg-white dark:bg-[#122b3b] text-slate-600 dark:text-slate-300 border border-[#e2d8c7] dark:border-[#1a3b50]")">
+                            @c.FirstName
+                        </button>
+                    }
+                    <button @onclick="() => _showRegisterChildModal = true" class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-slate-600">
+                        + Add Another
                     </button>
+                </div>
+            }
+
+            @if (_activeChild != null)
+            {
+                <ChildHeaderCard Child="_activeChild" OnSizesUpdated="ReloadActiveChildAsync" />
+
+                <div class="flex items-center gap-3 border-b border-[#e2d8c7] dark:border-[#1a3b50] mb-6">
+                    <button @onclick='() => _activeTab = "growth"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "growth" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                        Growth & Dimensions
+                    </button>
+                    <button @onclick='() => _activeTab = "roadmap"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "roadmap" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                        Development Roadmap (Targets)
+                    </button>
+                    <button @onclick='() => _activeTab = "timeline"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "timeline" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                        Memories & Accomplishments
+                    </button>
+                </div>
+
+                @if (_activeTab == "growth")
+                {
+                    <GrowthTab ChildId="_activeChild.Id" LatestMeasurement="_dashboard?.LatestMeasurement" OnMeasurementsChanged="ReloadActiveChildAsync" />
                 }
-                <button @onclick="() => _showRegisterChildModal = true" class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-slate-600">
-                    + Add Another
-                </button>
-            </div>
-        }
-
-        @if (_activeChild != null)
-        {
-            <!-- Child Header with Age & Sizes -->
-            <ChildHeaderCard Child="_activeChild" OnSizesUpdated="ReloadActiveChildAsync" />
-
-            <!-- Subsystem Navigation Tabs -->
-            <div class="flex items-center gap-3 border-b border-[#e2d8c7] dark:border-[#1a3b50] mb-6">
-                <button @onclick='() => _activeTab = "growth"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "growth" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
-                    Growth & Dimensions
-                </button>
-                <button @onclick='() => _activeTab = "roadmap"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "roadmap" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
-                    Development Roadmap (Targets)
-                </button>
-                <button @onclick='() => _activeTab = "timeline"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "timeline" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
-                    Memories & Accomplishments
-                </button>
-            </div>
-
-            <!-- Tab Content -->
-            @if (_activeTab == "growth")
-            {
-                <GrowthTab ChildId="_activeChild.Id" LatestMeasurement="_dashboard?.LatestMeasurement" OnMeasurementsChanged="ReloadActiveChildAsync" />
-            }
-            else if (_activeTab == "roadmap")
-            {
-                <MilestonesRoadmapTab ChildId="_activeChild.Id" OnExpectationsChanged="ReloadActiveChildAsync" />
-            }
-            else if (_activeTab == "timeline")
-            {
-                <MilestonesTimelineTab ChildId="_activeChild.Id" OnMilestonesChanged="ReloadActiveChildAsync" />
+                else if (_activeTab == "roadmap")
+                {
+                    <MilestonesRoadmapTab ChildId="_activeChild.Id" OnExpectationsChanged="ReloadActiveChildAsync" />
+                }
+                else if (_activeTab == "timeline")
+                {
+                    <MilestonesTimelineTab ChildId="_activeChild.Id" OnMilestonesChanged="ReloadActiveChildAsync" />
+                }
             }
         }
-    }
-</div>
+    </main>
 
-<!-- Modal: Register Child -->
-@if (_showRegisterChildModal)
-{
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-        <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-md w-full shadow-2xl">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Register Child Profile</h3>
+    @if (_showRegisterChildModal)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+            <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-md w-full shadow-2xl">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Register Child Profile</h3>
 
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">First Name</label>
-                        <input @bind="_regFirstName" placeholder="e.g. Oliver" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Last Name</label>
-                        <input @bind="_regLastName" placeholder="Optional" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Date of Birth</label>
-                        <input @bind="_regDob" type="date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Gender</label>
-                        <select @bind="_regGender" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
-                            <option value="Boy">Boy</option>
-                            <option value="Girl">Girl</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="pt-2 border-t border-[#e2d8c7] dark:border-[#1a3b50]">
-                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Initial Sizes (Optional)</span>
+                <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-1">Clothes Size</label>
-                            <input @bind="_regClothesSize" placeholder="e.g. 86" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-lg" />
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">First Name</label>
+                            <input @bind="_regFirstName" placeholder="e.g. Oliver" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
                         </div>
                         <div>
-                            <label class="block text-[11px] text-slate-500 mb-1">Shoe Size</label>
-                            <input @bind="_regShoeSize" placeholder="e.g. 22" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-lg" />
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Last Name</label>
+                            <input @bind="_regLastName" placeholder="Optional" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Date of Birth</label>
+                            <input @bind="_regDob" type="date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Gender</label>
+                            <select @bind="_regGender" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
+                                <option value="Boy">Boy</option>
+                                <option value="Girl">Girl</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-[#e2d8c7] dark:border-[#1a3b50]">
+                        <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Initial Sizes (Optional)</span>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-1">Clothes Size</label>
+                                <input @bind="_regClothesSize" placeholder="e.g. 86" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-lg" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-1">Shoe Size</label>
+                                <input @bind="_regShoeSize" placeholder="e.g. 22" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-lg" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex justify-end gap-2 mt-6">
-                <button @onclick="() => _showRegisterChildModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancel</button>
-                <button @onclick="RegisterChildAsync" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs">Register</button>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button @onclick="() => _showRegisterChildModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">Cancel</button>
+                    <button @onclick="RegisterChildAsync" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs">Register</button>
+                </div>
             </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 @code {
     private List<ChildProfileModel> _children = new();
