@@ -6,17 +6,37 @@ namespace FamilyManagement.UI.Shared.Services;
 public class ChildApiClient
 {
     private readonly HttpClient _httpClient;
+    private readonly IApiBaseUrlProvider _baseUrlProvider;
 
-    public ChildApiClient(HttpClient httpClient)
+    public ChildApiClient(HttpClient httpClient, IApiBaseUrlProvider baseUrlProvider)
     {
         _httpClient = httpClient;
+        _baseUrlProvider = baseUrlProvider;
+    }
+
+    private string BuildUrl(string relativePath)
+    {
+        var baseUri = _baseUrlProvider.GetBaseUrl();
+        if (string.IsNullOrWhiteSpace(baseUri))
+        {
+            return relativePath.TrimStart('/');
+        }
+
+        if (_httpClient.BaseAddress != null &&
+            Uri.TryCreate(baseUri, UriKind.Absolute, out var parsedBase) &&
+            string.Equals(parsedBase.Host, _httpClient.BaseAddress.Host, StringComparison.OrdinalIgnoreCase))
+        {
+            return relativePath.TrimStart('/');
+        }
+
+        return $"{baseUri.TrimEnd('/')}/{relativePath.TrimStart('/')}";
     }
 
     public async Task<List<ChildProfileModel>> ListChildrenAsync(CancellationToken ct = default)
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<ChildProfileModel>>("/api/children", ct);
+            var response = await _httpClient.GetFromJsonAsync<List<ChildProfileModel>>(BuildUrl("api/children"), ct);
             return response ?? new List<ChildProfileModel>();
         }
         catch
@@ -50,7 +70,7 @@ public class ChildApiClient
             diaperSize
         };
 
-        var response = await _httpClient.PostAsJsonAsync("/api/children", payload, ct);
+        var response = await _httpClient.PostAsJsonAsync(BuildUrl("api/children"), payload, ct);
         if (!response.IsSuccessStatusCode) return null;
         return await response.Content.ReadFromJsonAsync<ChildProfileModel>(cancellationToken: ct);
     }
@@ -59,7 +79,7 @@ public class ChildApiClient
     {
         try
         {
-            return await _httpClient.GetFromJsonAsync<ChildDashboardModel>($"/api/children/{childId}/dashboard", ct);
+            return await _httpClient.GetFromJsonAsync<ChildDashboardModel>(BuildUrl($"api/children/{childId}/dashboard"), ct);
         }
         catch
         {
@@ -76,7 +96,7 @@ public class ChildApiClient
         CancellationToken ct = default)
     {
         var payload = new { id = childId, clothesSize, shoeSize, hatSize, diaperSize };
-        var response = await _httpClient.PutAsJsonAsync($"/api/children/{childId}/sizes", payload, ct);
+        var response = await _httpClient.PutAsJsonAsync(BuildUrl($"api/children/{childId}/sizes"), payload, ct);
         return response.IsSuccessStatusCode;
     }
 
@@ -84,7 +104,7 @@ public class ChildApiClient
     {
         try
         {
-            var response = await _httpClient.GetFromJsonAsync<List<GrowthMeasurementModel>>($"/api/children/{childId}/growth", ct);
+            var response = await _httpClient.GetFromJsonAsync<List<GrowthMeasurementModel>>(BuildUrl($"api/children/{childId}/growth"), ct);
             return response ?? new List<GrowthMeasurementModel>();
         }
         catch
@@ -112,14 +132,14 @@ public class ChildApiClient
             notes
         };
 
-        var response = await _httpClient.PostAsJsonAsync($"/api/children/{childId}/growth", payload, ct);
+        var response = await _httpClient.PostAsJsonAsync(BuildUrl($"api/children/{childId}/growth"), payload, ct);
         if (!response.IsSuccessStatusCode) return null;
         return await response.Content.ReadFromJsonAsync<GrowthMeasurementModel>(cancellationToken: ct);
     }
 
     public async Task<bool> DeleteGrowthAsync(Guid measurementId, CancellationToken ct = default)
     {
-        var response = await _httpClient.DeleteAsync($"/api/children/growth/{measurementId}", ct);
+        var response = await _httpClient.DeleteAsync(BuildUrl($"api/children/growth/{measurementId}"), ct);
         return response.IsSuccessStatusCode;
     }
 
@@ -131,13 +151,13 @@ public class ChildApiClient
     {
         try
         {
-            var url = $"/api/children/{childId}/milestones";
+            var url = $"api/children/{childId}/milestones";
             var query = new List<string>();
             if (!string.IsNullOrEmpty(status)) query.Add($"status={status}");
             if (!string.IsNullOrEmpty(category)) query.Add($"category={category}");
             if (query.Count > 0) url += "?" + string.Join("&", query);
 
-            var response = await _httpClient.GetFromJsonAsync<List<ChildMilestoneModel>>(url, ct);
+            var response = await _httpClient.GetFromJsonAsync<List<ChildMilestoneModel>>(BuildUrl(url), ct);
             return response ?? new List<ChildMilestoneModel>();
         }
         catch
@@ -173,7 +193,7 @@ public class ChildApiClient
             photoUrl
         };
 
-        var response = await _httpClient.PostAsJsonAsync($"/api/children/{childId}/milestones", payload, ct);
+        var response = await _httpClient.PostAsJsonAsync(BuildUrl($"api/children/{childId}/milestones"), payload, ct);
         if (!response.IsSuccessStatusCode) return null;
         return await response.Content.ReadFromJsonAsync<ChildMilestoneModel>(cancellationToken: ct);
     }
@@ -186,13 +206,13 @@ public class ChildApiClient
         CancellationToken ct = default)
     {
         var payload = new { id = milestoneId, achievedDate, notes, photoUrl };
-        var response = await _httpClient.PutAsJsonAsync($"/api/children/milestones/{milestoneId}/achieve", payload, ct);
+        var response = await _httpClient.PutAsJsonAsync(BuildUrl($"api/children/milestones/{milestoneId}/achieve"), payload, ct);
         return response.IsSuccessStatusCode;
     }
 
     public async Task<int> SeedStandardMilestonesAsync(Guid childId, CancellationToken ct = default)
     {
-        var response = await _httpClient.PostAsJsonAsync($"/api/children/{childId}/milestones/seed", new { childId }, ct);
+        var response = await _httpClient.PostAsJsonAsync(BuildUrl($"api/children/{childId}/milestones/seed"), new { childId }, ct);
         if (!response.IsSuccessStatusCode) return 0;
         var res = await response.Content.ReadFromJsonAsync<SeedResponse>(cancellationToken: ct);
         return res?.AddedCount ?? 0;

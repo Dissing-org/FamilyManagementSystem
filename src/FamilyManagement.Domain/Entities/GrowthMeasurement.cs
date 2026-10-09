@@ -54,6 +54,11 @@ public class GrowthMeasurement
             throw new ArgumentNullException(nameof(childId));
         }
 
+        if (recordedDate.Date > DateTime.UtcNow.Date.AddDays(1))
+        {
+            throw new ArgumentException("Recorded date cannot be in the future.", nameof(recordedDate));
+        }
+
         if (heightCm is null && weightKg is null && headCircumferenceCm is null)
         {
             throw new ArgumentException("At least one measurement (height, weight, or head circumference) must be provided.");
@@ -92,6 +97,11 @@ public class GrowthMeasurement
         decimal? headCircumferenceCm,
         string? notes)
     {
+        if (recordedDate.Date > DateTime.UtcNow.Date.AddDays(1))
+        {
+            throw new ArgumentException("Recorded date cannot be in the future.", nameof(recordedDate));
+        }
+
         if (heightCm is null && weightKg is null && headCircumferenceCm is null)
         {
             throw new ArgumentException("At least one measurement must be provided.");

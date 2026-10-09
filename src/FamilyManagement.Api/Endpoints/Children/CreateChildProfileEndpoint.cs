@@ -34,7 +34,7 @@ public class CreateChildProfileValidator : Validator<CreateChildProfileRequest>
 
         RuleFor(x => x.DateOfBirth)
             .NotEmpty().WithMessage("Date of birth is required.")
-            .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Date of birth cannot be in the future.");
+            .Must(d => d.Date <= DateTime.UtcNow.Date.AddDays(1)).WithMessage("Date of birth cannot be in the future.");
 
         RuleFor(x => x.Gender)
             .IsInEnum().WithMessage("A valid gender must be selected.");

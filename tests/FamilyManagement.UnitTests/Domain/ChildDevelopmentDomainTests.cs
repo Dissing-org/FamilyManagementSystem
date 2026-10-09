@@ -84,6 +84,17 @@ public class ChildDevelopmentDomainTests
            .WithMessage("*At least one measurement*");
     }
 
+    [Fact]
+    public void GrowthMeasurement_Create_ThrowsWhenDateIsInFuture()
+    {
+        var childId = ChildId.New();
+        var futureDate = DateTime.UtcNow.AddDays(2);
+        var act = () => GrowthMeasurement.Create(childId, futureDate, 75m, 10m, null);
+
+        act.Should().Throw<ArgumentException>()
+           .WithMessage("*Recorded date cannot be in the future*");
+    }
+
     [Theory]
     [InlineData("2023-01-31", "2023-03-01", 0, 1, 29, 1)] // Jan 31 to March 1 (non-leap year Feb 28 days) -> 1 mo 1 day or 29 days depending on calendar month advancement
     [InlineData("2024-01-31", "2024-03-01", 0, 1, 30, 1)] // Leap year (Feb 29)

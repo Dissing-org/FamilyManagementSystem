@@ -40,7 +40,7 @@ public class CreateMilestoneValidator : Validator<CreateMilestoneRequest>
             .When(x => !x.IsAchieved && x.ExpectedAgeMonths.HasValue);
 
         RuleFor(x => x.AchievedDate)
-            .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Achieved date cannot be in the future.")
+            .Must(d => d!.Value.Date <= DateTime.UtcNow.Date.AddDays(1)).WithMessage("Achieved date cannot be in the future.")
             .When(x => x.IsAchieved && x.AchievedDate.HasValue);
     }
 }

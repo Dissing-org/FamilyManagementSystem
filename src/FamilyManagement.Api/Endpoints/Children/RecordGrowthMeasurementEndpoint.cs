@@ -24,7 +24,7 @@ public class RecordGrowthMeasurementValidator : Validator<RecordGrowthMeasuremen
 
         RuleFor(x => x.RecordedDate)
             .NotEmpty().WithMessage("Recorded date is required.")
-            .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Recorded date cannot be in the future.");
+            .Must(d => d.Date <= DateTime.UtcNow.Date.AddDays(1)).WithMessage("Recorded date cannot be in the future.");
 
         RuleFor(x => x)
             .Must(x => x.HeightCm.HasValue || x.WeightKg.HasValue || x.HeadCircumferenceCm.HasValue)
