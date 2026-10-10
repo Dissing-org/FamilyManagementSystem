@@ -31,7 +31,7 @@ public class DeleteMileageLogEndpoint : Endpoint<DeleteMileageLogRequest>
 
     public override async Task HandleAsync(DeleteMileageLogRequest req, CancellationToken ct)
     {
-        var deleted = await _handler.HandleAsync(new DeleteMileageLogCommand(req.LogId), ct);
+        var deleted = await _handler.HandleAsync(new DeleteMileageLogCommand(req.Id, req.LogId), ct);
         if (!deleted)
         {
             await HttpContext.Response.SendResultAsync(TypedResults.NotFound());

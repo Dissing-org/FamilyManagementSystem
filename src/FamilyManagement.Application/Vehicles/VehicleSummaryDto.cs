@@ -26,7 +26,10 @@ public record VehicleSummaryDto(
         DateTime? asOfDate = null)
     {
         var today = (asOfDate ?? DateTime.UtcNow).Date;
-        var latestService = serviceRecords.OrderByDescending(s => s.ServiceDate).FirstOrDefault();
+        var latestService = serviceRecords
+            .Where(s => s.Type is FamilyManagement.Domain.Enums.ServiceType.RegularService or FamilyManagement.Domain.Enums.ServiceType.OilChange)
+            .OrderByDescending(s => s.ServiceDate)
+            .FirstOrDefault();
 
         DateTime? lastServiceDate = latestService?.ServiceDate;
         int? lastServiceMileage = latestService?.MileageKm;
@@ -34,7 +37,7 @@ public record VehicleSummaryDto(
         int? kmUntilNextService = null;
         if (vehicle.ServiceIntervalKm.HasValue)
         {
-            var baseMileage = lastServiceMileage ?? 0;
+            var baseMileage = lastServiceMileage ?? vehicle.CurrentMileageKm;
             var targetMileage = baseMileage + vehicle.ServiceIntervalKm.Value;
             kmUntilNextService = targetMileage - vehicle.CurrentMileageKm;
         }

@@ -1,6 +1,7 @@
 @using FamilyManagement.UI.Shared.Models
 @using FamilyManagement.UI.Shared.Services
 @inject VehicleApiClient VehicleApi
+@inject IReceiptApiClient ReceiptApi
 
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -100,12 +101,12 @@
                             <div class="flex items-center gap-2 mt-1">
                                 @if (record.ReceiptId.HasValue)
                                 {
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-[#064f6e] dark:text-[#abf5ed] bg-[#abf5ed]/20 px-2 py-0.5 rounded-md" title="Linked receipt on file">
+                                    <a href="receipts" class="inline-flex items-center gap-1 text-[11px] font-bold text-[#064f6e] dark:text-[#abf5ed] bg-[#abf5ed]/20 hover:bg-[#abf5ed]/30 px-2 py-0.5 rounded-md transition-colors" title="View in Receipts">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
                                         Receipt
-                                    </span>
+                                    </a>
                                 }
 
                                 <button @onclick="() => DeleteRecordAsync(record.Id)" class="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors" title="Delete record">
@@ -190,6 +191,17 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Receipt (Optional)</label>
+                    <select @bind="_newReceiptId" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
+                        <option value="">No linked receipt</option>
+                        @foreach (var receipt in _availableReceipts)
+                        {
+                            <option value="@receipt.Id">@receipt.Merchant - @receipt.PurchaseDate.ToString("yyyy-MM-dd") (@receipt.FileName)</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Details (Optional)</label>
                     <textarea @bind="_newNotes" rows="3" placeholder="Replaced spark plugs, synthetic 5W-30 oil, pollen filter..." class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
                 </div>
@@ -218,6 +230,7 @@
     public EventCallback OnServiceRecorded { get; set; }
 
     private List<VehicleServiceRecordDto> _records = new();
+    private List<ReceiptViewModel> _availableReceipts = new();
     private bool _loading = true;
     private bool _showRecordModal = false;
     private bool _saving = false;
@@ -242,6 +255,7 @@
     private decimal? _newCost;
     private string? _newWorkshop;
     private string? _newNotes;
+    private string? _newReceiptId;
 
     private IEnumerable<VehicleServiceRecordDto> FilteredRecords =>
         string.IsNullOrEmpty(_selectedFilter)
@@ -263,6 +277,14 @@
     {
         _loading = true;
         _records = await VehicleApi.GetServiceRecordsAsync(VehicleId);
+        try
+        {
+            _availableReceipts = await ReceiptApi.GetReceiptsAsync();
+        }
+        catch
+        {
+            _availableReceipts = new();
+        }
         _loading = false;
     }
 
@@ -275,6 +297,7 @@
         _newCost = null;
         _newWorkshop = null;
         _newNotes = null;
+        _newReceiptId = null;
         _errorMessage = null;
         _showRecordModal = true;
     }
@@ -296,6 +319,8 @@
         _saving = true;
         _errorMessage = null;
 
+        Guid? parsedReceiptId = Guid.TryParse(_newReceiptId, out var rId) ? rId : null;
+
         var request = new RecordVehicleServiceRequest
         {
             Id = VehicleId,
@@ -305,7 +330,8 @@
             Title = _newTitle.Trim(),
             Workshop = string.IsNullOrWhiteSpace(_newWorkshop) ? null : _newWorkshop.Trim(),
             Cost = _newCost,
-            Notes = string.IsNullOrWhiteSpace(_newNotes) ? null : _newNotes.Trim()
+            Notes = string.IsNullOrWhiteSpace(_newNotes) ? null : _newNotes.Trim(),
+            ReceiptId = parsedReceiptId
         };
 
         var (success, error, _) = await VehicleApi.RecordServiceAsync(VehicleId, request);

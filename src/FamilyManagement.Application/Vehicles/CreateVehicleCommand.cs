@@ -16,29 +16,6 @@ public record CreateVehicleCommand(
     int? ServiceIntervalMonths = null,
     DateTime? NextInspectionDate = null);
 
-public class CreateVehicleCommandValidator
-{
-    public (bool IsValid, List<string> Errors) Validate(CreateVehicleCommand command)
-    {
-        var errors = new List<string>();
-        if (string.IsNullOrWhiteSpace(command.Make))
-            errors.Add("Make is required.");
-        if (string.IsNullOrWhiteSpace(command.Model))
-            errors.Add("Model is required.");
-        if (string.IsNullOrWhiteSpace(command.LicensePlate))
-            errors.Add("License plate is required.");
-        if (command.Year <= 1900)
-            errors.Add("Year must be greater than 1900.");
-        if (command.CurrentMileageKm < 0)
-            errors.Add("Current mileage cannot be negative.");
-        if (command.ServiceIntervalKm.HasValue && command.ServiceIntervalKm.Value <= 0)
-            errors.Add("Service interval (km) must be greater than zero.");
-        if (command.ServiceIntervalMonths.HasValue && command.ServiceIntervalMonths.Value <= 0)
-            errors.Add("Service interval (months) must be greater than zero.");
-        return (errors.Count == 0, errors);
-    }
-}
-
 public class CreateVehicleCommandHandler
 {
     private readonly IVehicleRepository _repository;

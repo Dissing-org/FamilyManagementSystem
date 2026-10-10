@@ -31,7 +31,7 @@ public class DeleteVehicleServiceRecordEndpoint : Endpoint<DeleteVehicleServiceR
 
     public override async Task HandleAsync(DeleteVehicleServiceRecordRequest req, CancellationToken ct)
     {
-        var deleted = await _handler.HandleAsync(new DeleteVehicleServiceRecordCommand(req.ServiceId), ct);
+        var deleted = await _handler.HandleAsync(new DeleteVehicleServiceRecordCommand(req.Id, req.ServiceId), ct);
         if (!deleted)
         {
             await HttpContext.Response.SendResultAsync(TypedResults.NotFound());

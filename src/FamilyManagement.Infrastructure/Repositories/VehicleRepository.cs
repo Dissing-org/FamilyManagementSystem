@@ -43,6 +43,18 @@ public class VehicleRepository : IVehicleRepository
 
     public async Task DeleteAsync(Vehicle vehicle, CancellationToken cancellationToken = default)
     {
+        var logs = await _dbContext.MileageLogs.Where(m => m.VehicleId == vehicle.Id).ToListAsync(cancellationToken);
+        if (logs.Count > 0)
+        {
+            _dbContext.MileageLogs.RemoveRange(logs);
+        }
+
+        var services = await _dbContext.VehicleServices.Where(s => s.VehicleId == vehicle.Id).ToListAsync(cancellationToken);
+        if (services.Count > 0)
+        {
+            _dbContext.VehicleServices.RemoveRange(services);
+        }
+
         _dbContext.Vehicles.Remove(vehicle);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

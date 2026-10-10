@@ -10,21 +10,6 @@ public record LogMileageCommand(
     int MileageKm,
     string? Notes = null);
 
-public class LogMileageCommandValidator
-{
-    public (bool IsValid, List<string> Errors) Validate(LogMileageCommand command)
-    {
-        var errors = new List<string>();
-        if (command.VehicleId == Guid.Empty)
-            errors.Add("Vehicle ID is required.");
-        if (command.MileageKm < 0)
-            errors.Add("Mileage cannot be negative.");
-        if (command.RecordedDate.Date > DateTime.UtcNow.Date.AddDays(1))
-            errors.Add("Recorded date cannot be in the future.");
-        return (errors.Count == 0, errors);
-    }
-}
-
 public class LogMileageCommandHandler
 {
     private readonly IMileageLogRepository _mileageLogRepository;

@@ -3,7 +3,7 @@ using FamilyManagement.Domain.ValueObjects;
 
 namespace FamilyManagement.Application.Vehicles;
 
-public record DeleteVehicleServiceRecordCommand(Guid Id);
+public record DeleteVehicleServiceRecordCommand(Guid VehicleId, Guid ServiceId);
 
 public class DeleteVehicleServiceRecordCommandHandler
 {
@@ -16,8 +16,9 @@ public class DeleteVehicleServiceRecordCommandHandler
 
     public async Task<bool> HandleAsync(DeleteVehicleServiceRecordCommand command, CancellationToken cancellationToken = default)
     {
-        var record = await _repository.GetByIdAsync(ServiceRecordId.From(command.Id), cancellationToken);
-        if (record is null)
+        var vehicleId = VehicleId.From(command.VehicleId);
+        var record = await _repository.GetByIdAsync(ServiceRecordId.From(command.ServiceId), cancellationToken);
+        if (record is null || record.VehicleId != vehicleId)
         {
             return false;
         }

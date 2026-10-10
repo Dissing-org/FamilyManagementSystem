@@ -222,7 +222,8 @@ using (var scope = app.Services.CreateScope())
                         "RecordedDate" TEXT NOT NULL,
                         "MileageKm" INTEGER NOT NULL,
                         "Notes" TEXT NULL,
-                        "CreatedAt" TEXT NOT NULL
+                        "CreatedAt" TEXT NOT NULL,
+                        CONSTRAINT "FK_MileageLogs_Vehicles_VehicleId" FOREIGN KEY ("VehicleId") REFERENCES "Vehicles" ("Id") ON DELETE CASCADE
                     );
                     CREATE INDEX "IX_MileageLogs_VehicleId" ON "MileageLogs" ("VehicleId");
                     CREATE INDEX "IX_MileageLogs_VehicleId_RecordedDate" ON "MileageLogs" ("VehicleId", "RecordedDate");
@@ -238,7 +239,8 @@ using (var scope = app.Services.CreateScope())
                         "Cost" TEXT NULL,
                         "Notes" TEXT NULL,
                         "ReceiptId" TEXT NULL,
-                        "CreatedAt" TEXT NOT NULL
+                        "CreatedAt" TEXT NOT NULL,
+                        CONSTRAINT "FK_VehicleServiceRecords_Vehicles_VehicleId" FOREIGN KEY ("VehicleId") REFERENCES "Vehicles" ("Id") ON DELETE CASCADE
                     );
                     CREATE INDEX "IX_VehicleServiceRecords_VehicleId" ON "VehicleServiceRecords" ("VehicleId");
                     CREATE INDEX "IX_VehicleServiceRecords_VehicleId_ServiceDate" ON "VehicleServiceRecords" ("VehicleId", "ServiceDate");

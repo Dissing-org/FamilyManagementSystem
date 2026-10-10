@@ -218,4 +218,57 @@ public class VehicleDomainTests
         summary.TotalServiceRecordsCount.Should().Be(1);
         summary.TotalMileageLogsCount.Should().Be(1);
     }
+
+    [Fact]
+    public void VehicleSummary_WhenNoServiceRecords_ShouldFallbackToCurrentMileageInsteadOfZero()
+    {
+        // A used car registered at 85,000 km with a 15,000 km service interval and no past service recorded
+        var vehicle = Vehicle.Create("Skoda", "Fabia", 2018, "AB 11 222", FuelType.Gasoline, 85000, null,
+            serviceIntervalKm: 15000,
+            serviceIntervalMonths: 12);
+
+        var summary = VehicleSummaryDto.Create(vehicle, new(), new());
+
+        // Target mileage should be 85,000 + 15,000 = 100,000. 100,000 - 85,000 = 15,000 km left.
+        // It must NOT evaluate to (0 + 15,000 - 85,000 = -70,000 km overdue)!
+        summary.KmUntilNextService.Should().Be(15000);
+        summary.ServiceDue.Should().BeFalse();
+        summary.StatusAlerts.Should().NotContain("ServiceDue");
+        summary.StatusAlerts.Should().NotContain("ServiceOverdue");
+    }
+
+    [Fact]
+    public void VehicleSummary_TireChangeOrRepair_ShouldNotResetRegularServiceCountdown()
+    {
+        var vehicle = Vehicle.Create("Skoda", "Octavia", 2020, "AB 33 444", FuelType.Diesel, 72000, null,
+            serviceIntervalKm: 15000,
+            serviceIntervalMonths: 12);
+
+        var oilService = VehicleServiceRecord.Create(
+            vehicle.Id,
+            DateTime.UtcNow.Date.AddMonths(-6),
+            60000,
+            ServiceType.RegularService,
+            "Oil Change",
+            "AutoMester",
+            1800m);
+
+        // 3 months later, a seasonal tire change was recorded at 68,000 km
+        var tireChange = VehicleServiceRecord.Create(
+            vehicle.Id,
+            DateTime.UtcNow.Date.AddMonths(-3),
+            68000,
+            ServiceType.TireChange,
+            "Winter Tire Swap",
+            "QuickPoint",
+            400m);
+
+        var summary = VehicleSummaryDto.Create(vehicle, new(), new List<VehicleServiceRecord> { oilService, tireChange });
+
+        // Expected next regular service: 60,000 + 15,000 = 75,000 km.
+        // Remaining from 72,000 km: 75,000 - 72,000 = 3,000 km.
+        // The tire change at 68,000 km must NOT push regular service to (68,000 + 15,000 = 83,000 km / 11,000 km left).
+        summary.KmUntilNextService.Should().Be(3000);
+        summary.LastServiceMileageKm.Should().Be(60000);
+    }
 }

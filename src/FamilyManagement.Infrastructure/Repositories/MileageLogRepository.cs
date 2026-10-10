@@ -20,6 +20,7 @@ public class MileageLogRepository : IMileageLogRepository
         return await _dbContext.MileageLogs
             .Where(m => m.VehicleId == vehicleId)
             .OrderByDescending(m => m.RecordedDate)
+            .ThenByDescending(m => m.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 

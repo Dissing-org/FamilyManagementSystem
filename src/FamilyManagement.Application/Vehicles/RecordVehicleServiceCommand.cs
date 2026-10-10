@@ -16,25 +16,6 @@ public record RecordVehicleServiceCommand(
     string? Notes = null,
     Guid? ReceiptId = null);
 
-public class RecordVehicleServiceCommandValidator
-{
-    public (bool IsValid, List<string> Errors) Validate(RecordVehicleServiceCommand command)
-    {
-        var errors = new List<string>();
-        if (command.VehicleId == Guid.Empty)
-            errors.Add("Vehicle ID is required.");
-        if (string.IsNullOrWhiteSpace(command.Title))
-            errors.Add("Service title is required.");
-        if (command.MileageKm < 0)
-            errors.Add("Mileage cannot be negative.");
-        if (command.ServiceDate.Date > DateTime.UtcNow.Date.AddDays(1))
-            errors.Add("Service date cannot be in the future.");
-        if (command.Cost.HasValue && command.Cost.Value < 0)
-            errors.Add("Cost cannot be negative.");
-        return (errors.Count == 0, errors);
-    }
-}
-
 public class RecordVehicleServiceCommandHandler
 {
     private readonly IVehicleServiceRepository _serviceRepository;
