@@ -17,12 +17,12 @@
             </div>
             <div class="flex items-baseline gap-2">
                 <span class="text-3xl font-black text-slate-900 dark:text-slate-100">
-                    @(LatestMeasurement?.HeightCm.HasValue == true ? $"{LatestMeasurement.HeightCm:N1}" : "—")
+                    @(EffectiveHeightMeasurement?.HeightCm.HasValue == true ? $"{EffectiveHeightMeasurement.HeightCm:N1}" : "—")
                 </span>
                 <span class="text-sm font-semibold text-slate-500">cm</span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
-                @(LatestMeasurement?.HeightCm.HasValue == true ? $"Recorded on {LatestMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
+                @(EffectiveHeightMeasurement?.HeightCm.HasValue == true ? $"Recorded on {EffectiveHeightMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
             </p>
         </div>
 
@@ -38,12 +38,12 @@
             </div>
             <div class="flex items-baseline gap-2">
                 <span class="text-3xl font-black text-slate-900 dark:text-slate-100">
-                    @(LatestMeasurement?.WeightKg.HasValue == true ? $"{LatestMeasurement.WeightKg:N2}" : "—")
+                    @(EffectiveWeightMeasurement?.WeightKg.HasValue == true ? $"{EffectiveWeightMeasurement.WeightKg:N2}" : "—")
                 </span>
                 <span class="text-sm font-semibold text-slate-500">kg</span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
-                @(LatestMeasurement?.WeightKg.HasValue == true ? $"Recorded on {LatestMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
+                @(EffectiveWeightMeasurement?.WeightKg.HasValue == true ? $"Recorded on {EffectiveWeightMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
             </p>
         </div>
 
@@ -59,12 +59,12 @@
             </div>
             <div class="flex items-baseline gap-2">
                 <span class="text-3xl font-black text-slate-900 dark:text-slate-100">
-                    @(LatestMeasurement?.HeadCircumferenceCm.HasValue == true ? $"{LatestMeasurement.HeadCircumferenceCm:N1}" : "—")
+                    @(EffectiveHeadMeasurement?.HeadCircumferenceCm.HasValue == true ? $"{EffectiveHeadMeasurement.HeadCircumferenceCm:N1}" : "—")
                 </span>
                 <span class="text-sm font-semibold text-slate-500">cm</span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
-                @(LatestMeasurement?.HeadCircumferenceCm.HasValue == true ? $"Recorded on {LatestMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
+                @(EffectiveHeadMeasurement?.HeadCircumferenceCm.HasValue == true ? $"Recorded on {EffectiveHeadMeasurement.RecordedDate:MMM d, yyyy}" : "No records yet")
             </p>
         </div>
     </div>
@@ -76,7 +76,7 @@
                 <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Growth Log</h3>
                 <p class="text-xs text-slate-500">Historical height and weight entries</p>
             </div>
-            <button @onclick="() => _showRecordModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-xs transition-colors">
+            <button @onclick="OpenRecordModal" class="inline-flex items-center gap-2 px-4 py-2 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-xs transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -95,7 +95,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
                 <p class="text-sm font-medium">No growth measurements recorded yet</p>
-                <p class="text-xs text-slate-400 mt-1">Start by recording your child's current height and weight.</p>
+                <p class="text-xs text-slate-400 mt-1">Start by recording your child's current height, weight, or head circumference.</p>
             </div>
         }
         else
@@ -119,14 +119,35 @@
                                 <td class="py-3 px-4 font-semibold text-slate-800 dark:text-slate-200">
                                     @m.RecordedDate.ToString("MMM d, yyyy")
                                 </td>
-                                <td class="py-3 px-4 text-slate-700 dark:text-slate-300">
-                                    @(m.HeightCm.HasValue ? $"{m.HeightCm:N1} cm" : "—")
+                                <td class="py-3 px-4">
+                                    @if (m.HeightCm.HasValue)
+                                    {
+                                        <span class="font-medium text-slate-800 dark:text-slate-200">@($"{m.HeightCm:N1} cm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-slate-400 dark:text-slate-600">—</span>
+                                    }
                                 </td>
-                                <td class="py-3 px-4 text-slate-700 dark:text-slate-300">
-                                    @(m.WeightKg.HasValue ? $"{m.WeightKg:N2} kg" : "—")
+                                <td class="py-3 px-4">
+                                    @if (m.WeightKg.HasValue)
+                                    {
+                                        <span class="font-medium text-slate-800 dark:text-slate-200">@($"{m.WeightKg:N2} kg")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-slate-400 dark:text-slate-600">—</span>
+                                    }
                                 </td>
-                                <td class="py-3 px-4 text-slate-700 dark:text-slate-300">
-                                    @(m.HeadCircumferenceCm.HasValue ? $"{m.HeadCircumferenceCm:N1} cm" : "—")
+                                <td class="py-3 px-4">
+                                    @if (m.HeadCircumferenceCm.HasValue)
+                                    {
+                                        <span class="font-medium text-slate-800 dark:text-slate-200">@($"{m.HeadCircumferenceCm:N1} cm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-slate-400 dark:text-slate-600">—</span>
+                                    }
                                 </td>
                                 <td class="py-3 px-4 text-xs text-slate-500">
                                     @(string.IsNullOrEmpty(m.Notes) ? "—" : m.Notes)
@@ -149,27 +170,80 @@
 {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
         <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-md w-full shadow-2xl">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Record Growth Measurement</h3>
-            
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">Record Growth Measurement</h3>
+
+            <!-- Mode Selector Chips -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-[#0b1a24] rounded-xl text-xs font-semibold mb-4">
+                <button type="button" @onclick='() => SetMetricMode("all")'
+                        class="flex-1 py-1.5 px-2 rounded-lg transition-all @(_metricMode == "all" ? "bg-white dark:bg-[#122b3b] text-[#064f6e] dark:text-[#abf5ed] shadow-xs font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                    All / Any
+                </button>
+                <button type="button" @onclick='() => SetMetricMode("weight")'
+                        class="flex-1 py-1.5 px-2 rounded-lg transition-all @(_metricMode == "weight" ? "bg-white dark:bg-[#122b3b] text-[#064f6e] dark:text-[#abf5ed] shadow-xs font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                    Weight only
+                </button>
+                <button type="button" @onclick='() => SetMetricMode("height")'
+                        class="flex-1 py-1.5 px-2 rounded-lg transition-all @(_metricMode == "height" ? "bg-white dark:bg-[#122b3b] text-[#064f6e] dark:text-[#abf5ed] shadow-xs font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                    Height only
+                </button>
+                <button type="button" @onclick='() => SetMetricMode("head")'
+                        class="flex-1 py-1.5 px-2 rounded-lg transition-all @(_metricMode == "head" ? "bg-white dark:bg-[#122b3b] text-[#064f6e] dark:text-[#abf5ed] shadow-xs font-bold" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                    Head Circ. only
+                </button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="p-3 mb-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-xl text-xs font-medium text-red-600 dark:text-red-400">
+                    @_errorMessage
+                </div>
+            }
+
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label>
                     <input @bind="_newDate" type="date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Height (cm)</label>
-                        <input @bind="_newHeight" type="number" step="0.1" placeholder="e.g. 84.5" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+
+                @if (_metricMode == "all")
+                {
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Height (cm)</label>
+                            <input @bind="_newHeight" type="number" step="0.1" placeholder="e.g. 84.5" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (kg)</label>
+                            <input @bind="_newWeight" type="number" step="0.01" placeholder="e.g. 11.4" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Weight (kg)</label>
-                        <input @bind="_newWeight" type="number" step="0.01" placeholder="e.g. 11.4" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Head Circumference (cm, optional)</label>
+                        <input @bind="_newHead" type="number" step="0.1" placeholder="e.g. 47.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
                     </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Head Circumference (cm, optional)</label>
-                    <input @bind="_newHead" type="number" step="0.1" placeholder="e.g. 47.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
-                </div>
+                }
+                else if (_metricMode == "weight")
+                {
+                    <div>
+                        <label class="block text-xs font-semibold text-[#064f6e] dark:text-[#abf5ed] mb-1">Weight (kg) *</label>
+                        <input @bind="_newWeight" type="number" step="0.01" placeholder="e.g. 11.4" autofocus class="w-full px-3 py-2.5 text-base bg-slate-50 dark:bg-[#0b1a24] border-2 border-[#064f6e]/40 dark:border-[#abf5ed]/40 rounded-xl text-slate-800 dark:text-slate-100 font-bold focus:outline-hidden focus:border-[#064f6e] dark:focus:border-[#abf5ed]" />
+                    </div>
+                }
+                else if (_metricMode == "height")
+                {
+                    <div>
+                        <label class="block text-xs font-semibold text-[#064f6e] dark:text-[#abf5ed] mb-1">Height (cm) *</label>
+                        <input @bind="_newHeight" type="number" step="0.1" placeholder="e.g. 84.5" autofocus class="w-full px-3 py-2.5 text-base bg-slate-50 dark:bg-[#0b1a24] border-2 border-[#064f6e]/40 dark:border-[#abf5ed]/40 rounded-xl text-slate-800 dark:text-slate-100 font-bold focus:outline-hidden focus:border-[#064f6e] dark:focus:border-[#abf5ed]" />
+                    </div>
+                }
+                else if (_metricMode == "head")
+                {
+                    <div>
+                        <label class="block text-xs font-semibold text-[#064f6e] dark:text-[#abf5ed] mb-1">Head Circumference (cm) *</label>
+                        <input @bind="_newHead" type="number" step="0.1" placeholder="e.g. 47.0" autofocus class="w-full px-3 py-2.5 text-base bg-slate-50 dark:bg-[#0b1a24] border-2 border-[#064f6e]/40 dark:border-[#abf5ed]/40 rounded-xl text-slate-800 dark:text-slate-100 font-bold focus:outline-hidden focus:border-[#064f6e] dark:focus:border-[#abf5ed]" />
+                    </div>
+                }
+
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes (optional)</label>
                     <textarea @bind="_newNotes" rows="2" placeholder="e.g. 1-year pediatrician checkup" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
@@ -187,11 +261,20 @@
 @code {
     [Parameter, EditorRequired] public Guid ChildId { get; set; }
     [Parameter] public GrowthMeasurementModel? LatestMeasurement { get; set; }
+    [Parameter] public GrowthMeasurementModel? LatestHeightMeasurement { get; set; }
+    [Parameter] public GrowthMeasurementModel? LatestWeightMeasurement { get; set; }
+    [Parameter] public GrowthMeasurementModel? LatestHeadCircumferenceMeasurement { get; set; }
     [Parameter] public EventCallback OnMeasurementsChanged { get; set; }
+
+    private GrowthMeasurementModel? EffectiveHeightMeasurement => LatestHeightMeasurement ?? (LatestMeasurement?.HeightCm.HasValue == true ? LatestMeasurement : null);
+    private GrowthMeasurementModel? EffectiveWeightMeasurement => LatestWeightMeasurement ?? (LatestMeasurement?.WeightKg.HasValue == true ? LatestMeasurement : null);
+    private GrowthMeasurementModel? EffectiveHeadMeasurement => LatestHeadCircumferenceMeasurement ?? (LatestMeasurement?.HeadCircumferenceCm.HasValue == true ? LatestMeasurement : null);
 
     private List<GrowthMeasurementModel> _measurements = new();
     private bool _loading = true;
     private bool _showRecordModal;
+    private string _metricMode = "all";
+    private string? _errorMessage;
 
     private DateTime _newDate = DateTime.Today;
     private decimal? _newHeight;
@@ -204,6 +287,27 @@
         await LoadMeasurementsAsync();
     }
 
+    private void OpenRecordModal()
+    {
+        _metricMode = "all";
+        _errorMessage = null;
+        _newDate = DateTime.Today;
+        _newHeight = null;
+        _newWeight = null;
+        _newHead = null;
+        _newNotes = null;
+        _showRecordModal = true;
+    }
+
+    private void SetMetricMode(string mode)
+    {
+        _metricMode = mode;
+        _errorMessage = null;
+        if (mode == "weight") { _newHeight = null; _newHead = null; }
+        else if (mode == "height") { _newWeight = null; _newHead = null; }
+        else if (mode == "head") { _newHeight = null; _newWeight = null; }
+    }
+
     private async Task LoadMeasurementsAsync()
     {
         _loading = true;
@@ -213,8 +317,13 @@
 
     private async Task SaveMeasurementAsync()
     {
-        if (!_newHeight.HasValue && !_newWeight.HasValue && !_newHead.HasValue) return;
+        if (!_newHeight.HasValue && !_newWeight.HasValue && !_newHead.HasValue)
+        {
+            _errorMessage = "Please enter at least one measurement (weight, height, or head circumference).";
+            return;
+        }
 
+        _errorMessage = null;
         var result = await ChildApi.RecordGrowthAsync(ChildId, _newDate, _newHeight, _newWeight, _newHead, _newNotes);
         if (result != null)
         {

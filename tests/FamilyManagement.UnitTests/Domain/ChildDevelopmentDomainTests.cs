@@ -85,6 +85,42 @@ public class ChildDevelopmentDomainTests
     }
 
     [Fact]
+    public void GrowthMeasurement_Create_WithOnlyHeight_Succeeds()
+    {
+        var childId = ChildId.New();
+        var measurement = GrowthMeasurement.Create(childId, DateTime.UtcNow, heightCm: 82.5m, weightKg: null, headCircumferenceCm: null);
+
+        measurement.Should().NotBeNull();
+        measurement.HeightCm.Should().Be(82.5m);
+        measurement.WeightKg.Should().BeNull();
+        measurement.HeadCircumferenceCm.Should().BeNull();
+    }
+
+    [Fact]
+    public void GrowthMeasurement_Create_WithOnlyWeight_Succeeds()
+    {
+        var childId = ChildId.New();
+        var measurement = GrowthMeasurement.Create(childId, DateTime.UtcNow, heightCm: null, weightKg: 11.25m, headCircumferenceCm: null);
+
+        measurement.Should().NotBeNull();
+        measurement.HeightCm.Should().BeNull();
+        measurement.WeightKg.Should().Be(11.25m);
+        measurement.HeadCircumferenceCm.Should().BeNull();
+    }
+
+    [Fact]
+    public void GrowthMeasurement_Create_WithOnlyHeadCircumference_Succeeds()
+    {
+        var childId = ChildId.New();
+        var measurement = GrowthMeasurement.Create(childId, DateTime.UtcNow, heightCm: null, weightKg: null, headCircumferenceCm: 47.0m);
+
+        measurement.Should().NotBeNull();
+        measurement.HeightCm.Should().BeNull();
+        measurement.WeightKg.Should().BeNull();
+        measurement.HeadCircumferenceCm.Should().Be(47.0m);
+    }
+
+    [Fact]
     public void GrowthMeasurement_Create_ThrowsWhenDateIsInFuture()
     {
         var childId = ChildId.New();

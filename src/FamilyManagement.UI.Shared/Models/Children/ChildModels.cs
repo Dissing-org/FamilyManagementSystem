@@ -71,6 +71,9 @@ public class ChildDashboardModel
 {
     public ChildProfileModel Child { get; set; } = new();
     public GrowthMeasurementModel? LatestMeasurement { get; set; }
+    public GrowthMeasurementModel? LatestHeightMeasurement { get; set; }
+    public GrowthMeasurementModel? LatestWeightMeasurement { get; set; }
+    public GrowthMeasurementModel? LatestHeadCircumferenceMeasurement { get; set; }
     public int TotalMeasurements { get; set; }
     public int AchievedMilestonesCount { get; set; }
     public int PendingMilestonesCount { get; set; }

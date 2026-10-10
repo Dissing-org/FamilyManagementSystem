@@ -78,7 +78,12 @@
 
                 @if (_activeTab == "growth")
                 {
-                    <GrowthTab ChildId="_activeChild.Id" LatestMeasurement="_dashboard?.LatestMeasurement" OnMeasurementsChanged="ReloadActiveChildAsync" />
+                    <GrowthTab ChildId="_activeChild.Id"
+                               LatestMeasurement="_dashboard?.LatestMeasurement"
+                               LatestHeightMeasurement="_dashboard?.LatestHeightMeasurement"
+                               LatestWeightMeasurement="_dashboard?.LatestWeightMeasurement"
+                               LatestHeadCircumferenceMeasurement="_dashboard?.LatestHeadCircumferenceMeasurement"
+                               OnMeasurementsChanged="ReloadActiveChildAsync" />
                 }
                 else if (_activeTab == "roadmap")
                 {
