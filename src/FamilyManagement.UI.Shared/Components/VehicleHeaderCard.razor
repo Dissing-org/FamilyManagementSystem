@@ -1,0 +1,211 @@
+@using FamilyManagement.UI.Shared.Models
+
+<div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-6 shadow-sm mb-6">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <!-- Vehicle Identity & License Plate -->
+        <div class="flex items-start sm:items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-[#064f6e]/10 dark:bg-[#abf5ed]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center font-black text-2xl border border-[#064f6e]/20 shadow-xs flex-shrink-0">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <h1 class="text-2xl font-black text-slate-900 dark:text-slate-100">
+                        @Summary.Vehicle.Year @Summary.Vehicle.Make @Summary.Vehicle.Model
+                    </h1>
+                    
+                    <!-- EU / Danish style License Plate badge -->
+                    <div class="inline-flex items-center h-7 border-2 border-slate-700 bg-white dark:bg-slate-950 rounded-md shadow-xs overflow-hidden font-mono select-all">
+                        <div class="bg-[#003399] text-yellow-300 px-1.5 h-full flex flex-col items-center justify-center text-[8px] font-black leading-none">
+                            <span>★</span>
+                            <span class="text-white text-[9px] font-black tracking-tighter">DK</span>
+                        </div>
+                        <span class="px-2 font-black text-xs text-slate-900 dark:text-slate-100 tracking-wider">
+                            @Summary.Vehicle.LicensePlate.ToUpperInvariant()
+                        </span>
+                    </div>
+
+                    <!-- Fuel Badge -->
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold @GetFuelBadgeClass(Summary.Vehicle.FuelType)">
+                        @FormatFuelType(Summary.Vehicle.FuelType)
+                    </span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 mt-2">
+                    <!-- Status alerts -->
+                    @if (Summary.StatusAlerts.Count > 0)
+                    {
+                        @foreach (var alert in Summary.StatusAlerts)
+                        {
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold @GetAlertBadgeClass(alert)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                @FormatAlertTitle(alert)
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Up to date
+                        </span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Summary.Vehicle.Vin))
+                    {
+                        <span class="text-xs text-slate-400 font-mono" title="VIN">
+                            VIN: @Summary.Vehicle.Vin
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Cards Group -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <!-- Current Mileage -->
+            <div class="bg-[#fbf9f5] dark:bg-[#0b1a24] p-3.5 rounded-xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+                <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    Odometer
+                </div>
+                <div class="text-lg font-black text-slate-900 dark:text-slate-100 mt-0.5">
+                    @Summary.Vehicle.CurrentMileageKm.ToString("N0") <span class="text-xs font-semibold text-slate-500">km</span>
+                </div>
+                <div class="text-[11px] text-slate-500 mt-0.5 truncate">
+                    @Summary.TotalMileageLogsCount logs recorded
+                </div>
+            </div>
+
+            <!-- Next Service Countdown -->
+            <div class="bg-[#fbf9f5] dark:bg-[#0b1a24] p-3.5 rounded-xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+                <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                    <span>Next Service</span>
+                </div>
+                @if (Summary.KmUntilNextService.HasValue)
+                {
+                    <div class="text-lg font-black @(Summary.ServiceDue ? "text-rose-600 dark:text-rose-400" : "text-slate-900 dark:text-slate-100") mt-0.5">
+                        @if (Summary.KmUntilNextService < 0)
+                        {
+                            <span>+@Math.Abs(Summary.KmUntilNextService.Value).ToString("N0") km overdue</span>
+                        }
+                        else
+                        {
+                            <span>@Summary.KmUntilNextService.Value.ToString("N0") <span class="text-xs font-semibold text-slate-500">km left</span></span>
+                        }
+                    </div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">
+                        @(Summary.DaysUntilNextService.HasValue ? FormatDaysCountdown(Summary.DaysUntilNextService.Value) : "Schedule based on km")
+                    </div>
+                }
+                else
+                {
+                    <div class="text-base font-bold text-slate-400 mt-0.5">Not configured</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">No interval set</div>
+                }
+            </div>
+
+            <!-- Next Inspection (Bilsyn) -->
+            <div class="col-span-2 sm:col-span-1 bg-[#fbf9f5] dark:bg-[#0b1a24] p-3.5 rounded-xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+                <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    Bilsyn / Inspection
+                </div>
+                @if (Summary.NextInspectionDate.HasValue)
+                {
+                    <div class="text-lg font-black @(Summary.InspectionDue ? "text-amber-600 dark:text-amber-400" : "text-slate-900 dark:text-slate-100") mt-0.5">
+                        @Summary.NextInspectionDate.Value.ToString("MMM yyyy")
+                    </div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">
+                        @(Summary.DaysUntilNextInspection.HasValue ? FormatDaysCountdown(Summary.DaysUntilNextInspection.Value) : Summary.NextInspectionDate.Value.ToString("MMM d, yyyy"))
+                    </div>
+                }
+                else
+                {
+                    <div class="text-base font-bold text-slate-400 mt-0.5">—</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">No inspection date</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick action shortcuts -->
+    <div class="mt-5 pt-4 border-t border-[#e2d8c7] dark:border-[#1a3b50] flex flex-wrap items-center justify-between gap-3">
+        <div class="text-xs text-slate-500">
+            Total recorded maintenance: 
+            <span class="font-bold text-[#064f6e] dark:text-[#abf5ed]">
+                @Summary.TotalMaintenanceCost.ToString("N0") kr.
+            </span>
+            <span class="mx-1">·</span>
+            <span>@Summary.TotalServiceRecordsCount records</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button @onclick="() => OnQuickLogMileage.InvokeAsync()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#abf5ed]/20 hover:bg-[#abf5ed]/30 text-[#064f6e] dark:text-[#abf5ed] transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Log Mileage
+            </button>
+            <button @onclick="() => OnQuickRecordService.InvokeAsync()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#064f6e] hover:bg-[#05425c] text-white transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Record Service
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public VehicleSummaryDto Summary { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnQuickLogMileage { get; set; }
+
+    [Parameter]
+    public EventCallback OnQuickRecordService { get; set; }
+
+    private static string FormatDaysCountdown(int days)
+    {
+        if (days < 0) return $"{Math.Abs(days)} days overdue";
+        if (days == 0) return "Due today";
+        if (days == 1) return "Due tomorrow";
+        return $"In {days} days";
+    }
+
+    private static string FormatFuelType(string fuelType) => fuelType switch
+    {
+        "PlugInHybrid" => "Plug-in Hybrid",
+        _ => fuelType
+    };
+
+    private static string GetFuelBadgeClass(string fuelType) => fuelType switch
+    {
+        "Electric" => "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300",
+        "Hybrid" or "PlugInHybrid" => "bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300",
+        "Diesel" => "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300",
+        _ => "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
+    };
+
+    private static string GetAlertBadgeClass(string alert) => alert switch
+    {
+        "ServiceOverdue" or "InspectionOverdue" => "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300",
+        "ServiceDue" or "InspectionDue" => "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300",
+        _ => "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+    };
+
+    private static string FormatAlertTitle(string alert) => alert switch
+    {
+        "ServiceOverdue" => "Service Overdue",
+        "ServiceDue" => "Service Due Soon",
+        "InspectionOverdue" => "Bilsyn Overdue",
+        "InspectionDue" => "Bilsyn Due Soon",
+        _ => alert
+    };
+}

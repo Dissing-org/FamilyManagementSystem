@@ -29,6 +29,13 @@
                 <NavLink href="children" class="px-3.5 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors" ActiveClass="bg-white/20 text-[#abf5ed] font-bold shadow-xs">
                     Children
                 </NavLink>
+                <NavLink href="vehicles" class="px-3.5 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1.5" ActiveClass="bg-white/20 text-[#abf5ed] font-bold shadow-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
+                    </svg>
+                    <span>Vehicles</span>
+                </NavLink>
             </nav>
         </div>
 
@@ -50,7 +57,7 @@
     </div>
 
     <!-- Mobile Nav Bar (visible on small screens) -->
-    <div class="md:hidden flex border-t border-[#04364c] bg-[#05425c] px-2 py-1.5 gap-1.5">
+    <div class="md:hidden flex border-t border-[#04364c] bg-[#05425c] px-2 py-1.5 gap-1.5 overflow-x-auto">
         <NavLink href="" Match="NavLinkMatch.All" class="flex-1 text-center py-2 text-xs font-semibold text-white/80 rounded-xl transition-all" ActiveClass="bg-[#abf5ed] text-[#042838] font-black shadow-sm">
             Home
         </NavLink>
@@ -62,6 +69,13 @@
         </NavLink>
         <NavLink href="children" class="flex-1 text-center py-2 text-xs font-semibold text-white/80 rounded-xl transition-all" ActiveClass="bg-[#abf5ed] text-[#042838] font-black shadow-sm">
             Children
+        </NavLink>
+        <NavLink href="vehicles" class="flex-1 text-center py-2 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center gap-1" ActiveClass="bg-[#abf5ed] text-[#042838] font-black shadow-sm">
+            <svg class="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
+            </svg>
+            <span>Vehicles</span>
         </NavLink>
     </div>
 </header>

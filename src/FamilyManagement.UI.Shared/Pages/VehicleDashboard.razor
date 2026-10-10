@@ -1,0 +1,508 @@
+@page "/vehicles"
+@using FamilyManagement.UI.Shared.Components
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+@inject VehicleApiClient VehicleApi
+
+<div class="min-h-screen bg-[#fbf9f5] dark:bg-[#0b1a24] text-slate-800 dark:text-slate-100 font-sans pb-16">
+    <AppHeader CurrentSectionSubtitle="Vehicle & Mileage Tracker" OnSettingsSaved="LoadVehiclesAsync">
+        <ActionContent>
+            <button @onclick="OpenAddVehicleModal" 
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#abf5ed] hover:bg-[#8eebe0] text-[#042838] text-sm font-black rounded-xl shadow-md shadow-[#abf5ed]/20 transition-all hover:shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Add Vehicle</span>
+            </button>
+        </ActionContent>
+    </AppHeader>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        @if (_loading)
+        {
+            <div class="py-24 text-center">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#064f6e] border-t-transparent"></div>
+                <p class="mt-4 text-sm font-medium text-slate-500">Loading vehicles dashboard...</p>
+            </div>
+        }
+        else if (_vehicles.Count == 0)
+        {
+            <!-- Empty state -->
+            <div class="max-w-lg mx-auto bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-3xl p-8 sm:p-10 text-center shadow-lg my-12">
+                <div class="w-20 h-20 rounded-3xl bg-[#064f6e]/10 dark:bg-[#abf5ed]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100">Welcome to Vehicle Tracker</h2>
+                <p class="text-sm text-slate-500 mt-2 mb-8 leading-relaxed">
+                    Keep your family vehicles in top shape: track odometer distance, bilsyn inspections, maintenance intervals, and workshop invoices.
+                </p>
+
+                <button @onclick="OpenAddVehicleModal" class="w-full py-3.5 px-6 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-md transition-all">
+                    Register Your First Vehicle
+                </button>
+            </div>
+        }
+        else
+        {
+            <!-- Multi-vehicle switcher -->
+            @if (_vehicles.Count > 1)
+            {
+                <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                    @foreach (var v in _vehicles)
+                    {
+                        <button @onclick="() => SelectVehicleAsync(v.Id)" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 @(v.Id == _selectedVehicleId ? "bg-[#064f6e] text-white dark:bg-[#abf5ed] dark:text-[#042838] shadow-xs" : "bg-white dark:bg-[#122b3b] text-slate-600 dark:text-slate-300 border border-[#e2d8c7] dark:border-[#1a3b50]")">
+                            <span>@v.Make @v.Model</span>
+                            <span class="opacity-75 font-mono text-[11px]">(@v.LicensePlate)</span>
+                        </button>
+                    }
+                    <button @onclick="OpenAddVehicleModal" class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        + Add Another
+                    </button>
+                </div>
+            }
+
+            @if (_activeSummary != null)
+            {
+                <VehicleHeaderCard Summary="_activeSummary" 
+                                   OnQuickLogMileage="HandleQuickLogMileage" 
+                                   OnQuickRecordService="HandleQuickRecordService" />
+
+                <!-- Tabs Navigation -->
+                <div class="flex items-center gap-4 border-b border-[#e2d8c7] dark:border-[#1a3b50] mb-6">
+                    <button @onclick='() => _activeTab = "mileage"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "mileage" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span>Overview & Mileage</span>
+                    </button>
+
+                    <button @onclick='() => _activeTab = "services"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "services" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        <span>Service History</span>
+                    </button>
+
+                    <button @onclick='() => _activeTab = "settings"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "settings" ? "border-[#064f6e] text-[#064f6e] dark:border-[#abf5ed] dark:text-[#abf5ed]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Schedule & Specs</span>
+                    </button>
+                </div>
+
+                @if (_activeTab == "mileage")
+                {
+                    <MileageTab @ref="_mileageTabRef" 
+                                VehicleId="_activeSummary.Vehicle.Id" 
+                                CurrentOdometer="_activeSummary.Vehicle.CurrentMileageKm" 
+                                OnMileageUpdated="ReloadActiveVehicleSummaryAsync" />
+                }
+                else if (_activeTab == "services")
+                {
+                    <ServiceHistoryTab @ref="_serviceTabRef" 
+                                       VehicleId="_activeSummary.Vehicle.Id" 
+                                       CurrentOdometer="_activeSummary.Vehicle.CurrentMileageKm" 
+                                       OnServiceRecorded="ReloadActiveVehicleSummaryAsync" />
+                }
+                else if (_activeTab == "settings")
+                {
+                    <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-6 shadow-xs max-w-2xl">
+                        <h4 class="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">Edit Vehicle Schedule & Specifications</h4>
+
+                        @if (!string.IsNullOrEmpty(_updateError))
+                        {
+                            <div class="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
+                                @_updateError
+                            </div>
+                        }
+
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Make</label>
+                                    <input @bind="_editMake" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Model</label>
+                                    <input @bind="_editModel" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Year</label>
+                                    <input type="number" @bind="_editYear" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">License Plate</label>
+                                    <input @bind="_editLicensePlate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Fuel Type</label>
+                                    <select @bind="_editFuelType" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
+                                        <option value="Gasoline">Gasoline</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Electric">Electric</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="PlugInHybrid">Plug-in Hybrid</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Service Interval (km)</label>
+                                    <input type="number" @bind="_editServiceIntervalKm" placeholder="e.g. 15000" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Service Interval (Months)</label>
+                                    <input type="number" @bind="_editServiceIntervalMonths" placeholder="e.g. 12" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Next Inspection Date (Bilsyn)</label>
+                                    <input type="date" @bind="_editNextInspectionDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">VIN (Optional)</label>
+                                    <input @bind="_editVin" placeholder="17-character VIN" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-6 mt-6 border-t border-[#e2d8c7] dark:border-[#1a3b50]">
+                            <button @onclick="DeleteCurrentVehicleAsync" class="px-4 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors">
+                                Delete Vehicle
+                            </button>
+                            <button @onclick="SaveVehicleSpecsAsync" disabled="@_savingSpecs" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs transition-colors disabled:opacity-50">
+                                @(_savingSpecs ? "Saving..." : "Save Changes")
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </main>
+
+    <!-- Register Vehicle Modal -->
+    @if (_showAddVehicleModal)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+            <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-lg w-full shadow-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Register New Vehicle</h3>
+                    <button @onclick="() => _showAddVehicleModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(_addVehicleError))
+                {
+                    <div class="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
+                        @_addVehicleError
+                    </div>
+                }
+
+                <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Make *</label>
+                            <input @bind="_newMake" placeholder="e.g. Volkswagen, Skoda, Tesla" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Model *</label>
+                            <input @bind="_newModel" placeholder="e.g. ID.4, Octavia, Model Y" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Year *</label>
+                            <input type="number" @bind="_newYear" min="1900" max="2100" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">License Plate *</label>
+                            <input @bind="_newLicensePlate" placeholder="e.g. AB 12 345" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Fuel Type *</label>
+                            <select @bind="_newFuelType" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
+                                <option value="Gasoline">Gasoline</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Electric">Electric</option>
+                                <option value="Hybrid">Hybrid</option>
+                                <option value="PlugInHybrid">Plug-in Hybrid</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Initial Mileage (km)</label>
+                            <input type="number" @bind="_newCurrentMileageKm" min="0" placeholder="e.g. 45000" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">VIN (Optional)</label>
+                            <input @bind="_newVin" placeholder="17-character VIN" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Service Interval (km)</label>
+                            <input type="number" @bind="_newServiceIntervalKm" placeholder="e.g. 15000" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Service Interval (Months)</label>
+                            <input type="number" @bind="_newServiceIntervalMonths" placeholder="e.g. 12" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Next Inspection Date (Bilsyn)</label>
+                        <input type="date" @bind="_newNextInspectionDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
+                    <button @onclick="() => _showAddVehicleModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                        Cancel
+                    </button>
+                    <button @onclick="CreateVehicleAsync" disabled="@_savingNewVehicle" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs transition-colors disabled:opacity-50">
+                        @(_savingNewVehicle ? "Registering..." : "Register Vehicle")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<VehicleDto> _vehicles = new();
+    private Guid? _selectedVehicleId;
+    private VehicleSummaryDto? _activeSummary;
+    private bool _loading = true;
+    private string _activeTab = "mileage";
+
+    private MileageTab? _mileageTabRef;
+    private ServiceHistoryTab? _serviceTabRef;
+
+    // Add Vehicle Modal State
+    private bool _showAddVehicleModal = false;
+    private bool _savingNewVehicle = false;
+    private string? _addVehicleError;
+    private string _newMake = string.Empty;
+    private string _newModel = string.Empty;
+    private int _newYear = DateTime.UtcNow.Year;
+    private string _newLicensePlate = string.Empty;
+    private string _newFuelType = "Gasoline";
+    private int _newCurrentMileageKm = 0;
+    private string? _newVin;
+    private int? _newServiceIntervalKm = 15000;
+    private int? _newServiceIntervalMonths = 12;
+    private DateTime? _newNextInspectionDate;
+
+    // Settings / Edit State
+    private bool _savingSpecs = false;
+    private string? _updateError;
+    private string _editMake = string.Empty;
+    private string _editModel = string.Empty;
+    private int _editYear;
+    private string _editLicensePlate = string.Empty;
+    private string _editFuelType = "Gasoline";
+    private string? _editVin;
+    private int? _editServiceIntervalKm;
+    private int? _editServiceIntervalMonths;
+    private DateTime? _editNextInspectionDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVehiclesAsync();
+    }
+
+    private async Task LoadVehiclesAsync()
+    {
+        _loading = true;
+        _vehicles = await VehicleApi.GetVehiclesAsync();
+
+        if (_vehicles.Count > 0)
+        {
+            if (!_selectedVehicleId.HasValue || !_vehicles.Any(v => v.Id == _selectedVehicleId.Value))
+            {
+                _selectedVehicleId = _vehicles[0].Id;
+            }
+            await LoadActiveVehicleSummaryAsync();
+        }
+        else
+        {
+            _selectedVehicleId = null;
+            _activeSummary = null;
+        }
+
+        _loading = false;
+    }
+
+    private async Task SelectVehicleAsync(Guid id)
+    {
+        _selectedVehicleId = id;
+        await LoadActiveVehicleSummaryAsync();
+    }
+
+    private async Task LoadActiveVehicleSummaryAsync()
+    {
+        if (_selectedVehicleId.HasValue)
+        {
+            _activeSummary = await VehicleApi.GetVehicleSummaryAsync(_selectedVehicleId.Value);
+            PopulateEditForm();
+        }
+    }
+
+    private async Task ReloadActiveVehicleSummaryAsync()
+    {
+        await LoadActiveVehicleSummaryAsync();
+        // Also refresh the vehicles list in case odometer/details updated
+        _vehicles = await VehicleApi.GetVehiclesAsync();
+    }
+
+    private void PopulateEditForm()
+    {
+        if (_activeSummary != null)
+        {
+            var v = _activeSummary.Vehicle;
+            _editMake = v.Make;
+            _editModel = v.Model;
+            _editYear = v.Year;
+            _editLicensePlate = v.LicensePlate;
+            _editFuelType = v.FuelType;
+            _editVin = v.Vin;
+            _editServiceIntervalKm = v.ServiceIntervalKm;
+            _editServiceIntervalMonths = v.ServiceIntervalMonths;
+            _editNextInspectionDate = v.NextInspectionDate;
+            _updateError = null;
+        }
+    }
+
+    private void OpenAddVehicleModal()
+    {
+        _newMake = string.Empty;
+        _newModel = string.Empty;
+        _newYear = DateTime.UtcNow.Year;
+        _newLicensePlate = string.Empty;
+        _newFuelType = "Gasoline";
+        _newCurrentMileageKm = 0;
+        _newVin = null;
+        _newServiceIntervalKm = 15000;
+        _newServiceIntervalMonths = 12;
+        _newNextInspectionDate = null;
+        _addVehicleError = null;
+        _showAddVehicleModal = true;
+    }
+
+    private async Task CreateVehicleAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newMake) || string.IsNullOrWhiteSpace(_newModel) || string.IsNullOrWhiteSpace(_newLicensePlate))
+        {
+            _addVehicleError = "Make, Model, and License Plate are required.";
+            return;
+        }
+
+        _savingNewVehicle = true;
+        _addVehicleError = null;
+
+        var request = new CreateVehicleRequest
+        {
+            Make = _newMake.Trim(),
+            Model = _newModel.Trim(),
+            Year = _newYear,
+            LicensePlate = _newLicensePlate.Trim().ToUpperInvariant(),
+            FuelType = _newFuelType,
+            CurrentMileageKm = _newCurrentMileageKm,
+            Vin = string.IsNullOrWhiteSpace(_newVin) ? null : _newVin.Trim().ToUpperInvariant(),
+            ServiceIntervalKm = _newServiceIntervalKm,
+            ServiceIntervalMonths = _newServiceIntervalMonths,
+            NextInspectionDate = _newNextInspectionDate
+        };
+
+        var (success, error, created) = await VehicleApi.CreateVehicleAsync(request);
+        _savingNewVehicle = false;
+
+        if (success && created != null)
+        {
+            _showAddVehicleModal = false;
+            _selectedVehicleId = created.Id;
+            await LoadVehiclesAsync();
+        }
+        else
+        {
+            _addVehicleError = error ?? "Failed to create vehicle.";
+        }
+    }
+
+    private async Task SaveVehicleSpecsAsync()
+    {
+        if (!_selectedVehicleId.HasValue) return;
+
+        _savingSpecs = true;
+        _updateError = null;
+
+        var request = new UpdateVehicleRequest
+        {
+            Id = _selectedVehicleId.Value,
+            Make = _editMake.Trim(),
+            Model = _editModel.Trim(),
+            Year = _editYear,
+            LicensePlate = _editLicensePlate.Trim().ToUpperInvariant(),
+            FuelType = _editFuelType,
+            Vin = string.IsNullOrWhiteSpace(_editVin) ? null : _editVin.Trim().ToUpperInvariant(),
+            ServiceIntervalKm = _editServiceIntervalKm,
+            ServiceIntervalMonths = _editServiceIntervalMonths,
+            NextInspectionDate = _editNextInspectionDate
+        };
+
+        var (success, error, _) = await VehicleApi.UpdateVehicleAsync(_selectedVehicleId.Value, request);
+        _savingSpecs = false;
+
+        if (success)
+        {
+            await ReloadActiveVehicleSummaryAsync();
+        }
+        else
+        {
+            _updateError = error ?? "Failed to update vehicle details.";
+        }
+    }
+
+    private async Task DeleteCurrentVehicleAsync()
+    {
+        if (!_selectedVehicleId.HasValue) return;
+
+        var id = _selectedVehicleId.Value;
+        var ok = await VehicleApi.DeleteVehicleAsync(id);
+        if (ok)
+        {
+            _selectedVehicleId = null;
+            await LoadVehiclesAsync();
+        }
+    }
+
+    private void HandleQuickLogMileage()
+    {
+        _activeTab = "mileage";
+        _mileageTabRef?.OpenModal();
+    }
+
+    private void HandleQuickRecordService()
+    {
+        _activeTab = "services";
+        _serviceTabRef?.OpenModal();
+    }
+}

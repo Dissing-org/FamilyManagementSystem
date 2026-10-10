@@ -25,6 +25,7 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddScoped<IReceiptApiClient, ReceiptApiClient>();
 builder.Services.AddScoped<IInsuranceApiClient, InsuranceApiClient>();
 builder.Services.AddScoped<ChildApiClient>();
+builder.Services.AddScoped<VehicleApiClient>();
 
 await builder.Build().RunAsync();
 

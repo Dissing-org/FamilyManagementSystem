@@ -10,6 +10,9 @@ public class ReceiptDbContext : DbContext
     public DbSet<ChildProfile> ChildProfiles => Set<ChildProfile>();
     public DbSet<GrowthMeasurement> GrowthMeasurements => Set<GrowthMeasurement>();
     public DbSet<ChildMilestone> ChildMilestones => Set<ChildMilestone>();
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+    public DbSet<MileageLogEntry> MileageLogs => Set<MileageLogEntry>();
+    public DbSet<VehicleServiceRecord> VehicleServices => Set<VehicleServiceRecord>();
 
     public ReceiptDbContext(DbContextOptions<ReceiptDbContext> options) : base(options)
     {

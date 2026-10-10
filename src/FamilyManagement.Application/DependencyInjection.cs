@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using FamilyManagement.Application.UseCases.Receipts.Commands;
 using FamilyManagement.Application.UseCases.Receipts.Queries;
+using FamilyManagement.Application.Vehicles;
 
 namespace FamilyManagement.Application;
 
@@ -31,6 +32,19 @@ public static class DependencyInjection
         services.AddScoped<FamilyManagement.Application.UseCases.Children.Queries.GetChildDashboardQueryHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Children.Queries.GetGrowthHistoryQueryHandler>();
         services.AddScoped<FamilyManagement.Application.UseCases.Children.Queries.GetMilestonesQueryHandler>();
+
+        services.AddScoped<CreateVehicleCommandHandler>();
+        services.AddScoped<UpdateVehicleDetailsCommandHandler>();
+        services.AddScoped<LogMileageCommandHandler>();
+        services.AddScoped<RecordVehicleServiceCommandHandler>();
+        services.AddScoped<DeleteVehicleCommandHandler>();
+        services.AddScoped<DeleteMileageLogCommandHandler>();
+        services.AddScoped<DeleteVehicleServiceRecordCommandHandler>();
+        services.AddScoped<GetAllVehiclesQueryHandler>();
+        services.AddScoped<GetVehicleByIdQueryHandler>();
+        services.AddScoped<GetMileageLogsQueryHandler>();
+        services.AddScoped<GetServiceRecordsQueryHandler>();
+        services.AddScoped<GetVehicleSummaryQueryHandler>();
 
         return services;
     }

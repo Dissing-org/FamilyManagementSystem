@@ -190,6 +190,63 @@ using (var scope = app.Services.CreateScope())
                 app.Logger.LogInformation("Created Child Development tables in SQLite database.");
             }
         }
+
+        // Ensure Vehicle Management tables exist
+        using (var tableCmd = connection.CreateCommand())
+        {
+            tableCmd.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='Vehicles';";
+            var tableCount = Convert.ToInt32(tableCmd.ExecuteScalar());
+            if (tableCount == 0)
+            {
+                tableCmd.CommandText = """
+                    CREATE TABLE "Vehicles" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_Vehicles" PRIMARY KEY,
+                        "Make" TEXT NOT NULL,
+                        "Model" TEXT NOT NULL,
+                        "Year" INTEGER NOT NULL,
+                        "LicensePlate" TEXT NOT NULL,
+                        "Vin" TEXT NULL,
+                        "FuelType" TEXT NOT NULL,
+                        "CurrentMileageKm" INTEGER NOT NULL,
+                        "ServiceIntervalKm" INTEGER NULL,
+                        "ServiceIntervalMonths" INTEGER NULL,
+                        "NextInspectionDate" TEXT NULL,
+                        "CreatedAt" TEXT NOT NULL,
+                        "UpdatedAt" TEXT NULL
+                    );
+                    CREATE INDEX "IX_Vehicles_LicensePlate" ON "Vehicles" ("LicensePlate");
+
+                    CREATE TABLE "MileageLogs" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_MileageLogs" PRIMARY KEY,
+                        "VehicleId" TEXT NOT NULL,
+                        "RecordedDate" TEXT NOT NULL,
+                        "MileageKm" INTEGER NOT NULL,
+                        "Notes" TEXT NULL,
+                        "CreatedAt" TEXT NOT NULL
+                    );
+                    CREATE INDEX "IX_MileageLogs_VehicleId" ON "MileageLogs" ("VehicleId");
+                    CREATE INDEX "IX_MileageLogs_VehicleId_RecordedDate" ON "MileageLogs" ("VehicleId", "RecordedDate");
+
+                    CREATE TABLE "VehicleServiceRecords" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_VehicleServiceRecords" PRIMARY KEY,
+                        "VehicleId" TEXT NOT NULL,
+                        "ServiceDate" TEXT NOT NULL,
+                        "MileageKm" INTEGER NOT NULL,
+                        "Type" TEXT NOT NULL,
+                        "Title" TEXT NOT NULL,
+                        "Workshop" TEXT NULL,
+                        "Cost" TEXT NULL,
+                        "Notes" TEXT NULL,
+                        "ReceiptId" TEXT NULL,
+                        "CreatedAt" TEXT NOT NULL
+                    );
+                    CREATE INDEX "IX_VehicleServiceRecords_VehicleId" ON "VehicleServiceRecords" ("VehicleId");
+                    CREATE INDEX "IX_VehicleServiceRecords_VehicleId_ServiceDate" ON "VehicleServiceRecords" ("VehicleId", "ServiceDate");
+                """;
+                tableCmd.ExecuteNonQuery();
+                app.Logger.LogInformation("Created Vehicle Management tables in SQLite database.");
+            }
+        }
     }
     catch (Exception ex)
     {

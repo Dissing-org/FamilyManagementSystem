@@ -1,0 +1,357 @@
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+@inject VehicleApiClient VehicleApi
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Service & Maintenance Records</h3>
+            <p class="text-xs text-slate-500">Track oil changes, bilsyn inspections, tire swaps, and repair invoices</p>
+        </div>
+        <button @onclick="OpenRecordServiceModal" class="inline-flex items-center gap-2 px-4 py-2 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] font-bold text-sm rounded-xl shadow-xs transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Record Service</span>
+        </button>
+    </div>
+
+    @if (_loading)
+    {
+        <div class="py-12 text-center text-slate-400 text-sm">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-3 border-[#064f6e] border-t-transparent mb-2"></div>
+            <p>Loading maintenance records...</p>
+        </div>
+    }
+    else if (_records.Count == 0)
+    {
+        <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-[#abf5ed]/20 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+            </div>
+            <h4 class="text-base font-bold text-slate-800 dark:text-slate-200">No service history recorded</h4>
+            <p class="text-sm text-slate-500 mt-1 mb-6">Keep a complete log of all workshop visits, parts replacements, and costs.</p>
+            <button @onclick="OpenRecordServiceModal" class="px-5 py-2.5 bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:text-[#042838] text-white text-sm font-semibold rounded-xl shadow-xs">
+                Record First Service
+            </button>
+        </div>
+    }
+    else
+    {
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+            <button @onclick='() => _selectedFilter = null' class="px-3 py-1.5 rounded-lg font-bold transition-colors @(_selectedFilter == null ? "bg-[#064f6e] text-white dark:bg-[#abf5ed] dark:text-[#042838]" : "bg-white dark:bg-[#122b3b] text-slate-600 dark:text-slate-300 border border-[#e2d8c7] dark:border-[#1a3b50]")">
+                All (@_records.Count)
+            </button>
+            @foreach (var type in ServiceTypes)
+            {
+                var count = _records.Count(r => r.Type == type);
+                if (count > 0)
+                {
+                    <button @onclick='() => _selectedFilter = type' class="px-3 py-1.5 rounded-lg font-bold transition-colors @(_selectedFilter == type ? "bg-[#064f6e] text-white dark:bg-[#abf5ed] dark:text-[#042838]" : "bg-white dark:bg-[#122b3b] text-slate-600 dark:text-slate-300 border border-[#e2d8c7] dark:border-[#1a3b50]")">
+                        @FormatServiceType(type) (@count)
+                    </button>
+                }
+            }
+        </div>
+
+        <!-- Service Cards Stream -->
+        <div class="space-y-3">
+            @foreach (var record in FilteredRecords)
+            {
+                <div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-5 shadow-xs transition-shadow hover:shadow-md">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div class="flex items-start gap-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold @GetServiceTypeBadgeClass(record.Type) whitespace-nowrap">
+                                @FormatServiceType(record.Type)
+                            </span>
+                            <div>
+                                <h4 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                                    @record.Title
+                                </h4>
+                                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500">
+                                    <span class="font-medium">@record.ServiceDate.ToString("MMM d, yyyy")</span>
+                                    <span>•</span>
+                                    <span class="font-mono font-semibold">@record.MileageKm.ToString("N0") km</span>
+                                    @if (!string.IsNullOrWhiteSpace(record.Workshop))
+                                    {
+                                        <span>•</span>
+                                        <span class="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                            </svg>
+                                            @record.Workshop
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center sm:flex-col sm:items-end justify-between gap-1">
+                            @if (record.Cost.HasValue)
+                            {
+                                <div class="text-base font-black text-slate-900 dark:text-slate-100">
+                                    @record.Cost.Value.ToString("N0") <span class="text-xs font-semibold text-slate-500">kr.</span>
+                                </div>
+                            }
+
+                            <div class="flex items-center gap-2 mt-1">
+                                @if (record.ReceiptId.HasValue)
+                                {
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-[#064f6e] dark:text-[#abf5ed] bg-[#abf5ed]/20 px-2 py-0.5 rounded-md" title="Linked receipt on file">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        Receipt
+                                    </span>
+                                }
+
+                                <button @onclick="() => DeleteRecordAsync(record.Id)" class="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors" title="Delete record">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(record.Notes))
+                    {
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 pt-3 border-t border-[#e2d8c7]/50 dark:border-[#1a3b50] whitespace-pre-wrap">
+                            @record.Notes
+                        </p>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (_showRecordModal)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+        <div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] p-6 max-w-lg w-full shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Record Service Event</h3>
+                <button @onclick="() => _showRecordModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
+                    @_errorMessage
+                </div>
+            }
+
+            <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Service Type</label>
+                        <select @bind="_newType" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100">
+                            @foreach (var type in ServiceTypes)
+                            {
+                                <option value="@type">@FormatServiceType(type)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Service Date</label>
+                        <input type="date" @bind="_newDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Title / Description</label>
+                    <input @bind="_newTitle" placeholder="e.g. Major 60,000 km Service, Oil + Filters, Summer Tires" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Odometer (km)</label>
+                        <input type="number" @bind="_newMileage" min="0" placeholder="e.g. 60500" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Cost (kr. / DKK)</label>
+                        <input type="number" step="0.01" @bind="_newCost" min="0" placeholder="e.g. 3450" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Workshop / Provider (Optional)</label>
+                    <input @bind="_newWorkshop" placeholder="e.g. QuickPoint, Semler Biler, Skorstensgaard" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes / Details (Optional)</label>
+                    <textarea @bind="_newNotes" rows="3" placeholder="Replaced spark plugs, synthetic 5W-30 oil, pollen filter..." class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#0b1a24] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <button @onclick="() => _showRecordModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    Cancel
+                </button>
+                <button @onclick="SaveServiceRecordAsync" disabled="@_saving" class="px-5 py-2 text-sm font-semibold bg-[#064f6e] hover:bg-[#05425c] dark:bg-[#abf5ed] dark:hover:bg-[#8eebe0] text-white dark:text-[#042838] rounded-xl shadow-xs transition-colors disabled:opacity-50">
+                    @(_saving ? "Saving..." : "Save Record")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid VehicleId { get; set; }
+
+    [Parameter]
+    public int CurrentOdometer { get; set; }
+
+    [Parameter]
+    public EventCallback OnServiceRecorded { get; set; }
+
+    private List<VehicleServiceRecordDto> _records = new();
+    private bool _loading = true;
+    private bool _showRecordModal = false;
+    private bool _saving = false;
+    private string? _errorMessage;
+    private string? _selectedFilter;
+
+    private static readonly string[] ServiceTypes = new[]
+    {
+        "RegularService",
+        "OilChange",
+        "InspectionSyn",
+        "TireChange",
+        "BrakeService",
+        "Repair",
+        "Other"
+    };
+
+    private string _newType = "RegularService";
+    private DateTime _newDate = DateTime.Today;
+    private string _newTitle = string.Empty;
+    private int _newMileage;
+    private decimal? _newCost;
+    private string? _newWorkshop;
+    private string? _newNotes;
+
+    private IEnumerable<VehicleServiceRecordDto> FilteredRecords =>
+        string.IsNullOrEmpty(_selectedFilter)
+            ? _records
+            : _records.Where(r => r.Type == _selectedFilter);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadRecordsAsync();
+    }
+
+    public void OpenModal()
+    {
+        OpenRecordServiceModal();
+        StateHasChanged();
+    }
+
+    private async Task LoadRecordsAsync()
+    {
+        _loading = true;
+        _records = await VehicleApi.GetServiceRecordsAsync(VehicleId);
+        _loading = false;
+    }
+
+    private void OpenRecordServiceModal()
+    {
+        _newType = "RegularService";
+        _newDate = DateTime.Today;
+        _newTitle = string.Empty;
+        _newMileage = CurrentOdometer > 0 ? CurrentOdometer : 0;
+        _newCost = null;
+        _newWorkshop = null;
+        _newNotes = null;
+        _errorMessage = null;
+        _showRecordModal = true;
+    }
+
+    private async Task SaveServiceRecordAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newTitle))
+        {
+            _errorMessage = "Service title is required.";
+            return;
+        }
+
+        if (_newMileage < 0)
+        {
+            _errorMessage = "Mileage cannot be negative.";
+            return;
+        }
+
+        _saving = true;
+        _errorMessage = null;
+
+        var request = new RecordVehicleServiceRequest
+        {
+            Id = VehicleId,
+            ServiceDate = _newDate,
+            MileageKm = _newMileage,
+            Type = _newType,
+            Title = _newTitle.Trim(),
+            Workshop = string.IsNullOrWhiteSpace(_newWorkshop) ? null : _newWorkshop.Trim(),
+            Cost = _newCost,
+            Notes = string.IsNullOrWhiteSpace(_newNotes) ? null : _newNotes.Trim()
+        };
+
+        var (success, error, _) = await VehicleApi.RecordServiceAsync(VehicleId, request);
+        _saving = false;
+
+        if (success)
+        {
+            _showRecordModal = false;
+            await LoadRecordsAsync();
+            await OnServiceRecorded.InvokeAsync();
+        }
+        else
+        {
+            _errorMessage = error ?? "Failed to save service record.";
+        }
+    }
+
+    private async Task DeleteRecordAsync(Guid serviceId)
+    {
+        var ok = await VehicleApi.DeleteServiceRecordAsync(VehicleId, serviceId);
+        if (ok)
+        {
+            await LoadRecordsAsync();
+            await OnServiceRecorded.InvokeAsync();
+        }
+    }
+
+    private static string FormatServiceType(string type) => type switch
+    {
+        "RegularService" => "Regular Service",
+        "OilChange" => "Oil Change",
+        "InspectionSyn" => "Bilsyn / Inspection",
+        "TireChange" => "Tire Change",
+        "BrakeService" => "Brakes",
+        "Repair" => "Repair",
+        _ => "Other"
+    };
+
+    private static string GetServiceTypeBadgeClass(string type) => type switch
+    {
+        "RegularService" => "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300",
+        "OilChange" => "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300",
+        "InspectionSyn" => "bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300",
+        "TireChange" => "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200",
+        "BrakeService" => "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300",
+        "Repair" => "bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300",
+        _ => "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+    };
+}

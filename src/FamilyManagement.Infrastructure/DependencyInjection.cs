@@ -25,6 +25,9 @@ public static class DependencyInjection
         services.AddScoped<IChildProfileRepository, FamilyManagement.Infrastructure.Repositories.ChildProfileRepository>();
         services.AddScoped<IGrowthMeasurementRepository, FamilyManagement.Infrastructure.Repositories.GrowthMeasurementRepository>();
         services.AddScoped<IChildMilestoneRepository, FamilyManagement.Infrastructure.Repositories.ChildMilestoneRepository>();
+        services.AddScoped<IVehicleRepository, FamilyManagement.Infrastructure.Repositories.VehicleRepository>();
+        services.AddScoped<IMileageLogRepository, FamilyManagement.Infrastructure.Repositories.MileageLogRepository>();
+        services.AddScoped<IVehicleServiceRepository, FamilyManagement.Infrastructure.Repositories.VehicleServiceRepository>();
 
         services.Configure<GoogleDriveOptions>(
             configuration.GetSection(GoogleDriveOptions.SectionName));
