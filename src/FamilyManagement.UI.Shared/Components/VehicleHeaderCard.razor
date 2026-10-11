@@ -1,10 +1,10 @@
 @using FamilyManagement.UI.Shared.Models
 
-<div class="bg-white dark:bg-[#122b3b] border border-[#e2d8c7] dark:border-[#1a3b50] rounded-2xl p-6 shadow-sm mb-6">
+<div class="bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-2xl p-6 shadow-sm mb-6">
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <!-- Vehicle Identity & License Plate -->
         <div class="flex items-start sm:items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-[#064f6e]/10 dark:bg-[#abf5ed]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center font-black text-2xl border border-[#064f6e]/20 shadow-xs flex-shrink-0">
+            <div class="w-16 h-16 rounded-2xl bg-[#C85A32]/10 dark:bg-[#FDEEE9]/15 text-[#C85A32] dark:text-[#FDEEE9] flex items-center justify-center font-black text-2xl border border-[#C85A32]/20 shadow-xs flex-shrink-0">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
@@ -70,7 +70,7 @@
         <!-- Metrics Cards Group -->
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <!-- Current Mileage -->
-            <div class="bg-[#fbf9f5] dark:bg-[#0b1a24] p-3.5 rounded-xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+            <div class="bg-[#FAF6F0] dark:bg-[#1C1512] p-3.5 rounded-xl border border-[#EADECF] dark:border-[#3D2F28]">
                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                     Odometer
                 </div>
@@ -83,7 +83,7 @@
             </div>
 
             <!-- Next Service Countdown -->
-            <div class="bg-[#fbf9f5] dark:bg-[#0b1a24] p-3.5 rounded-xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+            <div class="bg-[#FAF6F0] dark:bg-[#1C1512] p-3.5 rounded-xl border border-[#EADECF] dark:border-[#3D2F28]">
                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center justify-between">
                     <span>Next Service</span>
                 </div>
@@ -111,7 +111,7 @@
             </div>
 
             <!-- Next Inspection (Bilsyn) -->
-            <div class="col-span-2 sm:col-span-1 bg-[#fbf9f5] dark:bg-[#0b1a24] p-3.5 rounded-xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+            <div class="col-span-2 sm:col-span-1 bg-[#FAF6F0] dark:bg-[#1C1512] p-3.5 rounded-xl border border-[#EADECF] dark:border-[#3D2F28]">
                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                     Bilsyn / Inspection
                 </div>
@@ -134,10 +134,10 @@
     </div>
 
     <!-- Quick action shortcuts -->
-    <div class="mt-5 pt-4 border-t border-[#e2d8c7] dark:border-[#1a3b50] flex flex-wrap items-center justify-between gap-3">
+    <div class="mt-5 pt-4 border-t border-[#EADECF] dark:border-[#3D2F28] flex flex-wrap items-center justify-between gap-3">
         <div class="text-xs text-slate-500">
             Total recorded maintenance: 
-            <span class="font-bold text-[#064f6e] dark:text-[#abf5ed]">
+            <span class="font-bold text-[#C85A32] dark:text-[#FDEEE9]">
                 @Summary.TotalMaintenanceCost.ToString("N0") kr.
             </span>
             <span class="mx-1">·</span>
@@ -145,13 +145,13 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <button @onclick="() => OnQuickLogMileage.InvokeAsync()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#abf5ed]/20 hover:bg-[#abf5ed]/30 text-[#064f6e] dark:text-[#abf5ed] transition-colors">
+            <button @onclick="() => OnQuickLogMileage.InvokeAsync()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#FDEEE9]/20 hover:bg-[#FDEEE9]/30 text-[#C85A32] dark:text-[#FDEEE9] transition-colors">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Log Mileage
             </button>
-            <button @onclick="() => OnQuickRecordService.InvokeAsync()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#064f6e] hover:bg-[#05425c] text-white transition-colors">
+            <button @onclick="() => OnQuickRecordService.InvokeAsync()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#C85A32] hover:bg-[#A8431F] text-white transition-colors">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>

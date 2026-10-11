@@ -2,16 +2,16 @@
 
 <header class="bg-[#C85A32] text-white border-b border-[#A8431F] sticky top-0 z-30 shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-6">
-            <a href="" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-[#FDEEE9] flex items-center justify-center text-[#7B2F14] shadow-md shadow-[#7B2F14]/20 group-hover:bg-[#FAF0E6] transition-colors">
+        <div class="flex items-center gap-6 min-w-0">
+            <a href="" class="flex items-center gap-3 group min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-[#FDEEE9] flex items-center justify-center text-[#7B2F14] shadow-md shadow-[#7B2F14]/20 group-hover:bg-[#FAF0E6] transition-colors shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                 </div>
-                <div>
-                    <h1 class="text-base font-black tracking-tight text-white">Family Hub</h1>
-                    <p class="text-xs text-[#FDEEE9]">@CurrentSectionSubtitle</p>
+                <div class="truncate">
+                    <h1 class="text-base font-black tracking-tight text-white truncate">Family Hub</h1>
+                    <p class="text-xs text-[#FDEEE9] truncate">@CurrentSectionSubtitle</p>
                 </div>
             </a>
 
@@ -39,9 +39,9 @@
             </nav>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button @onclick="() => _showSettingsModal = true" 
-                    class="p-2 text-white/80 hover:text-white hover:bg-white/15 rounded-xl transition-colors"
+                    class="p-2 text-white/80 hover:text-white hover:bg-white/15 rounded-xl transition-colors shrink-0"
                     title="Server Settings">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -51,27 +51,29 @@
 
             @if (ActionContent is not null)
             {
-                @ActionContent
+                <div class="flex items-center gap-1.5 shrink-0">
+                    @ActionContent
+                </div>
             }
         </div>
     </div>
 
-    <!-- Mobile Nav Bar (grafted 48px touch targets) -->
-    <div class="md:hidden flex border-t border-[#A8431F] bg-[#B84B24] px-2 py-2 gap-2 overflow-x-auto">
-        <NavLink href="" Match="NavLinkMatch.All" class="min-h-[48px] min-w-[70px] flex-1 text-center py-2 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center" ActiveClass="bg-[#FDEEE9] text-[#7B2F14] font-black shadow-sm">
+    <!-- Mobile Nav Bar (Fixed height, no vertical overflow, high contrast active pill) -->
+    <div class="md:hidden flex items-center border-t border-[#A8431F] bg-[#B84B24] px-2 py-1.5 gap-1.5 overflow-x-auto scrollbar-none">
+        <NavLink href="" Match="NavLinkMatch.All" class="min-w-[65px] h-9 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center shrink-0" ActiveClass="!bg-[#FDEEE9] !text-[#7B2F14] font-black shadow-xs">
             Home
         </NavLink>
-        <NavLink href="receipts" class="min-h-[48px] min-w-[70px] flex-1 text-center py-2 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center" ActiveClass="bg-[#FDEEE9] text-[#7B2F14] font-black shadow-sm">
+        <NavLink href="receipts" class="min-w-[65px] h-9 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center shrink-0" ActiveClass="!bg-[#FDEEE9] !text-[#7B2F14] font-black shadow-xs">
             Receipts
         </NavLink>
-        <NavLink href="insurances" class="min-h-[48px] min-w-[70px] flex-1 text-center py-2 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center" ActiveClass="bg-[#FDEEE9] text-[#7B2F14] font-black shadow-sm">
+        <NavLink href="insurances" class="min-w-[65px] h-9 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center shrink-0" ActiveClass="!bg-[#FDEEE9] !text-[#7B2F14] font-black shadow-xs">
             Insurances
         </NavLink>
-        <NavLink href="children" class="min-h-[48px] min-w-[70px] flex-1 text-center py-2 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center" ActiveClass="bg-[#FDEEE9] text-[#7B2F14] font-black shadow-sm">
+        <NavLink href="children" class="min-w-[65px] h-9 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center shrink-0" ActiveClass="!bg-[#FDEEE9] !text-[#7B2F14] font-black shadow-xs">
             Children
         </NavLink>
-        <NavLink href="vehicles" class="min-h-[48px] min-w-[70px] flex-1 text-center py-2 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center gap-1.5" ActiveClass="bg-[#FDEEE9] text-[#7B2F14] font-black shadow-sm">
-            <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <NavLink href="vehicles" class="min-w-[65px] h-9 px-3 text-xs font-semibold text-white/80 rounded-xl transition-all flex items-center justify-center shrink-0 gap-1.5" ActiveClass="!bg-[#FDEEE9] !text-[#7B2F14] font-black shadow-xs">
+            <svg class="w-4 h-4 inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
             </svg>

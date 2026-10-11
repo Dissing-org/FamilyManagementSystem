@@ -1,16 +1,16 @@
 @using FamilyManagement.UI.Shared.Models
 
-<div class="bg-white dark:bg-[#122b3b] rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50] shadow-sm hover:border-[#064f6e]/50 dark:hover:border-[#abf5ed]/50 hover:shadow-md transition-all p-5 flex flex-col justify-between group">
+<div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] shadow-xs hover:border-[#C85A32]/50 dark:hover:border-[#C85A32]/50 hover:shadow-md transition-all p-5 flex flex-col justify-between group">
     <!-- Header: Insurer & Category -->
     <div>
         <div class="flex items-start justify-between gap-3 mb-2">
             <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 truncate" title="@Policy.Insurer">
+                <h3 class="font-bold text-base text-[#2B1D16] dark:text-[#FAF0E6] truncate" title="@Policy.Insurer">
                     @Policy.Insurer
                 </h3>
                 @if (!string.IsNullOrWhiteSpace(Policy.PolicyNumber))
                 {
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate">
+                    <p class="text-xs text-[#7F6A5D] dark:text-[#EADECF]/80 font-mono mt-0.5 truncate">
                         #@Policy.PolicyNumber
                     </p>
                 }
@@ -22,42 +22,42 @@
         </div>
 
         <!-- Insured Party -->
-        <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 mt-2 mb-3 bg-[#fbf9f5] dark:bg-[#0b1a24] border border-[#e2d8c7]/60 dark:border-[#1a3b50]/60 px-2.5 py-1.5 rounded-xl">
-            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-1.5 text-xs text-[#2B1D16] dark:text-[#FAF0E6] mt-2 mb-3 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] px-2.5 py-1.5 rounded-xl">
+            <svg class="w-3.5 h-3.5 text-[#7F6A5D] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
             </svg>
             <span class="font-medium truncate">Insured: @Policy.InsuredParty</span>
         </div>
 
         <!-- Costs Breakdown -->
-        <div class="bg-[#064f6e]/10 dark:bg-[#064f6e]/20 rounded-xl p-3 mb-3 border border-[#064f6e]/30 dark:border-[#abf5ed]/20">
+        <div class="bg-[#FDEEE9]/60 dark:bg-[#C85A32]/10 rounded-xl p-3 mb-3 border border-[#EADECF] dark:border-[#3D2F28]">
             <div class="flex items-baseline justify-between">
-                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Monthly</span>
-                <span class="text-lg font-black text-[#064f6e] dark:text-[#abf5ed]">
+                <span class="text-xs text-[#7F6A5D] dark:text-[#EADECF]/80 font-medium">Monthly</span>
+                <span class="text-lg font-black text-[#C85A32] dark:text-[#FDEEE9]">
                     @Policy.MonthlyCost.ToString("N0") @Policy.Currency
                 </span>
             </div>
-            <div class="flex items-baseline justify-between text-xs text-slate-500 dark:text-slate-400 mt-1 pt-1 border-t border-[#064f6e]/20 dark:border-[#abf5ed]/20">
+            <div class="flex items-baseline justify-between text-xs text-[#7F6A5D] dark:text-[#EADECF]/80 mt-1 pt-1 border-t border-[#EADECF] dark:border-[#3D2F28]">
                 <span>Premium (@InsuranceConstants.FormatFrequency(Policy.Frequency))</span>
-                <span class="font-medium text-slate-700 dark:text-slate-300">
+                <span class="font-medium text-[#2B1D16] dark:text-[#FAF0E6]">
                     @Policy.PremiumAmount.ToString("N0") @Policy.Currency
                 </span>
             </div>
         </div>
 
         <!-- Deductible & Notes -->
-        <div class="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-3">
+        <div class="space-y-1.5 text-xs text-[#7F6A5D] dark:text-[#EADECF]/80 mb-3">
             @if (Policy.DeductibleAmount.HasValue && Policy.DeductibleAmount.Value > 0)
             {
                 <div class="flex items-center justify-between">
                     <span>Deductible:</span>
-                    <span class="font-medium text-slate-700 dark:text-slate-300">@Policy.DeductibleAmount.Value.ToString("N0") @Policy.Currency</span>
+                    <span class="font-medium text-[#2B1D16] dark:text-[#FAF0E6]">@Policy.DeductibleAmount.Value.ToString("N0") @Policy.Currency</span>
                 </div>
             }
 
             @if (!string.IsNullOrWhiteSpace(Policy.Notes))
             {
-                <p class="text-xs text-slate-500 dark:text-slate-400 italic line-clamp-2 mt-1">
+                <p class="text-xs text-[#7F6A5D] dark:text-[#EADECF]/80 italic line-clamp-2 mt-1">
                     "@Policy.Notes"
                 </p>
             }
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Footer: Renewal status & Actions -->
-    <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+    <div class="pt-3 border-t border-[#EADECF]/60 dark:border-[#3D2F28] flex items-center justify-between">
         <!-- Renewal Tag -->
         <div>
             @if (Policy.RenewalDate.HasValue)
@@ -80,28 +80,28 @@
                 }
                 else if (daysRemaining <= 30)
                 {
-                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-wada-ecru-700 dark:text-wada-ecru-400">
-                        <span class="w-1.5 h-1.5 rounded-full bg-wada-ecru-500 animate-pulse"></span>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#D9822B] dark:text-[#FEF3E2]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#D9822B] animate-pulse"></span>
                         Renews in @daysRemaining d (@Policy.RenewalDate.Value.ToString("MMM d"))
                     </span>
                 }
                 else
                 {
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">
+                    <span class="text-[11px] text-[#7F6A5D] dark:text-[#EADECF]/70">
                         Renewal: @Policy.RenewalDate.Value.ToString("MMM d, yyyy")
                     </span>
                 }
             }
             else
             {
-                <span class="text-[11px] text-slate-400 dark:text-slate-500">No renewal date</span>
+                <span class="text-[11px] text-[#7F6A5D] dark:text-[#EADECF]/70">No renewal date</span>
             }
         </div>
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-1">
             <button @onclick="() => OnEdit.InvokeAsync(Policy)" 
-                    class="p-1.5 text-slate-400 hover:text-[#064f6e] dark:hover:text-[#abf5ed] hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    class="p-1.5 text-[#7F6A5D] hover:text-[#C85A32] dark:hover:text-[#FDEEE9] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28] rounded-lg transition-colors"
                     title="Edit policy">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -111,18 +111,18 @@
             @if (_confirmingDelete)
             {
                 <button @onclick="ConfirmDeleteAsync" 
-                        class="px-2 py-1 text-[11px] font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors shadow-sm">
+                        class="px-2 py-1 text-[11px] font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition-colors shadow-xs">
                     Confirm?
                 </button>
                 <button @onclick="() => _confirmingDelete = false" 
-                        class="p-1 text-slate-400 hover:text-slate-600 rounded">
+                        class="p-1 text-[#7F6A5D] hover:text-[#2B1D16] dark:hover:text-[#FAF0E6] rounded">
                     ✕
                 </button>
             }
             else
             {
                 <button @onclick="() => _confirmingDelete = true" 
-                        class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        class="p-1.5 text-[#7F6A5D] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28] rounded-lg transition-colors"
                         title="Delete policy">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -153,15 +153,15 @@
 
     private static string GetCategoryBadgeClass(string category) => category.ToLowerInvariant() switch
     {
-        "home" => "bg-wada-marine-50 text-wada-marine-700 dark:bg-wada-marine-950/60 dark:text-wada-ice-300",
-        "health" => "bg-wada-ice-50 text-wada-ice-800 dark:bg-wada-ice-950/60 dark:text-wada-ice-300",
-        "auto" => "bg-wada-ecru-100 text-wada-ecru-800 dark:bg-wada-ecru-950/60 dark:text-wada-ecru-300",
+        "home" => "bg-[#FDEEE9] text-[#7B2F14] dark:bg-[#C85A32]/25 dark:text-[#FDEEE9]",
+        "health" => "bg-[#EAF0E8] text-[#344630] dark:bg-[#5B7553]/25 dark:text-[#EAF0E8]",
+        "auto" => "bg-[#FEF3E2] text-[#8C4F13] dark:bg-[#D9822B]/25 dark:text-[#FEF3E2]",
         "life" => "bg-rose-50 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
-        "travel" => "bg-cyan-50 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
-        "liability" => "bg-wada-marine-50 text-wada-marine-700 dark:bg-wada-marine-950/60 dark:text-wada-ice-300",
-        "pet" => "bg-wada-ecru-100 text-wada-ecru-800 dark:bg-wada-ecru-950/60 dark:text-wada-ecru-300",
-        "dental" => "bg-wada-ice-50 text-wada-ice-800 dark:bg-wada-ice-950/60 dark:text-wada-ice-300",
+        "travel" => "bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+        "liability" => "bg-[#FDEEE9] text-[#7B2F14] dark:bg-[#C85A32]/25 dark:text-[#FDEEE9]",
+        "pet" => "bg-[#FEF3E2] text-[#8C4F13] dark:bg-[#D9822B]/25 dark:text-[#FEF3E2]",
+        "dental" => "bg-[#EAF0E8] text-[#344630] dark:bg-[#5B7553]/25 dark:text-[#EAF0E8]",
         "disability" => "bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-        _ => "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+        _ => "bg-[#FAF6F0] text-[#7F6A5D] dark:bg-[#3D2F28] dark:text-[#EADECF]"
     };
 }
