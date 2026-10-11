@@ -5,244 +5,288 @@
 @using FamilyManagement.UI.Shared.Services
 @inject NavigationManager Navigation
 
-<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-16">
-    <AppHeader CurrentSectionSubtitle="Family Management Hub" OnSettingsSaved="LoadDataAsync" />
+<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-24 md:pb-16 selection:bg-[#FDEEE9] selection:text-[#C85A32]">
+    
+    <!-- Slim Frosted Top Header -->
+    <AppHeader CurrentSectionSubtitle="Daily Glance & Timeline" OnSettingsSaved="LoadDataAsync" UpcomingRenewalCount="UpcomingRenewalCount" />
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <!-- Welcome Hero Banner -->
-        <div class="bg-gradient-to-br from-[#C85A32] via-[#B84B24] to-[#7B2F14] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-8 relative overflow-hidden border border-[#A8431F]/30">
-            <div class="absolute -right-8 -bottom-8 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="relative z-10 max-w-2xl">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 backdrop-blur-md mb-3 border border-white/20 text-[#FDEEE9]">
-                    <span class="w-2 h-2 rounded-full bg-[#FAF0E6] animate-pulse"></span>
-                    Family Cloud Sanctuary
-                </span>
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">
-                    Welcome to Family Hub
-                </h1>
-                <p class="text-[#FAF0E6]/90 text-sm sm:text-base leading-relaxed">
-                    Centralized family management. Safely archive purchase receipts, track insurance policies, follow child milestones, and manage family vehicles.
-                </p>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+        
+        <!-- Section 1: Editorial Header & Daily Glance (with soft hearth glow) -->
+        <div class="relative overflow-hidden pb-6 border-b border-[#EADECF]/80 dark:border-[#3D2F28]/80">
+            <div class="absolute -top-12 -left-12 w-64 h-64 bg-[#C85A32]/10 dark:bg-[#C85A32]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs uppercase font-bold tracking-wider text-[#7F6A5D] dark:text-[#A8988B]">
+                        @DateTime.Now.ToString("dddd, MMMM d, yyyy")
+                    </p>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-[#2B1D16] dark:text-[#FAF0E6] mt-1">
+                        @GetGreeting(), Mathi
+                    </h1>
+                    <p class="text-sm text-[#7F6A5D] dark:text-[#A8988B] mt-1">
+                        Here is your family household snapshot for today.
+                    </p>
+                </div>
+
+                <!-- Quick Status Pill Capsule -->
+                <div class="flex items-center gap-2 self-start md:self-auto">
+                    @if (UpcomingRenewalCount > 0)
+                    {
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#FEF3E2] text-[#9E530E] border border-[#D9822B]/30">
+                            <span class="w-2 h-2 rounded-full bg-[#D9822B] animate-pulse"></span>
+                            @UpcomingRenewalCount renewals pending
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#EAF0EB] text-[#4A6243] border border-[#5B7553]/30">
+                            <span class="w-2 h-2 rounded-full bg-[#5B7553]"></span>
+                            All policies up to date
+                        </span>
+                    }
+                </div>
             </div>
+        </div>
+
+        <!-- Section 2: Quick Action Bar (Tactile One-Tap Pills) -->
+        <div class="py-4 flex items-center gap-2.5 overflow-x-auto scrollbar-none">
+            <button @onclick="() => _showUploadReceiptModal = true"
+                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#C85A32] text-white hover:bg-[#A8431F] shadow-xs transition-all shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Log Expense</span>
+            </button>
+
+            <a href="vehicles"
+               class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/90 dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] hover:border-[#C85A32] hover:bg-[#FDEEE9]/30 transition-all shrink-0">
+                <svg class="w-4 h-4 text-[#C85A32]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <span>Record Mileage</span>
+            </a>
+
+            <a href="children"
+               class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/90 dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] hover:border-[#5B7553] hover:bg-[#EAF0EB]/40 transition-all shrink-0">
+                <svg class="w-4 h-4 text-[#5B7553]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span>Measure Child</span>
+            </a>
+
+            <button @onclick="() => _showAddPolicyModal = true"
+                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/90 dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] hover:border-[#D9822B] hover:bg-[#FEF3E2]/40 transition-all shrink-0">
+                <svg class="w-4 h-4 text-[#D9822B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                <span>New Policy</span>
+            </button>
         </div>
 
         @if (_isLoading)
         {
-            <div class="py-16 flex flex-col items-center justify-center text-[#7F6A5D]">
-                <div class="animate-spin h-8 w-8 border-4 border-[#C85A32] border-t-transparent rounded-full mb-3"></div>
-                <p class="text-sm font-medium text-[#7F6A5D] dark:text-[#EADECF]">Loading family overview...</p>
+            <div class="py-20 flex flex-col items-center justify-center text-[#7F6A5D]">
+                <div class="animate-spin h-8 w-8 border-3 border-[#C85A32] border-t-transparent rounded-full mb-3"></div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#7F6A5D] dark:text-[#A8988B]">Syncing family records...</p>
             </div>
         }
         else
         {
-            <!-- Upcoming Renewal Alert Banner (Honey Noticeboard) -->
+            <!-- Section 3: Urgent Attention Strip (When Applicable) -->
             @if (_insuranceOverview?.UpcomingRenewals is not null && _insuranceOverview.UpcomingRenewals.Count > 0)
             {
-                <div class="mb-8 p-5 bg-[#FEF9F2] dark:bg-[#261D19] border-2 border-[#D9822B]/40 rounded-3xl shadow-sm">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2 text-[#7F3F15] dark:text-[#FCE4BF] font-bold text-sm sm:text-base">
-                            <svg class="w-5 h-5 text-[#D9822B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="my-4 p-4 rounded-2xl bg-[#FEF9F2] dark:bg-[#261D19] border border-[#D9822B]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-[#FEF3E2] text-[#D9822B] flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
-                            <span>Action Required: @(_insuranceOverview.UpcomingRenewals.Count) Policy Renewals Approaching</span>
                         </div>
-                        <a href="insurances" class="text-xs font-bold text-[#C85A32] dark:text-[#D9822B] hover:underline">
-                            View all in Insurances &rarr;
-                        </a>
+                        <div>
+                            <span class="text-xs font-bold text-[#7F3F15] dark:text-[#FCE4BF] uppercase tracking-wider">Upcoming Policy Renewal</span>
+                            <p class="text-xs text-[#2B1D16] dark:text-[#FAF0E6] mt-0.5">
+                                <strong>@_insuranceOverview.UpcomingRenewals.First().Insurer</strong> (@_insuranceOverview.UpcomingRenewals.First().Category) expires in <strong>@_insuranceOverview.UpcomingRenewals.First().DaysRemaining days</strong>.
+                            </p>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        @foreach (var alert in _insuranceOverview.UpcomingRenewals)
-                        {
-                            <div class="bg-white dark:bg-[#1C1512] p-3.5 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] flex items-center justify-between shadow-xs">
-                                <div>
-                                    <h4 class="font-bold text-sm text-[#2B1D16] dark:text-[#FAF0E6]">@alert.Insurer</h4>
-                                    <p class="text-xs text-[#7F6A5D] dark:text-[#EADECF]/70">@alert.InsuredParty (@alert.Category)</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold @(alert.IsUrgent ? "bg-[#FCEEEB] text-[#B84A39]" : "bg-[#FEF3E2] text-[#D9822B]")">
-                                        @alert.DaysRemaining days left
-                                    </span>
-                                </div>
-                            </div>
-                        }
-                    </div>
+                    <a href="insurances" class="text-xs font-bold text-[#C85A32] dark:text-[#D9822B] hover:underline self-end sm:self-auto shrink-0">
+                        Review in Insurances &rarr;
+                    </a>
                 </div>
             }
 
-            <!-- 4-Pillar Hub Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 1. Receipts Hub Card -->
-                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#C85A32]/50 transition-all group">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-[#FDEEE9] text-[#C85A32] flex items-center justify-center group-hover:scale-105 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/>
-                                </svg>
-                            </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
-                                Google Drive
-                            </span>
-                        </div>
-
-                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Purchase Receipts</h2>
-                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
-                            Store receipt documents and photos categorized with merchant autocomplete and Google Drive archiving.
-                        </p>
-
-                        <!-- Stats Row -->
-                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
-                            <div>
-                                <p class="text-xs font-bold text-[#7F6A5D] uppercase tracking-wider">Total Stored</p>
-                                <p class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">@_receipts.Count</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-[#C85A32] uppercase tracking-wider">This Month</p>
-                                <p class="text-2xl font-black text-[#C85A32]">@ReceiptsThisMonth</p>
-                            </div>
-                        </div>
+            <!-- Section 4: Asymmetric Editorial 8:4 Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
+                
+                <!-- Left 8/12: Chronological Activity Feed -->
+                <div class="lg:col-span-8 flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xs uppercase font-bold tracking-wider text-[#7F6A5D] dark:text-[#A8988B]">
+                            Recent Household Activity
+                        </h2>
+                        <span class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">Live Event Stream</span>
                     </div>
 
-                    <div class="flex items-center gap-3 pt-2">
-                        <a href="receipts" class="flex-1 py-2.5 px-4 bg-[#C85A32] hover:bg-[#A8431F] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
-                            Open Receipts &rarr;
-                        </a>
-                        <button @onclick="() => _showUploadReceiptModal = true" class="py-2.5 px-4 bg-[#FDEEE9] hover:bg-[#F9DDD4] text-[#7B2F14] font-black text-sm rounded-xl transition-colors shadow-sm">
-                            + Upload
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 2. Insurances Hub Card -->
-                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#D9822B]/50 transition-all group">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-[#FEF3E2] text-[#D9822B] flex items-center justify-center group-hover:scale-105 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                </svg>
+                    <div class="bg-white/95 dark:bg-[#261D19]/95 backdrop-blur-md rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] ring-1 ring-[#261D19]/[0.03] dark:ring-white/[0.05] divide-y divide-[#EADECF]/60 dark:divide-[#3D2F28]/60 shadow-xs overflow-hidden">
+                        
+                        @if (_receipts.Take(5).Any())
+                        {
+                            @foreach (var receipt in _receipts.Take(5))
+                            {
+                                <div class="p-4 flex items-center justify-between hover:bg-[#FAF6F0]/60 dark:hover:bg-[#1C1512]/40 transition-colors">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-9 h-9 rounded-xl bg-[#FDEEE9] text-[#C85A32] flex items-center justify-center shrink-0">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="truncate">
+                                            <p class="text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] truncate">@receipt.Merchant</p>
+                                            <p class="text-[11px] text-[#7F6A5D] dark:text-[#A8988B] truncate">@receipt.Category · Archived to Google Drive</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0 ml-3">
+                                        <span class="text-[11px] font-semibold text-[#7F6A5D] dark:text-[#A8988B]">@receipt.FormattedDate</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="p-8 text-center text-[#7F6A5D] dark:text-[#A8988B]">
+                                <p class="text-xs">No household transactions recorded yet.</p>
                             </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
-                                Policy Tracking
-                            </span>
-                        </div>
+                        }
 
-                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Family Insurance Policies</h2>
-                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
-                            Manage home, car, health, and family insurance policies, normalized monthly/annual costs, and renewal alerts.
-                        </p>
-
-                        <!-- Stats Row -->
-                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
-                            <div>
-                                <p class="text-xs font-bold text-[#D9822B] uppercase tracking-wider">Active Policies</p>
-                                <p class="text-2xl font-black text-[#D9822B]">
-                                    @(_insuranceOverview?.ActivePolicies ?? 0)
-                                </p>
+                        <!-- Quick Vehicle Inspection Alert Row if present -->
+                        @if (_vehicles.Any(v => v.NextInspectionDate.HasValue))
+                        {
+                            var nextCar = _vehicles.Where(v => v.NextInspectionDate.HasValue).OrderBy(v => v.NextInspectionDate).First();
+                            <div class="p-4 flex items-center justify-between bg-[#F5F7F4] dark:bg-[#1C1512]/80">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl bg-[#EAF0EB] text-[#5B7553] flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="truncate">
+                                        <p class="text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] truncate">Inspection Schedule: @nextCar.Make @nextCar.Model</p>
+                                        <p class="text-[11px] text-[#5B7553] font-medium">Bilsyn due @nextCar.NextInspectionDate?.ToString("MMM yyyy")</p>
+                                    </div>
+                                </div>
+                                <a href="vehicles" class="text-xs font-semibold text-[#5B7553] hover:underline shrink-0">View</a>
                             </div>
-                            <div>
-                                <p class="text-xs font-bold text-[#C85A32] uppercase tracking-wider">Monthly Budget</p>
-                                <p class="text-2xl font-black text-[#C85A32]">
-                                    @(_insuranceOverview?.TotalMonthlyCost.ToString("N0") ?? "0") @(_insuranceOverview?.Currency ?? "DKK")
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                        }
 
-                    <div class="flex items-center gap-3 pt-2">
-                        <a href="insurances" class="flex-1 py-2.5 px-4 bg-[#D9822B] hover:bg-[#C06B1F] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
-                            Open Insurances &rarr;
-                        </a>
-                        <button @onclick="() => _showAddPolicyModal = true" class="py-2.5 px-4 bg-[#FEF3E2] hover:bg-[#FDE7C7] text-[#9E530E] font-black text-sm rounded-xl transition-colors shadow-sm">
-                            + Add Policy
-                        </button>
                     </div>
                 </div>
 
-                <!-- 3. Children Hub Card -->
-                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#5B7553]/50 transition-all group">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-[#EAF0EB] text-[#5B7553] flex items-center justify-center group-hover:scale-105 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                                </svg>
+                <!-- Right 4/12: Domain Intelligence Rail -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xs uppercase font-bold tracking-wider text-[#7F6A5D] dark:text-[#A8988B]">
+                            Domain Snapshots
+                        </h2>
+                        <span class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">4 Pillars</span>
+                    </div>
+
+                    <!-- 1. Children Wardrobe & Milestone Glance -->
+                    <div class="bg-white/95 dark:bg-[#261D19]/95 backdrop-blur-md rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] ring-1 ring-[#261D19]/[0.03] dark:ring-white/[0.05] p-4 shadow-xs hover:border-[#5B7553]/40 transition-colors">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-[#5B7553] uppercase tracking-wider">Children & Sizes</span>
+                            <a href="children" class="text-xs font-semibold text-[#5B7553] hover:underline">Profiles &rarr;</a>
+                        </div>
+                        <div class="space-y-2 mt-2">
+                            @if (_children.Any())
+                            {
+                                @foreach (var child in _children)
+                                {
+                                    <div class="flex items-center justify-between py-1 border-b border-[#EADECF]/40 dark:border-[#3D2F28]/40 last:border-0 text-xs">
+                                        <div class="font-bold text-[#2B1D16] dark:text-[#FAF0E6]">
+                                            @child.FirstName <span class="font-normal text-[#7F6A5D]">(@child.Age.Formatted)</span>
+                                        </div>
+                                        <div class="text-[#7F6A5D] dark:text-[#A8988B] text-[11px]">
+                                            Clothes: <strong>@(child.Sizes?.ClothesSize ?? "—")</strong> · Shoes: <strong>@(child.Sizes?.ShoeSize ?? "—")</strong>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-xs text-[#7F6A5D]">No children registered yet.</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- 2. Vehicles Fleet & Odometer Glance -->
+                    <div class="bg-white/95 dark:bg-[#261D19]/95 backdrop-blur-md rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] ring-1 ring-[#261D19]/[0.03] dark:ring-white/[0.05] p-4 shadow-xs hover:border-[#C85A32]/40 transition-colors">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-[#7F6A5D] uppercase tracking-wider">Vehicles Fleet</span>
+                            <a href="vehicles" class="text-xs font-semibold text-[#C85A32] hover:underline">Garage &rarr;</a>
+                        </div>
+                        <div class="space-y-1.5 mt-2">
+                            @if (_vehicles.Any())
+                            {
+                                @foreach (var vehicle in _vehicles)
+                                {
+                                    <div class="flex items-center justify-between text-xs py-1">
+                                        <span class="font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@vehicle.Make @vehicle.Model</span>
+                                        <span class="font-semibold text-[#7F6A5D] bg-[#FAF6F0] dark:bg-[#1C1512] px-2 py-0.5 rounded-lg border border-[#EADECF] dark:border-[#3D2F28]">
+                                            @vehicle.CurrentMileageKm.ToString("N0") km
+                                        </span>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-xs text-[#7F6A5D]">No vehicles tracked.</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- 3. Insurances Monthly Burn -->
+                    <div class="bg-white/95 dark:bg-[#261D19]/95 backdrop-blur-md rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] ring-1 ring-[#261D19]/[0.03] dark:ring-white/[0.05] p-4 shadow-xs hover:border-[#D9822B]/40 transition-colors">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-[#D9822B] uppercase tracking-wider">Family Insurances</span>
+                            <a href="insurances" class="text-xs font-semibold text-[#D9822B] hover:underline">View All &rarr;</a>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-1">
+                            <div>
+                                <span class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">@(_insuranceOverview?.ActivePolicies ?? 0)</span>
+                                <span class="text-xs text-[#7F6A5D] ml-1">policies active</span>
                             </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
-                                Growth & Milestones
+                            <span class="text-xs font-bold text-[#7F3F15] dark:text-[#FCE4BF] bg-[#FEF3E2] dark:bg-[#382618] px-2 py-0.5 rounded-full">
+                                @(_insuranceOverview?.TotalMonthlyCost.ToString("N0") ?? "0") @(_insuranceOverview?.Currency ?? "DKK")/mo
                             </span>
                         </div>
+                    </div>
 
-                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Children & Milestones</h2>
-                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
-                            Track child development, clothing and shoe sizes, growth percentiles, health records, and milestones.
-                        </p>
-
-                        <!-- Stats Row -->
-                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
-                            <div>
-                                <p class="text-xs font-bold text-[#5B7553] uppercase tracking-wider">Registered Children</p>
-                                <p class="text-2xl font-black text-[#5B7553]">@_children.Count</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-[#7F6A5D] uppercase tracking-wider">Status</p>
-                                <p class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">Active</p>
-                            </div>
+                    <!-- 4. Purchase Receipts Telemetry -->
+                    <div class="bg-white/95 dark:bg-[#261D19]/95 backdrop-blur-md rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] ring-1 ring-[#261D19]/[0.03] dark:ring-white/[0.05] p-4 shadow-xs hover:border-[#C85A32]/40 transition-colors">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-[#C85A32] uppercase tracking-wider">Purchase Receipts</span>
+                            <a href="receipts" class="text-xs font-semibold text-[#C85A32] hover:underline">View All &rarr;</a>
                         </div>
-                    </div>
-
-                    <div class="flex items-center gap-3 pt-2">
-                        <a href="children" class="flex-1 py-2.5 px-4 bg-[#5B7553] hover:bg-[#4A6243] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
-                            Open Children &rarr;
-                        </a>
-                    </div>
-                </div>
-
-                <!-- 4. Vehicles Hub Card -->
-                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#C85A32]/50 transition-all group">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-[#FDEEE9] text-[#B84B24] flex items-center justify-center group-hover:scale-105 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
-                                </svg>
+                        <div class="flex items-baseline justify-between mt-1">
+                            <div>
+                                <span class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">@_receipts.Count</span>
+                                <span class="text-xs text-[#7F6A5D] ml-1">total files</span>
                             </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
-                                Fleet & Maintenance
+                            <span class="text-xs font-bold text-[#C85A32] bg-[#FDEEE9] dark:bg-[#331F17] px-2 py-0.5 rounded-full">
+                                +@ReceiptsThisMonth this month
                             </span>
                         </div>
-
-                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Family Vehicles</h2>
-                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
-                            Monitor odometer readings, periodic inspections (syn), maintenance schedules, and fuel logs for family cars.
-                        </p>
-
-                        <!-- Stats Row -->
-                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
-                            <div>
-                                <p class="text-xs font-bold text-[#B84B24] uppercase tracking-wider">Vehicles</p>
-                                <p class="text-2xl font-black text-[#B84B24]">@_vehicles.Count</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-[#7F6A5D] uppercase tracking-wider">Tracking</p>
-                                <p class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">Ready</p>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="flex items-center gap-3 pt-2">
-                        <a href="vehicles" class="flex-1 py-2.5 px-4 bg-[#C85A32] hover:bg-[#A8431F] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
-                            Open Vehicles &rarr;
-                        </a>
-                    </div>
                 </div>
             </div>
         }
     </main>
 </div>
 
-<!-- Modals for Quick Actions -->
+<!-- Global Modals for Quick Actions -->
 @if (_showUploadReceiptModal)
 {
     <UploadReceiptModal ExistingMerchants="@_merchants"
@@ -257,17 +301,10 @@
 }
 
 @code {
-    [Inject]
-    public IReceiptApiClient ReceiptApi { get; set; } = null!;
-
-    [Inject]
-    public IInsuranceApiClient InsuranceApi { get; set; } = null!;
-
-    [Inject]
-    public ChildApiClient ChildApi { get; set; } = null!;
-
-    [Inject]
-    public VehicleApiClient VehicleApi { get; set; } = null!;
+    [Inject] public IReceiptApiClient ReceiptApi { get; set; } = null!;
+    [Inject] public IInsuranceApiClient InsuranceApi { get; set; } = null!;
+    [Inject] public ChildApiClient ChildApi { get; set; } = null!;
+    [Inject] public VehicleApiClient VehicleApi { get; set; } = null!;
 
     private List<ReceiptViewModel> _receipts = new();
     private List<string> _merchants = new();
@@ -281,6 +318,16 @@
 
     private int ReceiptsThisMonth =>
         _receipts.Count(r => r.CreatedAt.ToLocalTime() is var created && created.Year == DateTime.Now.Year && created.Month == DateTime.Now.Month);
+
+    private int UpcomingRenewalCount => _insuranceOverview?.UpcomingRenewals?.Count ?? 0;
+
+    private string GetGreeting()
+    {
+        var hour = DateTime.Now.Hour;
+        if (hour < 12) return "Good morning";
+        if (hour < 18) return "Good afternoon";
+        return "Good evening";
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -308,7 +355,7 @@
         }
         catch
         {
-            // Silently fall back to empty defaults on failure
+            // Silently fall back to empty state on network issue
         }
         finally
         {
