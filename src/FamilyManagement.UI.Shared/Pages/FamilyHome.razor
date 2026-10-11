@@ -1,64 +1,65 @@
 @page "/"
 @using FamilyManagement.UI.Shared.Components
 @using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Models.Children
 @using FamilyManagement.UI.Shared.Services
 @inject NavigationManager Navigation
 
-<div class="min-h-screen bg-[#fbf9f5] dark:bg-[#0b1a24] text-slate-800 dark:text-slate-100 font-sans pb-16">
+<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-16">
     <AppHeader CurrentSectionSubtitle="Family Management Hub" OnSettingsSaved="LoadDataAsync" />
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <!-- Welcome Hero -->
-        <div class="bg-gradient-to-br from-[#064f6e] via-[#053f58] to-[#042838] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-8 relative overflow-hidden">
+        <!-- Welcome Hero Banner -->
+        <div class="bg-gradient-to-br from-[#C85A32] via-[#B84B24] to-[#7B2F14] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-8 relative overflow-hidden border border-[#A8431F]/30">
             <div class="absolute -right-8 -bottom-8 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
             <div class="relative z-10 max-w-2xl">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 backdrop-blur-md mb-3 border border-white/20 text-[#abf5ed]">
-                    <span class="w-2 h-2 rounded-full bg-[#abf5ed] animate-pulse"></span>
-                    Family Cloud System
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 backdrop-blur-md mb-3 border border-white/20 text-[#FDEEE9]">
+                    <span class="w-2 h-2 rounded-full bg-[#FAF0E6] animate-pulse"></span>
+                    Family Cloud Sanctuary
                 </span>
                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">
                     Welcome to Family Hub
                 </h1>
-                <p class="text-slate-200 text-sm sm:text-base leading-relaxed">
-                    Centralized family management. Safely archive purchase receipts to Google Drive and monitor insurance policies, coverage, and renewal schedules.
+                <p class="text-[#FAF0E6]/90 text-sm sm:text-base leading-relaxed">
+                    Centralized family management. Safely archive purchase receipts, track insurance policies, follow child milestones, and manage family vehicles.
                 </p>
             </div>
         </div>
 
         @if (_isLoading)
         {
-            <div class="py-16 flex flex-col items-center justify-center text-slate-400">
-                <div class="animate-spin h-8 w-8 border-4 border-[#064f6e] dark:border-[#abf5ed] border-t-transparent rounded-full mb-3"></div>
-                <p class="text-sm font-medium">Loading family overview...</p>
+            <div class="py-16 flex flex-col items-center justify-center text-[#7F6A5D]">
+                <div class="animate-spin h-8 w-8 border-4 border-[#C85A32] border-t-transparent rounded-full mb-3"></div>
+                <p class="text-sm font-medium text-[#7F6A5D] dark:text-[#EADECF]">Loading family overview...</p>
             </div>
         }
         else
         {
-            <!-- Upcoming Renewal Alert Banner (if any) -->
+            <!-- Upcoming Renewal Alert Banner (Honey Noticeboard) -->
             @if (_insuranceOverview?.UpcomingRenewals is not null && _insuranceOverview.UpcomingRenewals.Count > 0)
             {
-                <div class="mb-8 p-5 bg-[#c0b490]/15 border-2 border-[#c0b490]/40 rounded-3xl shadow-sm">
+                <div class="mb-8 p-5 bg-[#FEF9F2] dark:bg-[#261D19] border-2 border-[#D9822B]/40 rounded-3xl shadow-sm">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2 text-[#71644c] dark:text-[#ddd0b2] font-bold text-sm sm:text-base">
-                            <svg class="w-5 h-5 text-[#a89874]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex items-center gap-2 text-[#7F3F15] dark:text-[#FCE4BF] font-bold text-sm sm:text-base">
+                            <svg class="w-5 h-5 text-[#D9822B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
                             <span>Action Required: @(_insuranceOverview.UpcomingRenewals.Count) Policy Renewals Approaching</span>
                         </div>
-                        <a href="insurances" class="text-xs font-bold text-[#064f6e] dark:text-[#abf5ed] hover:underline">
+                        <a href="insurances" class="text-xs font-bold text-[#C85A32] dark:text-[#D9822B] hover:underline">
                             View all in Insurances &rarr;
                         </a>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         @foreach (var alert in _insuranceOverview.UpcomingRenewals)
                         {
-                            <div class="bg-white dark:bg-[#122b3b] p-3.5 rounded-2xl border border-[#c0b490]/30 flex items-center justify-between shadow-xs">
+                            <div class="bg-white dark:bg-[#1C1512] p-3.5 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] flex items-center justify-between shadow-xs">
                                 <div>
-                                    <h4 class="font-bold text-sm text-slate-900 dark:text-slate-100">@alert.Insurer</h4>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">@alert.InsuredParty (@alert.Category)</p>
+                                    <h4 class="font-bold text-sm text-[#2B1D16] dark:text-[#FAF0E6]">@alert.Insurer</h4>
+                                    <p class="text-xs text-[#7F6A5D] dark:text-[#EADECF]/70">@alert.InsuredParty (@alert.Category)</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold @(alert.IsUrgent ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-[#c0b490] text-[#342d21]")">
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold @(alert.IsUrgent ? "bg-[#FCEEEB] text-[#B84A39]" : "bg-[#FEF3E2] text-[#D9822B]")">
                                         @alert.DaysRemaining days left
                                     </span>
                                 </div>
@@ -68,80 +69,80 @@
                 </div>
             }
 
-            <!-- Main Module Hub Cards -->
+            <!-- 4-Pillar Hub Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Receipts Hub Card -->
-                <div class="bg-white dark:bg-[#122b3b] rounded-3xl border border-[#e2d8c7] dark:border-[#1a3b50] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#064f6e]/50 dark:hover:border-[#abf5ed]/50 transition-all group">
+                <!-- 1. Receipts Hub Card -->
+                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#C85A32]/50 transition-all group">
                     <div>
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-[#064f6e]/15 text-[#064f6e] dark:text-[#abf5ed] flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <div class="w-12 h-12 rounded-2xl bg-[#FDEEE9] text-[#C85A32] flex items-center justify-center group-hover:scale-105 transition-transform">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/>
                                 </svg>
                             </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#fbf9f5] dark:bg-[#0b1a24] text-slate-600 dark:text-slate-300 border border-[#e2d8c7] dark:border-[#1a3b50]">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
                                 Google Drive
                             </span>
                         </div>
 
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Purchase Receipts</h2>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">
+                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Purchase Receipts</h2>
+                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
                             Store receipt documents and photos categorized with merchant autocomplete and Google Drive archiving.
                         </p>
 
                         <!-- Stats Row -->
-                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#fbf9f5] dark:bg-[#0b1a24] p-4 rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
                             <div>
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Stored</p>
-                                <p class="text-2xl font-black text-slate-900 dark:text-slate-100">@_receipts.Count</p>
+                                <p class="text-xs font-bold text-[#7F6A5D] uppercase tracking-wider">Total Stored</p>
+                                <p class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">@_receipts.Count</p>
                             </div>
                             <div>
-                                <p class="text-xs font-bold text-[#064f6e] dark:text-[#abf5ed] uppercase tracking-wider">This Month</p>
-                                <p class="text-2xl font-black text-[#064f6e] dark:text-[#abf5ed]">@ReceiptsThisMonth</p>
+                                <p class="text-xs font-bold text-[#C85A32] uppercase tracking-wider">This Month</p>
+                                <p class="text-2xl font-black text-[#C85A32]">@ReceiptsThisMonth</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-3 pt-2">
-                        <a href="receipts" class="flex-1 py-2.5 px-4 bg-[#064f6e] hover:bg-[#05425c] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
+                        <a href="receipts" class="flex-1 py-2.5 px-4 bg-[#C85A32] hover:bg-[#A8431F] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
                             Open Receipts &rarr;
                         </a>
-                        <button @onclick="() => _showUploadReceiptModal = true" class="py-2.5 px-4 bg-[#abf5ed] hover:bg-[#8eebe0] text-[#042838] font-black text-sm rounded-xl transition-colors shadow-sm">
+                        <button @onclick="() => _showUploadReceiptModal = true" class="py-2.5 px-4 bg-[#FDEEE9] hover:bg-[#F9DDD4] text-[#7B2F14] font-black text-sm rounded-xl transition-colors shadow-sm">
                             + Upload
                         </button>
                     </div>
                 </div>
 
-                <!-- Insurances Hub Card -->
-                <div class="bg-white dark:bg-[#122b3b] rounded-3xl border border-[#e2d8c7] dark:border-[#1a3b50] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#064f6e]/50 dark:hover:border-[#abf5ed]/50 transition-all group">
+                <!-- 2. Insurances Hub Card -->
+                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#D9822B]/50 transition-all group">
                     <div>
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-2xl bg-[#c0b490]/25 text-[#71644c] dark:text-[#ddd0b2] flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <div class="w-12 h-12 rounded-2xl bg-[#FEF3E2] text-[#D9822B] flex items-center justify-center group-hover:scale-105 transition-transform">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                 </svg>
                             </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#fbf9f5] dark:bg-[#0b1a24] text-slate-600 dark:text-slate-300 border border-[#e2d8c7] dark:border-[#1a3b50]">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
                                 Policy Tracking
                             </span>
                         </div>
 
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Family Insurance Policies</h2>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">
+                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Family Insurance Policies</h2>
+                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
                             Manage home, car, health, and family insurance policies, normalized monthly/annual costs, and renewal alerts.
                         </p>
 
                         <!-- Stats Row -->
-                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#fbf9f5] dark:bg-[#0b1a24] p-4 rounded-2xl border border-[#e2d8c7] dark:border-[#1a3b50]">
+                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
                             <div>
-                                <p class="text-xs font-bold text-[#71644c] dark:text-[#ddd0b2] uppercase tracking-wider">Active Policies</p>
-                                <p class="text-2xl font-black text-[#71644c] dark:text-[#ddd0b2]">
+                                <p class="text-xs font-bold text-[#D9822B] uppercase tracking-wider">Active Policies</p>
+                                <p class="text-2xl font-black text-[#D9822B]">
                                     @(_insuranceOverview?.ActivePolicies ?? 0)
                                 </p>
                             </div>
                             <div>
-                                <p class="text-xs font-bold text-[#064f6e] dark:text-[#abf5ed] uppercase tracking-wider">Monthly Budget</p>
-                                <p class="text-2xl font-black text-[#064f6e] dark:text-[#abf5ed]">
+                                <p class="text-xs font-bold text-[#C85A32] uppercase tracking-wider">Monthly Budget</p>
+                                <p class="text-2xl font-black text-[#C85A32]">
                                     @(_insuranceOverview?.TotalMonthlyCost.ToString("N0") ?? "0") @(_insuranceOverview?.Currency ?? "DKK")
                                 </p>
                             </div>
@@ -149,12 +150,91 @@
                     </div>
 
                     <div class="flex items-center gap-3 pt-2">
-                        <a href="insurances" class="flex-1 py-2.5 px-4 bg-[#064f6e] hover:bg-[#05425c] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
+                        <a href="insurances" class="flex-1 py-2.5 px-4 bg-[#D9822B] hover:bg-[#C06B1F] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
                             Open Insurances &rarr;
                         </a>
-                        <button @onclick="() => _showAddPolicyModal = true" class="py-2.5 px-4 bg-[#abf5ed] hover:bg-[#8eebe0] text-[#042838] font-black text-sm rounded-xl transition-colors shadow-sm">
+                        <button @onclick="() => _showAddPolicyModal = true" class="py-2.5 px-4 bg-[#FEF3E2] hover:bg-[#FDE7C7] text-[#9E530E] font-black text-sm rounded-xl transition-colors shadow-sm">
                             + Add Policy
                         </button>
+                    </div>
+                </div>
+
+                <!-- 3. Children Hub Card -->
+                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#5B7553]/50 transition-all group">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-[#EAF0EB] text-[#5B7553] flex items-center justify-center group-hover:scale-105 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
+                                Growth & Milestones
+                            </span>
+                        </div>
+
+                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Children & Milestones</h2>
+                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
+                            Track child development, clothing and shoe sizes, growth percentiles, health records, and milestones.
+                        </p>
+
+                        <!-- Stats Row -->
+                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
+                            <div>
+                                <p class="text-xs font-bold text-[#5B7553] uppercase tracking-wider">Registered Children</p>
+                                <p class="text-2xl font-black text-[#5B7553]">@_children.Count</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-[#7F6A5D] uppercase tracking-wider">Status</p>
+                                <p class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">Active</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <a href="children" class="flex-1 py-2.5 px-4 bg-[#5B7553] hover:bg-[#4A6243] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
+                            Open Children &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. Vehicles Hub Card -->
+                <div class="bg-white dark:bg-[#261D19] rounded-3xl border border-[#EADECF] dark:border-[#3D2F28] shadow-sm p-6 sm:p-7 flex flex-col justify-between hover:border-[#C85A32]/50 transition-all group">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-[#FDEEE9] text-[#B84B24] flex items-center justify-center group-hover:scale-105 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28]">
+                                Fleet & Maintenance
+                            </span>
+                        </div>
+
+                        <h2 class="text-xl font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-2">Family Vehicles</h2>
+                        <p class="text-[#7F6A5D] dark:text-[#EADECF]/80 text-sm mb-6">
+                            Monitor odometer readings, periodic inspections (syn), maintenance schedules, and fuel logs for family cars.
+                        </p>
+
+                        <!-- Stats Row -->
+                        <div class="grid grid-cols-2 gap-3 mb-6 bg-[#F3ECE1] dark:bg-[#1C1512] p-4 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28]">
+                            <div>
+                                <p class="text-xs font-bold text-[#B84B24] uppercase tracking-wider">Vehicles</p>
+                                <p class="text-2xl font-black text-[#B84B24]">@_vehicles.Count</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-[#7F6A5D] uppercase tracking-wider">Tracking</p>
+                                <p class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">Ready</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <a href="vehicles" class="flex-1 py-2.5 px-4 bg-[#C85A32] hover:bg-[#A8431F] text-white font-bold text-sm rounded-xl text-center shadow-md transition-all hover:shadow-lg">
+                            Open Vehicles &rarr;
+                        </a>
                     </div>
                 </div>
             </div>
@@ -183,9 +263,17 @@
     [Inject]
     public IInsuranceApiClient InsuranceApi { get; set; } = null!;
 
+    [Inject]
+    public ChildApiClient ChildApi { get; set; } = null!;
+
+    [Inject]
+    public VehicleApiClient VehicleApi { get; set; } = null!;
+
     private List<ReceiptViewModel> _receipts = new();
     private List<string> _merchants = new();
     private InsuranceOverviewModel? _insuranceOverview;
+    private List<ChildProfileModel> _children = new();
+    private List<VehicleDto> _vehicles = new();
     private bool _isLoading = true;
 
     private bool _showUploadReceiptModal = false;
@@ -207,12 +295,16 @@
             var receiptsTask = ReceiptApi.GetReceiptsAsync();
             var merchantsTask = ReceiptApi.GetMerchantsAsync();
             var insuranceTask = InsuranceApi.GetOverviewAsync();
+            var childrenTask = ChildApi.ListChildrenAsync();
+            var vehiclesTask = VehicleApi.GetVehiclesAsync();
 
-            await Task.WhenAll(receiptsTask, merchantsTask, insuranceTask);
+            await Task.WhenAll(receiptsTask, merchantsTask, insuranceTask, childrenTask, vehiclesTask);
 
             _receipts = await receiptsTask;
             _merchants = await merchantsTask;
             _insuranceOverview = await insuranceTask;
+            _children = await childrenTask;
+            _vehicles = await vehiclesTask;
         }
         catch
         {
