@@ -1,6 +1,9 @@
 services:
   family-management-api:
     image: angelrush91/family-management-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.api
     container_name: family-management-api
     restart: unless-stopped
     expose:
