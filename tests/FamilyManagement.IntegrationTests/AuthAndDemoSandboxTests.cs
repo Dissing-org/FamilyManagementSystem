@@ -50,11 +50,13 @@ public class AuthAndDemoSandboxTests : IClassFixture<WebApplicationFactory<Progr
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
-    public async Task CloudflareHeader_WithOwnerEmail_ShouldAuthenticateAsOwner_AndForbidDemoReset()
+    [Theory]
+    [InlineData("mathi@familyhub.dk")]
+    [InlineData("owner@dissing.dev")]
+    public async Task CloudflareHeader_WithNonDemoEmail_ShouldAuthenticateAsOwner_AndForbidDemoReset(string email)
     {
         var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add(HybridAuthenticationHandler.CfAccessEmailHeader, "mathi@familyhub.dk");
+        client.DefaultRequestHeaders.Add(HybridAuthenticationHandler.CfAccessEmailHeader, email);
 
         var sessionResponse = await client.GetAsync("/api/auth/session");
         sessionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -62,6 +64,7 @@ public class AuthAndDemoSandboxTests : IClassFixture<WebApplicationFactory<Progr
         session.Should().NotBeNull();
         session!.IsAuthenticated.Should().BeTrue();
         session.Role.Should().Be("Owner");
+        session.Email.Should().Be(email);
         session.DisplayName.Should().Be("Mathi");
 
         var receiptsResponse = await client.GetAsync("/api/receipts");
@@ -72,6 +75,38 @@ public class AuthAndDemoSandboxTests : IClassFixture<WebApplicationFactory<Progr
 
         var resetResponse = await client.PostAsync("/api/demo/reset", null);
         resetResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task CloudflareHeader_WithDemoEmail_ShouldRequireDemoLogin_AndThenAuthenticateAsDemo()
+    {
+        var demoClient = _factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            HandleCookies = true
+        });
+        demoClient.DefaultRequestHeaders.Add(HybridAuthenticationHandler.CfAccessEmailHeader, "demo@familyhub.dk");
+
+        var initialSession = await demoClient.GetFromJsonAsync<AuthSessionResponse>("/api/auth/session");
+        initialSession.Should().NotBeNull();
+        initialSession!.IsAuthenticated.Should().BeFalse();
+
+        var unauthReceiptsResponse = await demoClient.GetAsync("/api/receipts");
+        unauthReceiptsResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+        var loginResponse = await demoClient.PostAsJsonAsync("/api/auth/login", new LoginRequest
+        {
+            Email = "demo@familyhub.dk",
+            Password = "FamilyHubDemo2026!"
+        });
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var activeSession = await demoClient.GetFromJsonAsync<AuthSessionResponse>("/api/auth/session");
+        activeSession.Should().NotBeNull();
+        activeSession!.IsAuthenticated.Should().BeTrue();
+        activeSession.Role.Should().Be("Demo");
+
+        var demoReceiptsResponse = await demoClient.GetAsync("/api/receipts");
+        demoReceiptsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]

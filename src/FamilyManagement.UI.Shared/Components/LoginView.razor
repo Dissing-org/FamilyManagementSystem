@@ -49,11 +49,10 @@
                     </label>
                     <input id="login-email"
                            type="email"
-                           required
-                           @bind="_email"
-                           @bind:event="oninput"
+                           readonly
+                           value="@_email"
                            placeholder="demo@familyhub.dk"
-                           class="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-sm text-[#2B1D16] dark:text-[#FAF0E6] placeholder-[#7F6A5D]/50 focus:outline-none focus:ring-2 focus:ring-[#C85A32] focus:border-transparent transition-all" />
+                           class="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-sm text-[#2B1D16] dark:text-[#FAF0E6] placeholder-[#7F6A5D]/50 cursor-not-allowed opacity-80 focus:outline-none transition-all" />
                 </div>
 
                 <div>
@@ -112,17 +111,30 @@
     [Parameter]
     public EventCallback OnLoginSuccess { get; set; }
 
-    private string _email = string.Empty;
+    private string _email = "demo@familyhub.dk";
     private string _password = string.Empty;
     private string? _errorMessage;
     private bool _isSubmitting;
 
+    protected override void OnInitialized()
+    {
+        _email = ResolveDemoEmail();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _email = ResolveDemoEmail();
+    }
+
+    private string ResolveDemoEmail() =>
+        string.IsNullOrWhiteSpace(AuthSession.Current.DemoEmailHint)
+            ? "demo@familyhub.dk"
+            : AuthSession.Current.DemoEmailHint;
+
     private void FillDemoCredentials()
     {
         _errorMessage = null;
-        _email = string.IsNullOrWhiteSpace(AuthSession.Current.DemoEmailHint)
-            ? "demo@familyhub.dk"
-            : AuthSession.Current.DemoEmailHint;
+        _email = ResolveDemoEmail();
         _password = string.IsNullOrWhiteSpace(AuthSession.Current.DemoPasswordHint)
             ? "FamilyHubDemo2026!"
             : AuthSession.Current.DemoPasswordHint;
@@ -137,7 +149,9 @@
 
         try
         {
-            var (success, error) = await AuthSession.LoginAsync(_email.Trim(), _password);
+            var demoEmail = ResolveDemoEmail();
+            _email = demoEmail;
+            var (success, error) = await AuthSession.LoginAsync(demoEmail, _password);
             if (success)
             {
                 await OnLoginSuccess.InvokeAsync();

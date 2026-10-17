@@ -94,11 +94,14 @@
                 </svg>
             </button>
 
-            <button @onclick="HandleLogoutAsync"
-                    class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] hover:bg-[#EADECF]/40 dark:hover:bg-[#3D2F28] transition-all shrink-0 cursor-pointer"
-                    title="@L["Header.SignOut"]">
-                @L["Header.SignOut"]
-            </button>
+            @if (AuthSession.Current.IsDemo)
+            {
+                <button @onclick="HandleLogoutAsync"
+                        class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] hover:bg-[#EADECF]/40 dark:hover:bg-[#3D2F28] transition-all shrink-0 cursor-pointer"
+                        title="@L["Header.SignOut"]">
+                    @L["Header.SignOut"]
+                </button>
+            }
         </div>
     </div>
 </header>
