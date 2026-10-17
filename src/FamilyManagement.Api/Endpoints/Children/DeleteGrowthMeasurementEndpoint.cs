@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.UseCases.Children.Commands;
 
 namespace FamilyManagement.Api.Endpoints.Children;
@@ -20,7 +20,6 @@ public class DeleteGrowthMeasurementEndpoint : Endpoint<DeleteGrowthMeasurementR
     public override void Configure()
     {
         Delete("/api/children/growth/{id}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Delete a growth measurement";

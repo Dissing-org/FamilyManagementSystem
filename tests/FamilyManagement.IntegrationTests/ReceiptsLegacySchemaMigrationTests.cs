@@ -109,5 +109,6 @@ public class ReceiptsLegacySchemaMigrationTests : IDisposable
         {
             try { File.Delete(path); } catch { /* best effort cleanup */ }
         }
+        GC.SuppressFinalize(this);
     }
 }

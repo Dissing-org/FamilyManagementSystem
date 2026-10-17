@@ -49,10 +49,7 @@ public class GrowthMeasurement
         decimal? headCircumferenceCm = null,
         string? notes = null)
     {
-        if (childId is null)
-        {
-            throw new ArgumentNullException(nameof(childId));
-        }
+        ArgumentNullException.ThrowIfNull(childId);
 
         if (recordedDate.Date > DateTime.UtcNow.Date.AddDays(1))
         {

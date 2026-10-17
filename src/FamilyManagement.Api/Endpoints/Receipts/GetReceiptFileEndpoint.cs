@@ -1,5 +1,6 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using Microsoft.Extensions.Options;
+using FamilyManagement.Application.Interfaces;
 using FamilyManagement.Infrastructure.Storage;
 
 namespace FamilyManagement.Api.Endpoints.Receipts;
@@ -12,16 +13,17 @@ public class GetReceiptFileRequest
 public class GetReceiptFileEndpoint : Endpoint<GetReceiptFileRequest>
 {
     private readonly GoogleDriveOptions _options;
+    private readonly ITenantContext _tenantContext;
 
-    public GetReceiptFileEndpoint(IOptions<GoogleDriveOptions> options)
+    public GetReceiptFileEndpoint(IOptions<GoogleDriveOptions> options, ITenantContext tenantContext)
     {
         _options = options.Value;
+        _tenantContext = tenantContext;
     }
 
     public override void Configure()
     {
         Get("/api/receipts/files/{FileId}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Stream or view a locally stored receipt file";
@@ -31,22 +33,36 @@ public class GetReceiptFileEndpoint : Endpoint<GetReceiptFileRequest>
 
     public override async Task HandleAsync(GetReceiptFileRequest req, CancellationToken ct)
     {
-        var configured = _options.LocalStorageDirectory;
-        if (string.IsNullOrWhiteSpace(configured))
+        string baseDir;
+        if (_tenantContext.IsDemo)
         {
-            configured = _options.LocalStorageFallbackDirectory;
-        }
+            var demoConfigured = string.IsNullOrWhiteSpace(_options.DemoLocalStorageDirectory)
+                ? "demo_receipts_storage"
+                : _options.DemoLocalStorageDirectory;
 
-        if (string.IsNullOrWhiteSpace(configured))
+            baseDir = Path.IsPathRooted(demoConfigured)
+                ? demoConfigured
+                : Path.Combine(AppContext.BaseDirectory, demoConfigured);
+        }
+        else
         {
-            configured = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "FamilyManagementReceipts");
-        }
+            var configured = _options.LocalStorageDirectory;
+            if (string.IsNullOrWhiteSpace(configured))
+            {
+                configured = _options.LocalStorageFallbackDirectory;
+            }
 
-        var baseDir = Path.IsPathRooted(configured)
-            ? configured
-            : Path.Combine(AppContext.BaseDirectory, configured);
+            if (string.IsNullOrWhiteSpace(configured))
+            {
+                configured = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "FamilyManagementReceipts");
+            }
+
+            baseDir = Path.IsPathRooted(configured)
+                ? configured
+                : Path.Combine(AppContext.BaseDirectory, configured);
+        }
 
         if (!Directory.Exists(baseDir))
         {

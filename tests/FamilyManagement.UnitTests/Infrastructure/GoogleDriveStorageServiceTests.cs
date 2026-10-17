@@ -30,6 +30,7 @@ public class GoogleDriveStorageServiceTests : IDisposable
                 // Best effort cleanup in tests
             }
         }
+        GC.SuppressFinalize(this);
     }
 
     [Theory]

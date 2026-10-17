@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 using FamilyManagement.Domain.Enums;
@@ -67,7 +67,6 @@ public class UpdateVehicleEndpoint : Endpoint<UpdateVehicleRequest, VehicleDto>
     public override void Configure()
     {
         Put("/api/vehicles/{id}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Update vehicle details";

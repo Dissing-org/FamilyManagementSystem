@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Queries;
 
@@ -21,7 +21,6 @@ public class GetChildDashboardEndpoint : Endpoint<GetChildDashboardRequest, Chil
     public override void Configure()
     {
         Get("/api/children/{id}/dashboard");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get child development dashboard";

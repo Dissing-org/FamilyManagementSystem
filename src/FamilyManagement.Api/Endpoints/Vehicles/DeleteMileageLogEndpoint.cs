@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.Vehicles;
 
 namespace FamilyManagement.Api.Endpoints.Vehicles;
@@ -21,7 +21,6 @@ public class DeleteMileageLogEndpoint : Endpoint<DeleteMileageLogRequest>
     public override void Configure()
     {
         Delete("/api/vehicles/{id}/mileage/{logId}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Delete a mileage log entry";

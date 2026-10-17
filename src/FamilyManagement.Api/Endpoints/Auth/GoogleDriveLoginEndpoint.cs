@@ -6,16 +6,17 @@ namespace FamilyManagement.Api.Endpoints.Auth;
 public class GoogleDriveLoginEndpoint : EndpointWithoutRequest
 {
     private readonly IGoogleDriveAuthService _authService;
+    private readonly ITenantContext _tenantContext;
 
-    public GoogleDriveLoginEndpoint(IGoogleDriveAuthService authService)
+    public GoogleDriveLoginEndpoint(IGoogleDriveAuthService authService, ITenantContext tenantContext)
     {
         _authService = authService;
+        _tenantContext = tenantContext;
     }
 
     public override void Configure()
     {
         Get("/api/auth/google/login");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Initiate Google Drive OAuth login";
@@ -25,6 +26,12 @@ public class GoogleDriveLoginEndpoint : EndpointWithoutRequest
 
     public override async Task HandleAsync(CancellationToken ct)
     {
+        if (_tenantContext.IsDemo)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.Forbid());
+            return;
+        }
+
         if (!_authService.IsConfigured)
         {
             await HttpContext.Response.SendResultAsync(TypedResults.BadRequest("Google Drive OAuth is not configured. Please set GoogleDrive:ClientId and GoogleDrive:ClientSecret in appsettings.json."));

@@ -20,15 +20,40 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install SonarScanner Tool
+        run: dotnet tool install --global dotnet-sonarscanner || exit 0
+
+      - name: SonarQube Begin
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          dotnet-sonarscanner begin /k:"familymanagementsystem" /n:"FamilyManagementSystem" /d:sonar.host.url="%SONAR_HOST_URL%" /d:sonar.token="%SONAR_TOKEN%" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/tests/**,**/*Tests/**,**/*Tests.cs,**/Migrations/**,**/Program.cs,**/AppHost.cs,**/DependencyInjection.cs,**/src/FamilyManagement.UI.Shared/Services/**,**/*.razor" /d:sonar.exclusions="**/bin/**,**/obj/**,**/wwwroot/**,**/node_modules/**,**/.tools/**,**/Migrations/**,**/*.g.cs,**/*.Designer.cs" /d:sonar.cpd.exclusions="**/Migrations/**,**/Program.cs,**/SqliteSchemaInitializer.cs"
 
       - name: Restore Dependencies
         run: dotnet restore FamilyManagementSystem.slnf
 
       - name: Build Solution
-        run: dotnet build FamilyManagementSystem.slnf --configuration Release --no-restore
+        run: dotnet build FamilyManagementSystem.slnf --configuration Release --no-restore --no-incremental
 
-      - name: Run Tests
-        run: dotnet test FamilyManagementSystem.slnf --configuration Release --no-build --verbosity normal
+      - name: Run Tests & Collect Coverage
+        run: dotnet test FamilyManagementSystem.slnf --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage;Format=opencover"
+
+      - name: SonarQube End
+        if: always()
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet-sonarscanner end /d:sonar.token="%SONAR_TOKEN%"
 
   docker-publish:
     name: Build & Publish to Docker Hub

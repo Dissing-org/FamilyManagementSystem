@@ -46,40 +46,40 @@ public class SeedStandardMilestonesCommandHandler
 
     private static List<ChildMilestone> GetStandardGuidelines(ChildId childId) => new()
     {
-        ChildMilestone.CreateExpected(childId, "Smiles at people", MilestoneCategory.SocialEmotional, 2, 3, "Can briefly calm himself, looks at parents", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Coos, makes gurgling sounds", MilestoneCategory.LanguageSpeech, 2, 3, "Turns head toward sounds", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Holds head up when on tummy", MilestoneCategory.GrossMotor, 2, 3, "Pushes up when lying on tummy", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Smiler til mennesker", MilestoneCategory.SocialEmotional, 2, 3, "Kan kortvarigt berolige sig selv og kigger på forældre", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Kurrer og laver pludrelyde", MilestoneCategory.LanguageSpeech, 2, 3, "Drejer hovedet mod lyde", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Løfter hovedet på maven", MilestoneCategory.GrossMotor, 2, 3, "Skubber sig op, når barnet ligger på maven", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "Chuckles and laughs", MilestoneCategory.LanguageSpeech, 4, 5, "Begins to babble with expression", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Reaches for toy with one hand", MilestoneCategory.FineMotor, 4, 6, "Uses hands and eyes together", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Rolls over from tummy to back", MilestoneCategory.GrossMotor, 4, 6, "Can roll from front to back", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Klukker og griner", MilestoneCategory.LanguageSpeech, 4, 5, "Begynder at pludre med udtryk", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Rækker ud efter legetøj med én hånd", MilestoneCategory.FineMotor, 4, 6, "Bruger hænder og øjne sammen", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Triller fra mave til ryg", MilestoneCategory.GrossMotor, 4, 6, "Kan trille fra mave til ryg", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "First baby tooth emerges", MilestoneCategory.Dental, 6, 10, "Usually lower central incisors", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Sits without support", MilestoneCategory.GrossMotor, 6, 8, "Sits steadily with hands free to play", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Passes things from one hand to another", MilestoneCategory.FineMotor, 6, 8, "Explores objects by putting in mouth", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Responds to own name", MilestoneCategory.LanguageSpeech, 6, 7, "Turns head when name is called", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Første mælketand bryder frem", MilestoneCategory.Dental, 6, 10, "Typisk de nederste fortænder i midten", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Sidder uden støtte", MilestoneCategory.GrossMotor, 6, 8, "Sidder stabilt med hænderne fri til at lege", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Flytter ting fra den ene hånd til den anden", MilestoneCategory.FineMotor, 6, 8, "Undersøger ting ved at putte dem i munden", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Reagerer på eget navn", MilestoneCategory.LanguageSpeech, 6, 7, "Drejer hovedet, når navnet bliver kaldt", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "Crawling on hands and knees", MilestoneCategory.GrossMotor, 9, 11, "Gets into sitting position and crawls", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Pulls up to stand", MilestoneCategory.GrossMotor, 9, 11, "Pulls up on furniture", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Pincer grasp (thumb and index finger)", MilestoneCategory.FineMotor, 9, 12, "Picks up small pieces of food", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Plays peek-a-boo", MilestoneCategory.SocialEmotional, 9, 10, "Has favorite toys and looks for hidden items", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Kravler på hænder og knæ", MilestoneCategory.GrossMotor, 9, 11, "Sætter sig selv op og kravler", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Trækker sig op at stå", MilestoneCategory.GrossMotor, 9, 11, "Trækker sig op ved møbler", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Pincetgreb (tommel- og pegefinger)", MilestoneCategory.FineMotor, 9, 12, "Samler små stykker mad op", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Leger borte-tit-tit", MilestoneCategory.SocialEmotional, 9, 10, "Har yndlingslegetøj og leder efter gemte ting", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "First independent steps / Walking", MilestoneCategory.GrossMotor, 12, 15, "Takes a few steps without holding on", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Says first clear word (e.g. Mama, Dada)", MilestoneCategory.LanguageSpeech, 12, 14, "Uses simple gestures like waving bye-bye", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Drinks from an open cup / sippy cup", MilestoneCategory.HealthSelfCare, 12, 14, "Helps when being dressed", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Første selvstændige skridt / Går selv", MilestoneCategory.GrossMotor, 12, 15, "Tager et par skridt uden at holde fast", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Siger første tydelige ord (f.eks. Mor, Far)", MilestoneCategory.LanguageSpeech, 12, 14, "Bruger enkle fagter som at vinke farvel", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Drikker af åben kop / tudkop", MilestoneCategory.HealthSelfCare, 12, 14, "Hjælper til, når barnet får tøj på", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "Says 10 or more words", MilestoneCategory.LanguageSpeech, 18, 20, "Points to show someone what he wants", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Walks up steps and runs", MilestoneCategory.GrossMotor, 18, 20, "Pulls toys while walking", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Eats with a spoon", MilestoneCategory.FineMotor, 18, 20, "Can scribble on paper", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Siger 10 eller flere ord", MilestoneCategory.LanguageSpeech, 18, 20, "Peger for at vise, hvad barnet vil have", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Går op ad trapper og løber", MilestoneCategory.GrossMotor, 18, 20, "Trækker legetøj efter sig, mens det går", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Spiser med ske", MilestoneCategory.FineMotor, 18, 20, "Kan tegne kruseduller på papir", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "Says 2-4 word sentences", MilestoneCategory.LanguageSpeech, 24, 28, "Repeats words overheard in conversations", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Kicks a ball forward", MilestoneCategory.GrossMotor, 24, 28, "Jumps with both feet off the ground", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Builds tower of 4+ blocks", MilestoneCategory.FineMotor, 24, 28, "Sorts shapes and colors", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Siger sætninger på 2-4 ord", MilestoneCategory.LanguageSpeech, 24, 28, "Gentager ord hørt i samtaler", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Sparker en bold fremad", MilestoneCategory.GrossMotor, 24, 28, "Hopper med begge fødder fri af gulvet", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Bygger tårn af 4+ klodser", MilestoneCategory.FineMotor, 24, 28, "Sorterer former og farver", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "Daytime potty trained", MilestoneCategory.HealthSelfCare, 36, 42, "Stays dry during day, uses toilet with help", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Rides a tricycle", MilestoneCategory.GrossMotor, 36, 42, "Pedals tricycle with good balance", isStandardGuideline: true),
-        ChildMilestone.CreateExpected(childId, "Carries on conversation of 2-3 sentences", MilestoneCategory.LanguageSpeech, 36, 40, "Speaks clearly enough for strangers to understand", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Renlig om dagen", MilestoneCategory.HealthSelfCare, 36, 42, "Holder sig tør om dagen og bruger toilet med hjælp", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Kører på trehjulet cykel", MilestoneCategory.GrossMotor, 36, 42, "Træder i pedalerne med god balance", isStandardGuideline: true),
+        ChildMilestone.CreateExpected(childId, "Fører en samtale på 2-3 sætninger", MilestoneCategory.LanguageSpeech, 36, 40, "Taler tydeligt nok til, at fremmede kan forstå det", isStandardGuideline: true),
 
-        ChildMilestone.CreateExpected(childId, "Loses first baby tooth", MilestoneCategory.Dental, 72, 84, "Primary central incisor naturally falls out", isStandardGuideline: true)
+        ChildMilestone.CreateExpected(childId, "Taber første mælketand", MilestoneCategory.Dental, 72, 84, "Den første mælketand falder naturligt ud", isStandardGuideline: true)
     };
 }

@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.UseCases.Insurances.Commands;
 
 namespace FamilyManagement.Api.Endpoints.Insurances;
@@ -20,7 +20,6 @@ public class DeleteInsurancePolicyEndpoint : Endpoint<DeleteInsurancePolicyReque
     public override void Configure()
     {
         Delete("/api/insurances/{id}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Delete an insurance policy";

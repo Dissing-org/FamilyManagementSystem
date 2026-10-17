@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Queries;
 using FamilyManagement.Domain.Enums;
@@ -24,7 +24,6 @@ public class GetMilestonesEndpoint : Endpoint<GetMilestonesRequest, List<ChildMi
     public override void Configure()
     {
         Get("/api/children/{childId}/milestones");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get child milestones";

@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Insurances;
 using FamilyManagement.Application.UseCases.Insurances.Queries;
 
@@ -21,7 +21,6 @@ public class GetInsuranceOverviewEndpoint : Endpoint<GetInsuranceOverviewRequest
     public override void Configure()
     {
         Get("/api/insurances/overview");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get insurance overview and renewals";

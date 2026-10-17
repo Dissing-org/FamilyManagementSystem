@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 using FamilyManagement.Domain.Enums;
@@ -58,7 +58,6 @@ public class RecordVehicleServiceEndpoint : Endpoint<RecordVehicleServiceRequest
     public override void Configure()
     {
         Post("/api/vehicles/{id}/services");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Record a vehicle service event";

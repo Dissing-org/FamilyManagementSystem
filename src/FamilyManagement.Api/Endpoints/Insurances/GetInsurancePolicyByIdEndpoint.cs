@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Insurances;
 using FamilyManagement.Application.UseCases.Insurances.Queries;
 
@@ -21,7 +21,6 @@ public class GetInsurancePolicyByIdEndpoint : Endpoint<GetInsurancePolicyByIdReq
     public override void Configure()
     {
         Get("/api/insurances/{id}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get insurance policy by ID";

@@ -34,3 +34,7 @@ appsettings.*.local.json
 
 ## Local Agents & Plugins
 .agents/
+.tools/
+.sonarqube/
+.sonarlint/
+scratch/

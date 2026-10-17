@@ -15,10 +15,18 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("ReceiptDatabase") ?? "Data Source=receipts.db";
+        services.AddDbContext<ReceiptDbContext>((sp, options) =>
+        {
+            var config = sp.GetService<IConfiguration>() ?? configuration;
+            var tenant = sp.GetService<ITenantContext>();
+            var isDemo = tenant?.Role == WorkspaceRole.Demo;
 
-        services.AddDbContext<ReceiptDbContext>(options =>
-            options.UseSqlite(connectionString));
+            var connectionString = isDemo
+                ? (config.GetConnectionString("DemoDatabase") ?? "Data Source=demo.db")
+                : (config.GetConnectionString("ReceiptDatabase") ?? "Data Source=receipts.db");
+
+            options.UseSqlite(connectionString);
+        });
 
         services.AddScoped<IReceiptRepository, ReceiptRepository>();
         services.AddScoped<IInsurancePolicyRepository, InsurancePolicyRepository>();
@@ -34,6 +42,9 @@ public static class DependencyInjection
 
         services.AddSingleton<IGoogleDriveAuthService, GoogleDriveAuthService>();
         services.AddScoped<IReceiptFileStorageService, GoogleDriveStorageService>();
+
+        services.AddSingleton<IDemoDataSeeder, DemoDataSeeder>();
+        services.AddHostedService<DemoResetHostedService>();
 
         return services;
     }

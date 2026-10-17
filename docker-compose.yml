@@ -8,18 +8,29 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__ReceiptDatabase=Data Source=/app/data/receipts.db
+      - ConnectionStrings__DemoDatabase=Data Source=/app/data/demo.db
       - GoogleDrive__StorageProvider=Local
       - GoogleDrive__LocalStorageDirectory=/app/receipts_storage
+      - GoogleDrive__DemoLocalStorageDirectory=/app/data/demo_receipts_storage
+      - Auth__OwnerEmail=${OWNER_EMAIL:-mathi@familyhub.dk}
+      - Auth__DemoEmail=${DEMO_EMAIL:-demo@familyhub.dk}
+      - Auth__DemoPassword=${DEMO_PASSWORD:-FamilyHubDemo2026!}
+      - Auth__AllowDevelopmentOwnerFallback=false
     volumes:
       - family_data:/app/data
       - C:\Users\mathi\Documents\FamilyManagementReceipts:/app/receipts_storage
 
   family-management:
     image: angelrush91/family-management-web:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.web
     container_name: family-management
     restart: unless-stopped
     ports:
       - "8080:8080"
+    volumes:
+      - ./logs/web:/var/log/nginx
     depends_on:
       - family-management-api
 

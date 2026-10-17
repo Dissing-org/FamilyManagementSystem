@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Commands;
 using FluentValidation;
@@ -38,7 +38,6 @@ public class MarkMilestoneAchievedEndpoint : Endpoint<MarkMilestoneAchievedReque
     public override void Configure()
     {
         Put("/api/children/milestones/{id}/achieve");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Mark a milestone as achieved";

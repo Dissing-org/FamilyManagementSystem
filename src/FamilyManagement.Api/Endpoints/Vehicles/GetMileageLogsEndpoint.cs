@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.Vehicles;
 
 namespace FamilyManagement.Api.Endpoints.Vehicles;
@@ -20,7 +20,6 @@ public class GetMileageLogsEndpoint : Endpoint<GetMileageLogsRequest, List<Milea
     public override void Configure()
     {
         Get("/api/vehicles/{id}/mileage");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get mileage logs for a vehicle";

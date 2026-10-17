@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.Vehicles;
 
 namespace FamilyManagement.Api.Endpoints.Vehicles;
@@ -20,7 +20,6 @@ public class GetServiceRecordsEndpoint : Endpoint<GetServiceRecordsRequest, List
     public override void Configure()
     {
         Get("/api/vehicles/{id}/services");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get service history for a vehicle";

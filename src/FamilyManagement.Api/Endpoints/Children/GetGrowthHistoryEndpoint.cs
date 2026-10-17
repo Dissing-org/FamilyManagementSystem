@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Queries;
 
@@ -21,7 +21,6 @@ public class GetGrowthHistoryEndpoint : Endpoint<GetGrowthHistoryRequest, List<G
     public override void Configure()
     {
         Get("/api/children/{childId}/growth");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get child growth measurement history";

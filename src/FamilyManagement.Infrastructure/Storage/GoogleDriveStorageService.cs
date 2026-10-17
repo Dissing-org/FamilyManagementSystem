@@ -14,21 +14,23 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
     private readonly GoogleDriveOptions _options;
     private readonly ILogger<GoogleDriveStorageService> _logger;
     private readonly IGoogleDriveAuthService? _authService;
+    private readonly ITenantContext? _tenantContext;
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _folderIdCache = new();
 
     public GoogleDriveStorageService(
         IOptions<GoogleDriveOptions> options,
         ILogger<GoogleDriveStorageService> logger,
-        IGoogleDriveAuthService? authService = null)
+        IGoogleDriveAuthService? authService = null,
+        ITenantContext? tenantContext = null)
     {
         _options = options.Value;
         _logger = logger;
         _authService = authService;
+        _tenantContext = tenantContext;
     }
 
     private async Task<DriveService?> TryGetDriveServiceAsync(CancellationToken cancellationToken)
     {
-        // 1. Try OAuth 2.0 User Credential (preferred for personal Google Drive)
         if (_authService is GoogleDriveAuthService concreteAuth)
         {
             var userDrive = await concreteAuth.TryCreateUserDriveServiceAsync(cancellationToken);
@@ -38,10 +40,10 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
             }
         }
 
-        // 2. Try Service Account (for Workspace Shared Drives)
         if (!string.IsNullOrWhiteSpace(_options.CredentialsJsonPath) && File.Exists(_options.CredentialsJsonPath))
         {
-            var credential = GoogleCredential.FromFile(_options.CredentialsJsonPath)
+            var credential = CredentialFactory.FromFile<ServiceAccountCredential>(_options.CredentialsJsonPath)
+                .ToGoogleCredential()
                 .CreateScoped(DriveService.Scope.DriveFile);
 
             return new DriveService(new BaseClientService.Initializer
@@ -65,14 +67,23 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
 
     public string ResolveLocalStorageDirectory()
     {
+        if (_tenantContext?.IsDemo == true)
+        {
+            var demoDir = string.IsNullOrWhiteSpace(_options.DemoLocalStorageDirectory)
+                ? "demo_receipts_storage"
+                : _options.DemoLocalStorageDirectory;
+
+            return Path.IsPathRooted(demoDir)
+                ? demoDir
+                : Path.Combine(AppContext.BaseDirectory, demoDir);
+        }
+
         var configured = _options.LocalStorageDirectory;
         if (string.IsNullOrWhiteSpace(configured))
         {
             configured = _options.LocalStorageFallbackDirectory;
         }
 
-        // If running in a Linux container but configured with a Windows-style path (e.g. C:\... or C:/...),
-        // fall back to /app/receipts_storage if it exists
         if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows) &&
             !string.IsNullOrWhiteSpace(configured) &&
             (configured.Length > 1 && configured[1] == ':'))
@@ -103,8 +114,8 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         ReceiptUploadMetadata? metadata,
         CancellationToken cancellationToken = default)
     {
-        // If configured for Local storage, save directly to local PC directory
-        if (string.Equals(_options.StorageProvider, "Local", StringComparison.OrdinalIgnoreCase))
+        if (_tenantContext?.IsDemo == true ||
+            string.Equals(_options.StorageProvider, "Local", StringComparison.OrdinalIgnoreCase))
         {
             return await SaveLocallyAsync(fileName, fileStream, metadata, cancellationToken);
         }
@@ -121,17 +132,14 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
             throw new InvalidOperationException("Google Drive is not authorized or configured.");
         }
 
-        // 1. Resolve Root Folder
         var rootFolderName = string.IsNullOrWhiteSpace(_options.RootFolderName) ? "Family Receipts" : _options.RootFolderName;
         var rootFolderId = !string.IsNullOrWhiteSpace(_options.RootFolderId)
             ? _options.RootFolderId
             : await GetOrCreateFolderAsync(driveService, rootFolderName, parentFolderId: null, cancellationToken);
 
-        // 2. Resolve Year Subfolder (e.g. "2026")
         var year = (metadata?.Year ?? DateTime.UtcNow.Year).ToString();
         var yearFolderId = await GetOrCreateFolderAsync(driveService, year, rootFolderId, cancellationToken);
 
-        // 3. Resolve Category Subfolder (e.g. "Groceries")
         var category = SanitizeFolderName(metadata?.Category);
         var targetFolderId = await GetOrCreateFolderAsync(driveService, category, yearFolderId, cancellationToken);
 
@@ -151,9 +159,12 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         }
 
         var uploadedFile = request.ResponseBody;
-        _logger.LogInformation(
-            "Uploaded receipt '{FileName}' to Google Drive in folder '{Root}/{Year}/{Category}' (FolderId: '{FolderId}') with FileId '{FileId}'",
-            fileName, rootFolderName, year, category, targetFolderId, uploadedFile.Id);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation(
+                "Uploaded receipt '{FileName}' to Google Drive in folder '{Root}/{Year}/{Category}' (FolderId: '{FolderId}') with FileId '{FileId}'",
+                fileName, rootFolderName, year, category, targetFolderId, uploadedFile.Id);
+        }
 
         return GoogleDriveFileReference.Create(
             uploadedFile.Id,
@@ -163,7 +174,6 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
 
     public async Task DeleteAsync(string fileId, CancellationToken cancellationToken = default)
     {
-        // Try deleting local file first if present
         var baseDir = ResolveLocalStorageDirectory();
         if (Directory.Exists(baseDir))
         {
@@ -173,18 +183,22 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
                 try
                 {
                     File.Delete(file);
-                    _logger.LogInformation("Deleted local receipt file '{Path}'", file);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Deleted local receipt file '{Path}'", file);
+                    }
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "Failed to delete local receipt file '{Path}'", file);
                 }
             }
+        }
 
-            if (string.Equals(_options.StorageProvider, "Local", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
+        if (_tenantContext?.IsDemo == true ||
+            string.Equals(_options.StorageProvider, "Local", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
         }
 
         var driveService = await TryGetDriveServiceAsync(cancellationToken);
@@ -233,7 +247,6 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
             return existing.Id;
         }
 
-        // Folder not found; create it
         var newFolder = new Google.Apis.Drive.v3.Data.File
         {
             Name = folderName,
@@ -249,8 +262,11 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
         createRequest.Fields = "id, name";
 
         var created = await createRequest.ExecuteAsync(cancellationToken);
-        _logger.LogInformation("Created Google Drive folder '{Name}' under parent '{Parent}' with ID '{Id}'",
-            folderName, parentFolderId ?? "root", created.Id);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Created Google Drive folder '{Name}' under parent '{Parent}' with ID '{Id}'",
+                folderName, parentFolderId ?? "root", created.Id);
+        }
 
         _folderIdCache[cacheKey] = created.Id;
         return created.Id;
@@ -282,7 +298,10 @@ public class GoogleDriveStorageService : IReceiptFileStorageService
             await stream.CopyToAsync(destStream, cancellationToken);
         }
 
-        _logger.LogInformation("Saved receipt '{FileName}' to local disk at '{Path}'", fileName, destinationPath);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Saved receipt '{FileName}' to local disk at '{Path}'", fileName, destinationPath);
+        }
 
         var webLink = $"/api/receipts/files/{fileId}";
         return GoogleDriveFileReference.Create(fileId, savedName, webLink);

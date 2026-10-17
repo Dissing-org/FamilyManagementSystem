@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.Vehicles;
 
 namespace FamilyManagement.Api.Endpoints.Vehicles;
@@ -15,7 +15,6 @@ public class GetVehiclesEndpoint : EndpointWithoutRequest<List<VehicleDto>>
     public override void Configure()
     {
         Get("/api/vehicles");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get all registered vehicles";

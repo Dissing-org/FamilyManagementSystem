@@ -1,4 +1,6 @@
 @using Microsoft.AspNetCore.Components.Routing
+@using FamilyManagement.UI.Shared.Services
+@inject IAuthSessionService AuthSession
 
 <header class="sticky top-0 z-30 w-full bg-[#FAF6F0]/90 dark:bg-[#1C1512]/90 backdrop-blur-md border-b border-[#EADECF]/80 dark:border-[#3D2F28]/80 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[50px] sm:h-[52px] flex items-center justify-between gap-4">
@@ -12,8 +14,8 @@
                     </svg>
                 </div>
                 <div class="flex flex-col min-w-0">
-                    <span class="text-sm font-bold tracking-tight text-[#2B1D16] dark:text-[#FAF0E6] leading-none">Family Hub</span>
-                    <span class="text-[11px] font-medium text-[#7F6A5D] dark:text-[#A8988B] mt-0.5 hidden xs:block truncate">@CurrentSectionSubtitle</span>
+                    <span class="text-sm font-bold tracking-tight text-[#2B1D16] dark:text-[#FAF0E6] leading-none">@L["App.Title"]</span>
+                    <span class="text-[11px] font-medium text-[#7F6A5D] dark:text-[#A8988B] mt-0.5 hidden xs:block truncate">@(string.IsNullOrWhiteSpace(CurrentSectionSubtitle) ? L["Header.DefaultSubtitle"] : CurrentSectionSubtitle)</span>
                 </div>
             </a>
 
@@ -23,29 +25,59 @@
             <!-- Desktop Segmented Pill Navigation Controls -->
             <nav class="hidden md:flex items-center gap-1 bg-[#EADECF]/40 dark:bg-[#261D19]/60 p-1 rounded-xl">
                 <NavLink href="" Match="NavLinkMatch.All" class="px-3 py-1 rounded-lg text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] dark:hover:text-[#FAF0E6] hover:bg-white/50 dark:hover:bg-[#3D2F28]/50 transition-all flex items-center gap-1.5" ActiveClass="!bg-white dark:!bg-[#261D19] !text-[#2B1D16] dark:!text-[#FAF0E6] shadow-xs font-bold">
-                    Overview
+                    @L["Nav.Overview"]
                 </NavLink>
                 <NavLink href="receipts" class="px-3 py-1 rounded-lg text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] dark:hover:text-[#FAF0E6] hover:bg-white/50 dark:hover:bg-[#3D2F28]/50 transition-all flex items-center gap-1.5" ActiveClass="!bg-white dark:!bg-[#261D19] !text-[#2B1D16] dark:!text-[#FAF0E6] shadow-xs font-bold">
-                    Receipts
+                    @L["Nav.Receipts"]
                 </NavLink>
                 <NavLink href="insurances" class="px-3 py-1 rounded-lg text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] dark:hover:text-[#FAF0E6] hover:bg-white/50 dark:hover:bg-[#3D2F28]/50 transition-all flex items-center gap-1.5" ActiveClass="!bg-white dark:!bg-[#261D19] !text-[#2B1D16] dark:!text-[#FAF0E6] shadow-xs font-bold">
-                    <span>Insurances</span>
+                    <span>@L["Nav.Insurances"]</span>
                     @if (UpcomingRenewalCount > 0)
                     {
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#D9822B] animate-pulse" title="@UpcomingRenewalCount renewals pending"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#D9822B] animate-pulse" title="@L.Format("Nav.RenewalsPendingTitle", UpcomingRenewalCount)"></span>
                     }
                 </NavLink>
                 <NavLink href="children" class="px-3 py-1 rounded-lg text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] dark:hover:text-[#FAF0E6] hover:bg-white/50 dark:hover:bg-[#3D2F28]/50 transition-all flex items-center gap-1.5" ActiveClass="!bg-white dark:!bg-[#261D19] !text-[#2B1D16] dark:!text-[#FAF0E6] shadow-xs font-bold">
-                    Children
+                    @L["Nav.Children"]
                 </NavLink>
                 <NavLink href="vehicles" class="px-3 py-1 rounded-lg text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] dark:hover:text-[#FAF0E6] hover:bg-white/50 dark:hover:bg-[#3D2F28]/50 transition-all flex items-center gap-1.5" ActiveClass="!bg-white dark:!bg-[#261D19] !text-[#2B1D16] dark:!text-[#FAF0E6] shadow-xs font-bold">
-                    Vehicles
+                    @L["Nav.Vehicles"]
                 </NavLink>
             </nav>
         </div>
 
-        <!-- Right: Action Slot & Server Settings -->
+        <!-- Right: Action Slot, Demo Controls & Server Settings -->
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            @if (AuthSession.Current.IsDemo)
+            {
+                <span class="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FEF3E2] dark:bg-[#382618] text-[#7F3F15] dark:text-[#FCE4BF] border border-[#D9822B]/40" title="@L["Header.DemoSandboxTitle"]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#D9822B] animate-pulse"></span>
+                    <span>@L["Header.DemoSandbox"]</span>
+                </span>
+
+                <button @onclick="HandleResetDemoAsync"
+                        disabled="@_isResetting"
+                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-white/90 dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] hover:border-[#C85A32] hover:text-[#C85A32] disabled:opacity-50 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                        title="@L["Header.ResetDemoTitle"]">
+                    @if (_isResetting)
+                    {
+                        <span class="animate-spin h-3 w-3 border-2 border-[#C85A32] border-t-transparent rounded-full"></span>
+                        <span class="hidden sm:inline">@L["Header.Resetting"]</span>
+                    }
+                    else if (_resetSuccess)
+                    {
+                        <span class="text-[#5B7553]">@L["Header.ResetDone"]</span>
+                    }
+                    else
+                    {
+                        <svg class="w-3.5 h-3.5 text-[#C85A32]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span class="hidden sm:inline">@L["Header.ResetDemo"]</span>
+                    }
+                </button>
+            }
+
             @if (ActionContent is not null)
             {
                 <div class="flex items-center gap-1.5 shrink-0">
@@ -55,11 +87,17 @@
 
             <button @onclick="() => _showSettingsModal = true" 
                     class="p-2 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#2B1D16] dark:hover:text-[#FAF0E6] hover:bg-[#EADECF]/40 dark:hover:bg-[#3D2F28] rounded-xl transition-all shrink-0"
-                    title="Server Settings">
+                    title="@L["Header.ServerSettings"]">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
+            </button>
+
+            <button @onclick="HandleLogoutAsync"
+                    class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] hover:bg-[#EADECF]/40 dark:hover:bg-[#3D2F28] transition-all shrink-0 cursor-pointer"
+                    title="@L["Header.SignOut"]">
+                @L["Header.SignOut"]
             </button>
         </div>
     </div>
@@ -71,19 +109,19 @@
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
-        <span>Home</span>
+        <span>@L["Nav.Home"]</span>
     </NavLink>
     <NavLink href="receipts" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
         </svg>
-        <span>Receipts</span>
+        <span>@L["Nav.Receipts"]</span>
     </NavLink>
     <NavLink href="insurances" class="relative flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
         </svg>
-        <span>Insurances</span>
+        <span>@L["Nav.Insurances"]</span>
         @if (UpcomingRenewalCount > 0)
         {
             <span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#D9822B] ring-2 ring-white dark:ring-[#1C1512] animate-pulse"></span>
@@ -93,14 +131,14 @@
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
         </svg>
-        <span>Children</span>
+        <span>@L["Nav.Children"]</span>
     </NavLink>
     <NavLink href="vehicles" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
         </svg>
-        <span>Vehicles</span>
+        <span>@L["Nav.Vehicles"]</span>
     </NavLink>
 </nav>
 
@@ -111,7 +149,7 @@
 
 @code {
     [Parameter]
-    public string CurrentSectionSubtitle { get; set; } = "Family Management";
+    public string CurrentSectionSubtitle { get; set; } = string.Empty;
 
     [Parameter]
     public RenderFragment? ActionContent { get; set; }
@@ -123,9 +161,43 @@
     public int UpcomingRenewalCount { get; set; } = 0;
 
     private bool _showSettingsModal = false;
+    private bool _isResetting = false;
+    private bool _resetSuccess = false;
 
     private async Task HandleSettingsSaved()
     {
         await OnSettingsSaved.InvokeAsync();
+    }
+
+    private async Task HandleResetDemoAsync()
+    {
+        if (_isResetting) return;
+        _isResetting = true;
+        _resetSuccess = false;
+
+        try
+        {
+            var ok = await AuthSession.ResetDemoDataAsync();
+            if (ok)
+            {
+                _resetSuccess = true;
+                await OnSettingsSaved.InvokeAsync();
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(2500);
+                    _resetSuccess = false;
+                    await InvokeAsync(StateHasChanged);
+                });
+            }
+        }
+        finally
+        {
+            _isResetting = false;
+        }
+    }
+
+    private async Task HandleLogoutAsync()
+    {
+        await AuthSession.LogoutAsync();
     }
 }

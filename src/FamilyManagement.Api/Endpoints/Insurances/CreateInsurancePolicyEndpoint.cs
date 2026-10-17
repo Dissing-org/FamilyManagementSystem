@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Insurances;
 using FamilyManagement.Application.UseCases.Insurances.Commands;
 using FamilyManagement.Domain.Enums;
@@ -34,7 +34,6 @@ public class CreateInsurancePolicyEndpoint : Endpoint<CreateInsurancePolicyReque
     public override void Configure()
     {
         Post("/api/insurances");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Create a new insurance policy";

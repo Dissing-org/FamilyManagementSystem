@@ -14,6 +14,7 @@ namespace FamilyManagement.IntegrationTests;
 
 public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
 {
+    private static readonly string[] ExpectedMerchants = ["Costco", "IKEA"];
     private readonly WebApplicationFactory<Program> _factory;
 
     public ReceiptsApiTests(WebApplicationFactory<Program> factory)
@@ -153,7 +154,7 @@ public class ReceiptsApiTests : IClassFixture<WebApplicationFactory<Program>>
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var merchants = await response.Content.ReadFromJsonAsync<List<string>>();
         merchants.Should().NotBeNull();
-        merchants.Should().Contain(new[] { "Costco", "IKEA" });
+        merchants.Should().Contain(ExpectedMerchants);
         // Ensure no duplicate Costco
         merchants!.Count(m => string.Equals(m, "costco", StringComparison.OrdinalIgnoreCase)).Should().Be(1);
     }

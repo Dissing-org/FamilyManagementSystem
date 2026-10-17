@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 
@@ -40,7 +40,6 @@ public class LogMileageEndpoint : Endpoint<LogMileageRequest, MileageLogDto>
     public override void Configure()
     {
         Post("/api/vehicles/{id}/mileage");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Log mileage for a vehicle";

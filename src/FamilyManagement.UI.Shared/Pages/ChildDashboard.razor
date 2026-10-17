@@ -5,14 +5,14 @@
 @inject ChildApiClient ChildApi
 
 <div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-16">
-    <AppHeader CurrentSectionSubtitle="Child Development & Milestones" OnSettingsSaved="LoadChildrenAsync">
+    <AppHeader CurrentSectionSubtitle="@L["Children.Subtitle"]" OnSettingsSaved="LoadChildrenAsync">
         <ActionContent>
             <button @onclick="() => _showRegisterChildModal = true" 
                     class="inline-flex items-center gap-2 px-4 py-2 bg-[#FDEEE9] hover:bg-[#F9DDD4] text-[#7B2F14] text-sm font-black rounded-xl shadow-md transition-all hover:shadow-lg">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
-                <span>Add Child</span>
+                <span>@L["Children.AddChild"]</span>
             </button>
         </ActionContent>
     </AppHeader>
@@ -22,7 +22,7 @@
         {
             <div class="py-24 text-center">
                 <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#C85A32] border-t-transparent"></div>
-                <p class="mt-4 text-sm font-medium text-[#7F6A5D] dark:text-[#A8988B]">Loading child development dashboard...</p>
+                <p class="mt-4 text-sm font-medium text-[#7F6A5D] dark:text-[#A8988B]">@L["Children.Loading"]</p>
             </div>
         }
         else if (_children.Count == 0)
@@ -33,13 +33,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
-                <h2 class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">Welcome to Child Tracker</h2>
+                <h2 class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6]">@L["Children.WelcomeTitle"]</h2>
                 <p class="text-sm text-[#7F6A5D] dark:text-[#A8988B] mt-2 mb-8 leading-relaxed">
-                    Track your child's age, growth milestones, shoe and clothing sizes, memories, and developmental targets.
+                    @L["Children.WelcomeDescription"]
                 </p>
 
                 <button @onclick="() => _showRegisterChildModal = true" class="w-full py-3.5 px-6 bg-[#C85A32] hover:bg-[#B54E29] text-white dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] dark:text-[#7B2F14] font-bold text-sm rounded-xl shadow-md transition-all">
-                    Register Your Child
+                    @L["Children.RegisterChildButton"]
                 </button>
             </div>
         }
@@ -55,7 +55,7 @@
                         </button>
                     }
                     <button @onclick="() => _showRegisterChildModal = true" class="px-3 py-2 text-xs font-bold text-[#7F6A5D] hover:text-[#2B1D16] dark:text-[#A8988B] dark:hover:text-[#FAF0E6]">
-                        + Add Another
+                        @L["Children.AddAnother"]
                     </button>
                 </div>
             }
@@ -66,13 +66,13 @@
 
                 <div class="flex items-center gap-3 border-b border-[#EADECF] dark:border-[#3D2F28] mb-6">
                     <button @onclick='() => _activeTab = "growth"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "growth" ? "border-[#C85A32] text-[#C85A32] dark:border-[#FDEEE9] dark:text-[#FDEEE9]" : "border-transparent text-[#7F6A5D] hover:text-[#2B1D16] dark:text-[#A8988B] dark:hover:text-[#FAF0E6]")">
-                        Growth & Dimensions
+                        @L["Children.Tab.Growth"]
                     </button>
                     <button @onclick='() => _activeTab = "roadmap"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "roadmap" ? "border-[#C85A32] text-[#C85A32] dark:border-[#FDEEE9] dark:text-[#FDEEE9]" : "border-transparent text-[#7F6A5D] hover:text-[#2B1D16] dark:text-[#A8988B] dark:hover:text-[#FAF0E6]")">
-                        Development Roadmap (Targets)
+                        @L["Children.Tab.Roadmap"]
                     </button>
                     <button @onclick='() => _activeTab = "timeline"' class="pb-3 text-sm font-bold border-b-2 transition-colors @(_activeTab == "timeline" ? "border-[#C85A32] text-[#C85A32] dark:border-[#FDEEE9] dark:text-[#FDEEE9]" : "border-transparent text-[#7F6A5D] hover:text-[#2B1D16] dark:text-[#A8988B] dark:hover:text-[#FAF0E6]")">
-                        Memories & Accomplishments
+                        @L["Children.Tab.Timeline"]
                     </button>
                 </div>
 
@@ -101,53 +101,53 @@
     {
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
             <div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] p-6 max-w-md w-full shadow-2xl">
-                <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-4">Register Child Profile</h3>
+                <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-4">@L["Children.Modal.RegisterTitle"]</h3>
 
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">First Name</label>
-                            <input @bind="_regFirstName" placeholder="e.g. Oliver" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
+                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Children.Modal.FirstName"]</label>
+                            <input @bind="_regFirstName" placeholder="@L["Children.Modal.FirstNamePlaceholder"]" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">Last Name</label>
-                            <input @bind="_regLastName" placeholder="Optional" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
+                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Children.Modal.LastName"]</label>
+                            <input @bind="_regLastName" placeholder="@L["Common.Optional"]" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">Date of Birth</label>
+                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Children.Modal.DateOfBirth"]</label>
                             <input @bind="_regDob" type="date" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">Gender</label>
+                            <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Children.Modal.Gender"]</label>
                             <select @bind="_regGender" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]">
-                                <option value="Boy">Boy</option>
-                                <option value="Girl">Girl</option>
-                                <option value="Other">Other</option>
+                                <option value="Boy">@L.Gender("Boy")</option>
+                                <option value="Girl">@L.Gender("Girl")</option>
+                                <option value="Other">@L.Gender("Other")</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="pt-2 border-t border-[#EADECF] dark:border-[#3D2F28]">
-                        <span class="block text-xs font-bold text-[#7F6A5D] dark:text-[#A8988B] uppercase tracking-wider mb-2">Initial Sizes (Optional)</span>
+                        <span class="block text-xs font-bold text-[#7F6A5D] dark:text-[#A8988B] uppercase tracking-wider mb-2">@L["Children.Modal.InitialSizes"]</span>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[11px] text-[#7F6A5D] dark:text-[#A8988B] mb-1">Clothes Size</label>
-                                <input @bind="_regClothesSize" placeholder="e.g. 86" class="w-full px-3 py-1.5 text-xs bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg text-[#2B1D16] dark:text-[#FAF0E6]" />
+                                <label class="block text-[11px] text-[#7F6A5D] dark:text-[#A8988B] mb-1">@L["Children.Modal.ClothesSize"]</label>
+                                <input @bind="_regClothesSize" placeholder="@L["Children.Modal.ClothesSizePlaceholder"]" class="w-full px-3 py-1.5 text-xs bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg text-[#2B1D16] dark:text-[#FAF0E6]" />
                             </div>
                             <div>
-                                <label class="block text-[11px] text-[#7F6A5D] dark:text-[#A8988B] mb-1">Shoe Size</label>
-                                <input @bind="_regShoeSize" placeholder="e.g. 22" class="w-full px-3 py-1.5 text-xs bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg text-[#2B1D16] dark:text-[#FAF0E6]" />
+                                <label class="block text-[11px] text-[#7F6A5D] dark:text-[#A8988B] mb-1">@L["Children.Modal.ShoeSize"]</label>
+                                <input @bind="_regShoeSize" placeholder="@L["Children.Modal.ShoeSizePlaceholder"]" class="w-full px-3 py-1.5 text-xs bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg text-[#2B1D16] dark:text-[#FAF0E6]" />
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-2 mt-6">
-                    <button @onclick="() => _showRegisterChildModal = false" class="px-4 py-2 text-sm font-semibold text-[#7F6A5D] dark:text-[#EADECF] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28]/50 rounded-xl">Cancel</button>
-                    <button @onclick="RegisterChildAsync" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#B54E29] text-white dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] dark:text-[#7B2F14] rounded-xl shadow-xs">Register</button>
+                    <button @onclick="() => _showRegisterChildModal = false" class="px-4 py-2 text-sm font-semibold text-[#7F6A5D] dark:text-[#EADECF] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28]/50 rounded-xl">@L["Common.Cancel"]</button>
+                    <button @onclick="RegisterChildAsync" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#B54E29] text-white dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] dark:text-[#7B2F14] rounded-xl shadow-xs">@L["Children.Modal.RegisterSubmit"]</button>
                 </div>
             </div>
         </div>

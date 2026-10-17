@@ -5,14 +5,14 @@
 
 <div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-16">
     <!-- Header -->
-    <AppHeader CurrentSectionSubtitle="Policy & Coverage Management" OnSettingsSaved="LoadDataAsync">
+    <AppHeader CurrentSectionSubtitle="@L["Insurances.Subtitle"]" OnSettingsSaved="LoadDataAsync">
         <ActionContent>
             <button @onclick="OpenAddModal" 
                     class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#FDEEE9] hover:bg-[#F9DDD4] text-[#7B2F14] text-xs sm:text-sm font-black rounded-xl shadow-md transition-all hover:shadow-lg">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
-                <span>Add Policy</span>
+                <span>@L["Insurances.AddPolicy"]</span>
             </button>
         </ActionContent>
     </AppHeader>
@@ -28,7 +28,7 @@
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs font-bold text-[#C85A32] dark:text-[#FDEEE9] uppercase tracking-wider truncate">Total Monthly Cost</p>
+                    <p class="text-xs font-bold text-[#C85A32] dark:text-[#FDEEE9] uppercase tracking-wider truncate">@L["Insurances.TotalMonthlyCost"]</p>
                     <p class="text-2xl sm:text-3xl font-black text-[#C85A32] dark:text-[#FDEEE9] truncate">
                         @(_overview?.TotalMonthlyCost.ToString("N0") ?? "0") @(_overview?.Currency ?? "DKK")
                     </p>
@@ -43,7 +43,7 @@
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs font-bold text-[#C85A32] dark:text-[#F9DDD4] uppercase tracking-wider truncate">Annual Equivalent</p>
+                    <p class="text-xs font-bold text-[#C85A32] dark:text-[#F9DDD4] uppercase tracking-wider truncate">@L["Insurances.AnnualEquivalent"]</p>
                     <p class="text-2xl sm:text-3xl font-black text-[#C85A32] dark:text-[#FDEEE9] truncate">
                         @(_overview?.TotalAnnualCost.ToString("N0") ?? "0") @(_overview?.Currency ?? "DKK")
                     </p>
@@ -58,7 +58,7 @@
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs font-bold text-[#8C4F13] dark:text-[#FEF3E2] uppercase tracking-wider truncate">Active Policies</p>
+                    <p class="text-xs font-bold text-[#8C4F13] dark:text-[#FEF3E2] uppercase tracking-wider truncate">@L["Insurances.ActivePolicies"]</p>
                     <p class="text-2xl sm:text-3xl font-black text-[#8C4F13] dark:text-[#FEF3E2] truncate">
                         @(_overview?.ActivePolicies ?? _policies.Count)
                     </p>
@@ -69,14 +69,14 @@
         @if (_overview?.TotalsByCurrency is not null && _overview.TotalsByCurrency.Count > 1)
         {
             <div class="mb-6 p-3.5 bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-2xl flex flex-wrap items-center gap-3 text-xs shadow-xs">
-                <span class="font-bold text-[#7F6A5D] dark:text-[#EADECF] uppercase tracking-wider text-[11px]">Cost Breakdown by Currency:</span>
+                <span class="font-bold text-[#7F6A5D] dark:text-[#EADECF] uppercase tracking-wider text-[11px]">@L["Insurances.CostBreakdownByCurrency"]</span>
                 @foreach (var (curr, totals) in _overview.TotalsByCurrency)
                 {
                     <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FDEEE9] dark:bg-[#C85A32]/20 text-[#7B2F14] dark:text-[#FDEEE9] font-semibold border border-[#EADECF] dark:border-[#3D2F28]">
                         <span class="font-black">@curr</span>
-                        <span>@totals.TotalMonthlyCost.ToString("N0") / mo</span>
+                        <span>@totals.TotalMonthlyCost.ToString("N0") @L["Insurances.PerMonth"]</span>
                         <span class="text-[#7F6A5D] opacity-60">·</span>
-                        <span>@totals.TotalAnnualCost.ToString("N0") / yr</span>
+                        <span>@totals.TotalAnnualCost.ToString("N0") @L["Insurances.PerYear"]</span>
                     </div>
                 }
             </div>
@@ -90,7 +90,7 @@
                     <svg class="w-5 h-5 text-[#D9822B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
-                    <span>Upcoming Policy Renewals</span>
+                    <span>@L["Insurances.UpcomingRenewals"]</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     @foreach (var alert in _overview.UpcomingRenewals)
@@ -98,13 +98,13 @@
                         <div class="bg-white dark:bg-[#261D19] p-3 rounded-xl border border-[#EADECF] dark:border-[#3D2F28] flex items-center justify-between text-xs shadow-xs">
                             <div>
                                 <span class="font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@alert.Insurer</span>
-                                <span class="text-[#7F6A5D] dark:text-[#EADECF]/80 block">@alert.InsuredParty (@alert.Category)</span>
+                                <span class="text-[#7F6A5D] dark:text-[#EADECF]/80 block">@alert.InsuredParty (@L.InsuranceCategory(alert.Category))</span>
                             </div>
                             <div class="text-right">
                                 <span class="font-bold @(alert.IsUrgent ? "text-rose-600 dark:text-rose-400" : "text-[#D9822B] dark:text-[#FEF3E2]")">
-                                    in @alert.DaysRemaining days
+                                    @L.Format("Insurances.InDays", alert.DaysRemaining)
                                 </span>
-                                <span class="text-[11px] text-[#7F6A5D] opacity-75 block">@alert.RenewalDate.ToString("MMM d")</span>
+                                <span class="text-[11px] text-[#7F6A5D] opacity-75 block">@L.FormatDate(alert.RenewalDate, "d. MMM")</span>
                             </div>
                         </div>
                     }
@@ -121,7 +121,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
-                <input @bind="_searchQuery" @bind:event="oninput" type="text" placeholder="Search by insurer, policy #, or insured..."
+                <input @bind="_searchQuery" @bind:event="oninput" type="text" placeholder="@L["Insurances.SearchPlaceholder"]"
                        class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl focus:ring-2 focus:ring-[#C85A32] focus:outline-none shadow-xs text-[#2B1D16] dark:text-[#FAF0E6] placeholder-[#7F6A5D]/60" />
             </div>
 
@@ -129,13 +129,13 @@
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
                 <button @onclick='() => _selectedCategory = null'
                         class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap @(_selectedCategory == null ? "bg-[#C85A32] text-white shadow-xs" : "bg-white dark:bg-[#261D19] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28] hover:border-[#C85A32]")">
-                    All
+                    @L["Common.All"]
                 </button>
                 @foreach (var cat in InsuranceConstants.Categories)
                 {
                     <button @onclick="() => _selectedCategory = cat"
                             class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap @(_selectedCategory == cat ? "bg-[#C85A32] text-white shadow-xs" : "bg-white dark:bg-[#261D19] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF] dark:border-[#3D2F28] hover:border-[#C85A32]")">
-                        @cat
+                        @L.InsuranceCategory(cat)
                     </button>
                 }
             </div>
@@ -153,7 +153,7 @@
         {
             <div class="py-20 flex flex-col items-center justify-center text-[#7F6A5D] dark:text-[#EADECF]">
                 <div class="animate-spin h-8 w-8 border-4 border-[#C85A32] border-t-transparent rounded-full mb-3"></div>
-                <p class="text-sm font-medium">Loading family policies...</p>
+                <p class="text-sm font-medium">@L["Insurances.Loading"]</p>
             </div>
         }
         else if (FilteredPolicies.Count == 0)
@@ -164,20 +164,20 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                     </svg>
                 </div>
-                <h3 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">No insurance policies found</h3>
+                <h3 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">@L["Insurances.EmptyTitle"]</h3>
                 <p class="text-sm text-[#7F6A5D] dark:text-[#EADECF]/80 mb-4 max-w-sm mx-auto">
                     @if (!string.IsNullOrWhiteSpace(_searchQuery) || _selectedCategory != null)
                     {
-                        <span>No policies match your active search filters. Try clearing your filters.</span>
+                        <span>@L["Insurances.EmptyFilterMatch"]</span>
                     }
                     else
                     {
-                        <span>Keep track of home, auto, health, and family policies, premiums, and renewals.</span>
+                        <span>@L["Insurances.EmptyDefault"]</span>
                     }
                 </p>
                 <button @onclick="OpenAddModal"
                         class="px-4 py-2 bg-[#C85A32] hover:bg-[#B84B24] text-white font-black text-sm rounded-xl shadow-md transition-colors">
-                    Add Policy
+                    @L["Insurances.AddPolicy"]
                 </button>
             </div>
         }

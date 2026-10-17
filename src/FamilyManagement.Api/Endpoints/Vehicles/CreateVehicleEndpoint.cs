@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 using FamilyManagement.Domain.Enums;
@@ -67,7 +67,6 @@ public class CreateVehicleEndpoint : Endpoint<CreateVehicleRequest, VehicleDto>
     public override void Configure()
     {
         Post("/api/vehicles");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Register a new vehicle";

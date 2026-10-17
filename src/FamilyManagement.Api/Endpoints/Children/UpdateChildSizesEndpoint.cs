@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Commands;
 
@@ -25,7 +25,6 @@ public class UpdateChildSizesEndpoint : Endpoint<UpdateChildSizesRequest, ChildP
     public override void Configure()
     {
         Put("/api/children/{id}/sizes");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Update child wardrobe sizes";

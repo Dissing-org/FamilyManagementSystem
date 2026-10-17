@@ -5,14 +5,14 @@
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Odometer History</h3>
-            <p class="text-xs text-slate-500">Log distance traveled to monitor service schedules and driving usage</p>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">@L["Mileage.Title"]</h3>
+            <p class="text-xs text-slate-500">@L["Mileage.Subtitle"]</p>
         </div>
         <button @onclick="OpenLogMileageModal" class="inline-flex items-center gap-2 px-4 py-2 bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] font-bold text-sm rounded-xl shadow-xs transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
-            <span>Log Mileage</span>
+            <span>@L["Vehicles.LogMileage"]</span>
         </button>
     </div>
 
@@ -20,7 +20,7 @@
     {
         <div class="py-12 text-center text-slate-400 text-sm">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-3 border-[#C85A32] border-t-transparent mb-2"></div>
-            <p>Loading mileage records...</p>
+            <p>@L["Mileage.Loading"]</p>
         </div>
     }
     else if (_logs.Count == 0)
@@ -31,10 +31,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <h4 class="text-base font-bold text-slate-800 dark:text-slate-200">No mileage logged yet</h4>
-            <p class="text-sm text-slate-500 mt-1 mb-6">Log your odometer reading to track consumption and stay ahead of maintenance.</p>
+            <h4 class="text-base font-bold text-slate-800 dark:text-slate-200">@L["Mileage.EmptyTitle"]</h4>
+            <p class="text-sm text-slate-500 mt-1 mb-6">@L["Mileage.EmptySubtitle"]</p>
             <button @onclick="OpenLogMileageModal" class="px-5 py-2.5 bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:text-[#7B2F14] text-white text-sm font-semibold rounded-xl shadow-xs">
-                Log First Reading
+                @L["Mileage.LogFirst"]
             </button>
         </div>
     }
@@ -45,11 +45,11 @@
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 dark:bg-[#1C1512] text-slate-500 dark:text-slate-400 text-xs uppercase font-bold border-b border-[#EADECF] dark:border-[#3D2F28]">
                         <tr>
-                            <th class="px-5 py-3.5">Date</th>
-                            <th class="px-5 py-3.5">Reading</th>
-                            <th class="px-5 py-3.5">Delta</th>
-                            <th class="px-5 py-3.5">Notes</th>
-                            <th class="px-5 py-3.5 text-right">Actions</th>
+                            <th class="px-5 py-3.5">@L["Mileage.TableDate"]</th>
+                            <th class="px-5 py-3.5">@L["Mileage.TableReading"]</th>
+                            <th class="px-5 py-3.5">@L["Mileage.TableDelta"]</th>
+                            <th class="px-5 py-3.5">@L["Mileage.TableNotes"]</th>
+                            <th class="px-5 py-3.5 text-right">@L["Mileage.TableActions"]</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#EADECF]/60 dark:divide-[#3D2F28]">
@@ -61,28 +61,28 @@
 
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-[#163548]/40 transition-colors">
                                 <td class="px-5 py-3.5 font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                                    @log.RecordedDate.ToString("MMM d, yyyy")
+                                    @L.FormatDate(log.RecordedDate, "d. MMM yyyy")
                                 </td>
                                 <td class="px-5 py-3.5 font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap font-mono">
-                                    @log.MileageKm.ToString("N0") km
+                                    @log.MileageKm.ToString("N0", L.Culture) km
                                 </td>
                                 <td class="px-5 py-3.5 whitespace-nowrap">
                                     @if (delta.HasValue)
                                     {
                                         <span class="inline-flex items-center gap-1 text-xs font-semibold @(delta.Value >= 0 ? "text-[#C85A32] dark:text-[#FDEEE9]" : "text-rose-500")">
-                                            @(delta.Value >= 0 ? $"+{delta.Value:N0} km" : $"{delta.Value:N0} km")
+                                            @(delta.Value >= 0 ? $"+{delta.Value.ToString("N0", L.Culture)} km" : $"{delta.Value.ToString("N0", L.Culture)} km")
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="text-xs text-slate-400">Baseline</span>
+                                        <span class="text-xs text-slate-400">@L["Mileage.Baseline"]</span>
                                     }
                                 </td>
                                 <td class="px-5 py-3.5 text-slate-600 dark:text-slate-300">
                                     @(string.IsNullOrWhiteSpace(log.Notes) ? "—" : log.Notes)
                                 </td>
                                 <td class="px-5 py-3.5 text-right whitespace-nowrap">
-                                    <button @onclick="() => DeleteLogAsync(log.Id)" class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors" title="Delete entry">
+                                    <button @onclick="() => DeleteLogAsync(log.Id)" class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors" title="@L["Mileage.DeleteEntry"]">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                         </svg>
@@ -102,7 +102,7 @@
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
         <div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] p-6 max-w-md w-full shadow-2xl">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Log Mileage Reading</h3>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">@L["Mileage.ModalTitle"]</h3>
                 <button @onclick="() => _showLogModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -119,31 +119,31 @@
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Date</label>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Mileage.TableDate"]</label>
                     <input type="date" @bind="_recordedDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Odometer Reading (km)</label>
-                    <input type="number" @bind="_mileageKm" min="0" placeholder="e.g. 125000" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Mileage.OdometerReadingKm"]</label>
+                    <input type="number" @bind="_mileageKm" min="0" placeholder="@L["Mileage.OdometerPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
                     @if (CurrentOdometer > 0)
                     {
-                        <p class="text-[11px] text-slate-400 mt-1">Current odometer: @CurrentOdometer.ToString("N0") km</p>
+                        <p class="text-[11px] text-slate-400 mt-1">@L.Format("Mileage.CurrentOdometerFormat", CurrentOdometer.ToString("N0", L.Culture))</p>
                     }
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Notes (Optional)</label>
-                    <input @bind="_notes" placeholder="e.g. Holiday roadtrip return, Commute check" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Mileage.NotesOptional"]</label>
+                    <input @bind="_notes" placeholder="@L["Mileage.NotesPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-6">
                 <button @onclick="() => _showLogModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                    Cancel
+                    @L["Common.Cancel"]
                 </button>
                 <button @onclick="SaveMileageAsync" disabled="@_saving" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs transition-colors disabled:opacity-50">
-                    @(_saving ? "Saving..." : "Save Entry")
+                    @(_saving ? L["Common.Saving"] : L["Mileage.SaveEntry"])
                 </button>
             </div>
         </div>
@@ -201,7 +201,7 @@
     {
         if (_mileageKm < 0)
         {
-            _errorMessage = "Mileage cannot be negative.";
+            _errorMessage = L["Mileage.NegativeError"];
             return;
         }
 
@@ -227,7 +227,7 @@
         }
         else
         {
-            _errorMessage = error ?? "Failed to log mileage reading.";
+            _errorMessage = error ?? L["Mileage.SaveError"];
         }
     }
 

@@ -1,0 +1,10 @@
+<Project>
+  <Target Name="TriggerSonarScannerAfterTests"
+          AfterTargets="VSTest"
+          Condition="($(MSBuildProjectName.EndsWith('.IntegrationTests')) or '$(RunSonarOnUnitTests)' == 'true') and '$(SkipAutoSonar)' != 'true' and '$(SONARQUBE_SCANNER_PARAMS)' == '' and '$(TF_BUILD)' == '' and '$(GITHUB_ACTIONS)' == ''">
+    <Message Importance="High" Text="[SonarQube] Triggering automatic SonarQube scan after test execution..." />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)scripts\sonar-scan.ps1&quot; -SkipSonarTrigger"
+          WorkingDirectory="$(MSBuildThisFileDirectory)"
+          ContinueOnError="WarnAndContinue" />
+  </Target>
+</Project>

@@ -15,16 +15,17 @@ public class GoogleDriveCallbackRequest
 public class GoogleDriveCallbackEndpoint : Endpoint<GoogleDriveCallbackRequest>
 {
     private readonly IGoogleDriveAuthService _authService;
+    private readonly ITenantContext _tenantContext;
 
-    public GoogleDriveCallbackEndpoint(IGoogleDriveAuthService authService)
+    public GoogleDriveCallbackEndpoint(IGoogleDriveAuthService authService, ITenantContext tenantContext)
     {
         _authService = authService;
+        _tenantContext = tenantContext;
     }
 
     public override void Configure()
     {
         Get("/api/auth/google/callback");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Handle Google OAuth callback";
@@ -34,6 +35,12 @@ public class GoogleDriveCallbackEndpoint : Endpoint<GoogleDriveCallbackRequest>
 
     public override async Task HandleAsync(GoogleDriveCallbackRequest req, CancellationToken ct)
     {
+        if (_tenantContext.IsDemo)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.Forbid());
+            return;
+        }
+
         if (!string.IsNullOrWhiteSpace(req.Error))
         {
             await HttpContext.Response.SendResultAsync(TypedResults.BadRequest($"Google authorization failed: {req.Error}"));

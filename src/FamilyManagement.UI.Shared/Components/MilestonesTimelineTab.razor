@@ -5,20 +5,20 @@
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6]">Memories & Accomplishments</h3>
-            <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">Cherished moments and developmental achievements</p>
+            <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@L["Timeline.Title"]</h3>
+            <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">@L["Timeline.Subtitle"]</p>
         </div>
         <button @onclick="() => _showAddMemoryModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] font-bold text-sm rounded-xl shadow-xs transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
-            Add Memory / Milestone
+            @L["Timeline.AddMemory"]
         </button>
     </div>
 
     @if (_loading)
     {
-        <div class="py-12 text-center text-[#7F6A5D] dark:text-[#A8988B] text-sm">Loading memories...</div>
+        <div class="py-12 text-center text-[#7F6A5D] dark:text-[#A8988B] text-sm">@L["Timeline.Loading"]</div>
     }
     else if (_milestones.Count == 0)
     {
@@ -28,10 +28,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
                 </svg>
             </div>
-            <h4 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">No memories recorded yet</h4>
-            <p class="text-sm text-[#7F6A5D] dark:text-[#A8988B] mt-1 mb-6">Celebrate your child's first smile, first steps, lost baby tooth, or funny moments.</p>
+            <h4 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@L["Timeline.EmptyTitle"]</h4>
+            <p class="text-sm text-[#7F6A5D] dark:text-[#A8988B] mt-1 mb-6">@L["Timeline.EmptySubtitle"]</p>
             <button @onclick="() => _showAddMemoryModal = true" class="px-5 py-2.5 bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:text-[#7B2F14] text-white text-sm font-semibold rounded-xl shadow-xs">
-                Record First Memory
+                @L["Timeline.RecordFirstMemory"]
             </button>
         </div>
     }
@@ -50,9 +50,9 @@
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                             <div class="flex items-center gap-2">
                                 <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold @GetCategoryBadgeColor(m.Category)">
-                                    @FormatCategory(m.Category)
+                                    @L.MilestoneCategory(m.Category)
                                 </span>
-                                <h4 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@m.Title</h4>
+                                <h4 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@L.MilestoneText(m.Title)</h4>
                             </div>
 
                             <div class="flex items-center gap-2 text-xs font-medium text-[#7F6A5D] dark:text-[#A8988B]">
@@ -62,13 +62,13 @@
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                        @m.AchievedDate.Value.ToString("MMM d, yyyy")
+                                        @L.FormatDate(m.AchievedDate.Value)
                                     </span>
                                 }
                                 @if (m.AchievedAgeMonths.HasValue)
                                 {
                                     <span class="px-2 py-0.5 rounded bg-[#FAF6F0] dark:bg-[#1C1512] text-[#7F6A5D] dark:text-[#EADECF] border border-[#EADECF]/50 dark:border-[#3D2F28]/50 font-semibold text-[11px]">
-                                        at @m.AchievedAgeMonths mos
+                                        @L.Format("Timeline.AtAge", L.FormatAgeMonths(m.AchievedAgeMonths.Value))
                                     </span>
                                 }
                             </div>
@@ -91,42 +91,42 @@
 {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
         <div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] p-6 max-w-md w-full shadow-2xl">
-            <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-4">Record Achieved Milestone / Memory</h3>
+            <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-4">@L["Timeline.Modal.Title"]</h3>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">Title</label>
-                    <input @bind="_newTitle" placeholder="e.g. Started walking independently or Lost first tooth" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
+                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Timeline.Modal.TitleLabel"]</label>
+                    <input @bind="_newTitle" placeholder="@L["Timeline.Modal.TitlePlaceholder"]" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">Category</label>
+                        <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Common.Category"]</label>
                         <select @bind="_newCategory" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]">
-                            <option value="GrossMotor">Gross Motor (Walking, Sitting)</option>
-                            <option value="FineMotor">Fine Motor (Hands, Pincer)</option>
-                            <option value="LanguageSpeech">Speech & Language</option>
-                            <option value="Cognitive">Cognitive & Play</option>
-                            <option value="SocialEmotional">Social & Emotional</option>
-                            <option value="Dental">Dental & Teeth</option>
-                            <option value="HealthSelfCare">Health & Self Care</option>
+                            <option value="GrossMotor">@L.MilestoneCategory("GrossMotor")</option>
+                            <option value="FineMotor">@L.MilestoneCategory("FineMotor")</option>
+                            <option value="LanguageSpeech">@L.MilestoneCategory("LanguageSpeech")</option>
+                            <option value="Cognitive">@L.MilestoneCategory("Cognitive")</option>
+                            <option value="SocialEmotional">@L.MilestoneCategory("SocialEmotional")</option>
+                            <option value="Dental">@L.MilestoneCategory("Dental")</option>
+                            <option value="HealthSelfCare">@L.MilestoneCategory("HealthSelfCare")</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">Date Achieved</label>
+                        <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Roadmap.Modal.DateAchieved"]</label>
                         <input @bind="_newAchievedDate" type="date" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">Memories / Story (optional)</label>
-                    <textarea @bind="_newNotes" rows="3" placeholder="Where did it happen? Any funny reaction?" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]"></textarea>
+                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Timeline.Modal.StoryLabel"]</label>
+                    <textarea @bind="_newNotes" rows="3" placeholder="@L["Timeline.Modal.StoryPlaceholder"]" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]"></textarea>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-6">
-                <button @onclick="() => _showAddMemoryModal = false" class="px-4 py-2 text-sm font-semibold text-[#7F6A5D] dark:text-[#EADECF] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28]/50 rounded-xl">Cancel</button>
-                <button @onclick="SaveMemoryAsync" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs">Save Memory</button>
+                <button @onclick="() => _showAddMemoryModal = false" class="px-4 py-2 text-sm font-semibold text-[#7F6A5D] dark:text-[#EADECF] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28]/50 rounded-xl">@L["Common.Cancel"]</button>
+                <button @onclick="SaveMemoryAsync" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs">@L["Timeline.Modal.SaveMemory"]</button>
             </div>
         </div>
     </div>
@@ -182,18 +182,6 @@
             await OnMilestonesChanged.InvokeAsync();
         }
     }
-
-    private string FormatCategory(string cat) => cat switch
-    {
-        "GrossMotor" => "Motor",
-        "FineMotor" => "Fine Motor",
-        "LanguageSpeech" => "Speech",
-        "Cognitive" => "Cognitive",
-        "SocialEmotional" => "Social",
-        "Dental" => "Dental",
-        "HealthSelfCare" => "Self Care",
-        _ => cat
-    };
 
     private string GetCategoryBadgeColor(string cat) => cat switch
     {

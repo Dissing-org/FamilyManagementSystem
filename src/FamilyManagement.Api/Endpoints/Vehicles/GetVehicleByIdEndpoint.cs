@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.Vehicles;
 
 namespace FamilyManagement.Api.Endpoints.Vehicles;
@@ -20,7 +20,6 @@ public class GetVehicleByIdEndpoint : Endpoint<GetVehicleByIdRequest, VehicleDto
     public override void Configure()
     {
         Get("/api/vehicles/{id}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get vehicle details by ID";

@@ -29,7 +29,7 @@
 
                     <!-- Fuel Badge -->
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-bold @GetFuelBadgeClass(Summary.Vehicle.FuelType)">
-                        @FormatFuelType(Summary.Vehicle.FuelType)
+                        @L.FuelType(Summary.Vehicle.FuelType)
                     </span>
                 </div>
 
@@ -53,14 +53,14 @@
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            Up to date
+                            @L["Vehicles.UpToDate"]
                         </span>
                     }
 
                     @if (!string.IsNullOrWhiteSpace(Summary.Vehicle.Vin))
                     {
-                        <span class="text-xs text-slate-400 font-mono" title="VIN">
-                            VIN: @Summary.Vehicle.Vin
+                        <span class="text-xs text-slate-400 font-mono" title="Stelnummer (VIN)">
+                            @L["Vehicles.VinLabel"] @Summary.Vehicle.Vin
                         </span>
                     }
                 </div>
@@ -72,62 +72,62 @@
             <!-- Current Mileage -->
             <div class="bg-[#FAF6F0] dark:bg-[#1C1512] p-3.5 rounded-xl border border-[#EADECF] dark:border-[#3D2F28]">
                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                    Odometer
+                    @L["Vehicles.Odometer"]
                 </div>
                 <div class="text-lg font-black text-slate-900 dark:text-slate-100 mt-0.5">
-                    @Summary.Vehicle.CurrentMileageKm.ToString("N0") <span class="text-xs font-semibold text-slate-500">km</span>
+                    @Summary.Vehicle.CurrentMileageKm.ToString("N0", L.Culture) <span class="text-xs font-semibold text-slate-500">km</span>
                 </div>
                 <div class="text-[11px] text-slate-500 mt-0.5 truncate">
-                    @Summary.TotalMileageLogsCount logs recorded
+                    @L.Format("Vehicles.LogsRecordedFormat", Summary.TotalMileageLogsCount)
                 </div>
             </div>
 
             <!-- Next Service Countdown -->
             <div class="bg-[#FAF6F0] dark:bg-[#1C1512] p-3.5 rounded-xl border border-[#EADECF] dark:border-[#3D2F28]">
                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center justify-between">
-                    <span>Next Service</span>
+                    <span>@L["Vehicles.NextService"]</span>
                 </div>
                 @if (Summary.KmUntilNextService.HasValue)
                 {
                     <div class="text-lg font-black @(Summary.ServiceDue ? "text-rose-600 dark:text-rose-400" : "text-slate-900 dark:text-slate-100") mt-0.5">
                         @if (Summary.KmUntilNextService < 0)
                         {
-                            <span>+@Math.Abs(Summary.KmUntilNextService.Value).ToString("N0") km overdue</span>
+                            <span>@L.Format("Vehicles.KmOverdueFormat", Math.Abs(Summary.KmUntilNextService.Value).ToString("N0", L.Culture))</span>
                         }
                         else
                         {
-                            <span>@Summary.KmUntilNextService.Value.ToString("N0") <span class="text-xs font-semibold text-slate-500">km left</span></span>
+                            <span>@Summary.KmUntilNextService.Value.ToString("N0", L.Culture) <span class="text-xs font-semibold text-slate-500">@L["Vehicles.KmLeft"]</span></span>
                         }
                     </div>
                     <div class="text-[11px] text-slate-500 mt-0.5">
-                        @(Summary.DaysUntilNextService.HasValue ? FormatDaysCountdown(Summary.DaysUntilNextService.Value) : "Schedule based on km")
+                        @(Summary.DaysUntilNextService.HasValue ? FormatDaysCountdown(Summary.DaysUntilNextService.Value) : L["Vehicles.ScheduleBasedOnKm"])
                     </div>
                 }
                 else
                 {
-                    <div class="text-base font-bold text-slate-400 mt-0.5">Not configured</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">No interval set</div>
+                    <div class="text-base font-bold text-slate-400 mt-0.5">@L["Vehicles.NotConfigured"]</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">@L["Vehicles.NoIntervalSet"]</div>
                 }
             </div>
 
             <!-- Next Inspection (Bilsyn) -->
             <div class="col-span-2 sm:col-span-1 bg-[#FAF6F0] dark:bg-[#1C1512] p-3.5 rounded-xl border border-[#EADECF] dark:border-[#3D2F28]">
                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                    Bilsyn / Inspection
+                    @L["Vehicles.InspectionTitle"]
                 </div>
                 @if (Summary.NextInspectionDate.HasValue)
                 {
                     <div class="text-lg font-black @(Summary.InspectionDue ? "text-amber-600 dark:text-amber-400" : "text-slate-900 dark:text-slate-100") mt-0.5">
-                        @Summary.NextInspectionDate.Value.ToString("MMM yyyy")
+                        @Summary.NextInspectionDate.Value.ToString("MMM yyyy", L.Culture)
                     </div>
                     <div class="text-[11px] text-slate-500 mt-0.5">
-                        @(Summary.DaysUntilNextInspection.HasValue ? FormatDaysCountdown(Summary.DaysUntilNextInspection.Value) : Summary.NextInspectionDate.Value.ToString("MMM d, yyyy"))
+                        @(Summary.DaysUntilNextInspection.HasValue ? FormatDaysCountdown(Summary.DaysUntilNextInspection.Value) : L.FormatDate(Summary.NextInspectionDate.Value, "d. MMM yyyy"))
                     </div>
                 }
                 else
                 {
                     <div class="text-base font-bold text-slate-400 mt-0.5">—</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">No inspection date</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">@L["Vehicles.NoInspectionDate"]</div>
                 }
             </div>
         </div>
@@ -136,12 +136,12 @@
     <!-- Quick action shortcuts -->
     <div class="mt-5 pt-4 border-t border-[#EADECF] dark:border-[#3D2F28] flex flex-wrap items-center justify-between gap-3">
         <div class="text-xs text-slate-500">
-            Total recorded maintenance: 
+            @L["Vehicles.TotalMaintenanceLabel"] 
             <span class="font-bold text-[#C85A32] dark:text-[#FDEEE9]">
-                @Summary.TotalMaintenanceCost.ToString("N0") kr.
+                @Summary.TotalMaintenanceCost.ToString("N0", L.Culture) kr.
             </span>
             <span class="mx-1">·</span>
-            <span>@Summary.TotalServiceRecordsCount records</span>
+            <span>@L.Format("Vehicles.RecordsCountFormat", Summary.TotalServiceRecordsCount)</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -149,13 +149,13 @@
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Log Mileage
+                @L["Vehicles.LogMileage"]
             </button>
             <button @onclick="() => OnQuickRecordService.InvokeAsync()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#C85A32] hover:bg-[#A8431F] text-white transition-colors">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
-                Record Service
+                @L["Vehicles.RecordService"]
             </button>
         </div>
     </div>
@@ -171,19 +171,13 @@
     [Parameter]
     public EventCallback OnQuickRecordService { get; set; }
 
-    private static string FormatDaysCountdown(int days)
+    private string FormatDaysCountdown(int days)
     {
-        if (days < 0) return $"{Math.Abs(days)} days overdue";
-        if (days == 0) return "Due today";
-        if (days == 1) return "Due tomorrow";
-        return $"In {days} days";
+        if (days < 0) return L.Format("Vehicles.DaysOverdueFormat", Math.Abs(days));
+        if (days == 0) return L["Vehicles.DueToday"];
+        if (days == 1) return L["Vehicles.DueTomorrow"];
+        return L.Format("Vehicles.InDaysFormat", days);
     }
-
-    private static string FormatFuelType(string fuelType) => fuelType switch
-    {
-        "PlugInHybrid" => "Plug-in Hybrid",
-        _ => fuelType
-    };
 
     private static string GetFuelBadgeClass(string fuelType) => fuelType switch
     {
@@ -200,12 +194,12 @@
         _ => "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
     };
 
-    private static string FormatAlertTitle(string alert) => alert switch
+    private string FormatAlertTitle(string alert) => alert switch
     {
-        "ServiceOverdue" => "Service Overdue",
-        "ServiceDue" => "Service Due Soon",
-        "InspectionOverdue" => "Bilsyn Overdue",
-        "InspectionDue" => "Bilsyn Due Soon",
+        "ServiceOverdue" => L["Vehicles.AlertServiceOverdue"],
+        "ServiceDue" => L["Vehicles.AlertServiceDue"],
+        "InspectionOverdue" => L["Vehicles.AlertInspectionOverdue"],
+        "InspectionDue" => L["Vehicles.AlertInspectionDue"],
         _ => alert
     };
 }

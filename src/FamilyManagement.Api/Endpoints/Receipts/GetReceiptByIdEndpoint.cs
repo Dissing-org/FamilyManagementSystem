@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs;
 using FamilyManagement.Application.UseCases.Receipts.Queries;
 
@@ -21,7 +21,6 @@ public class GetReceiptByIdEndpoint : Endpoint<GetReceiptByIdRequest, ReceiptRes
     public override void Configure()
     {
         Get("/api/receipts/{Id:guid}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get receipt by ID";

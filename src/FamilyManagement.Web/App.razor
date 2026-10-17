@@ -1,8 +1,45 @@
-<Router AppAssembly="@typeof(App).Assembly" 
-        AdditionalAssemblies="new[] { typeof(FamilyManagement.UI.Shared.Pages.ReceiptDashboard).Assembly }" 
-        NotFoundPage="typeof(Pages.NotFound)">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-</Router>
+@using FamilyManagement.UI.Shared.Components
+@using FamilyManagement.UI.Shared.Services
+@implements IDisposable
+@inject IAuthSessionService AuthSession
+
+@if (!AuthSession.Current.IsLoaded)
+{
+    <div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] flex flex-col items-center justify-center text-[#7F6A5D]">
+        <div class="animate-spin h-8 w-8 border-3 border-[#C85A32] border-t-transparent rounded-full mb-3"></div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-[#7F6A5D] dark:text-[#A8988B]">@L["App.VerifyingSession"]</p>
+    </div>
+}
+else if (!AuthSession.Current.IsAuthenticated)
+{
+    <LoginView OnLoginSuccess="StateHasChanged" />
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly" 
+            AdditionalAssemblies="new[] { typeof(FamilyManagement.UI.Shared.Pages.ReceiptDashboard).Assembly }" 
+            NotFoundPage="typeof(Pages.NotFound)">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+    </Router>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        AuthSession.OnChange += HandleAuthStateChanged;
+        await AuthSession.RefreshSessionAsync();
+    }
+
+    private void HandleAuthStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthSession.OnChange -= HandleAuthStateChanged;
+    }
+}

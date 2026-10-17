@@ -10,7 +10,7 @@
                 <svg class="w-6 h-6 text-[#C85A32] dark:text-[#FDEEE9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
-                Upload Purchase Receipt
+                @L["Receipts.Modal.Title"]
             </h2>
             <button @onclick="Close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,13 +29,13 @@
         <div class="mt-4 space-y-4">
             <!-- File Picker -->
             <div>
-                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Receipt Document or Photo *</label>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">@L["Receipts.Modal.FileLabel"]</label>
                 <div class="border-2 border-dashed border-[#EADECF] dark:border-[#3D2F28] rounded-xl p-4 text-center hover:border-[#C85A32] dark:hover:border-[#FDEEE9] transition-colors">
                     <InputFile OnChange="HandleFileSelected" accept="image/*,application/pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#C85A32]/10 file:text-[#C85A32] dark:file:bg-[#FDEEE9]/20 dark:file:text-[#FDEEE9] hover:file:bg-[#C85A32]/20" />
                     @if (!string.IsNullOrEmpty(_model.FileName))
                     {
                         <p class="text-xs text-[#C85A32] dark:text-[#FDEEE9] font-medium mt-2">
-                            Selected: @_model.FileName (@(_model.FileBytes?.Length / 1024 ?? 0) KB)
+                            @L.Format("Receipts.Modal.SelectedFile", _model.FileName, _model.FileBytes?.Length / 1024 ?? 0)
                         </p>
                     }
                 </div>
@@ -44,8 +44,8 @@
             <!-- Merchant & Category -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Merchant / Store *</label>
-                    <input @bind="_model.Merchant" list="modal-merchants" type="text" placeholder="e.g. Costco, Target" required autocomplete="off"
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">@L["Receipts.Modal.MerchantLabel"]</label>
+                    <input @bind="_model.Merchant" list="modal-merchants" type="text" placeholder="@L["Receipts.Modal.MerchantPlaceholder"]" required autocomplete="off"
                            class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] dark:focus:ring-[#FDEEE9] focus:outline-none text-slate-900 dark:text-slate-100" />
                     <datalist id="modal-merchants">
                         @foreach (var m in _merchants)
@@ -55,12 +55,12 @@
                     </datalist>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Category</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">@L["Common.Category"]</label>
                     <select @bind="_model.Category" 
                             class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] dark:focus:ring-[#FDEEE9] focus:outline-none text-slate-900 dark:text-slate-100">
                         @foreach (var cat in ReceiptCategories.All)
                         {
-                            <option value="@cat">@cat</option>
+                            <option value="@cat">@L.Category(cat)</option>
                         }
                     </select>
                 </div>
@@ -68,15 +68,15 @@
 
             <!-- Date -->
             <div>
-                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Purchase Date</label>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">@L["Receipts.Modal.PurchaseDateLabel"]</label>
                 <input @bind="_model.PurchaseDate" type="date"
                        class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] dark:focus:ring-[#FDEEE9] focus:outline-none text-slate-900 dark:text-slate-100" />
             </div>
 
             <!-- Notes -->
             <div>
-                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Notes (Optional)</label>
-                <textarea @bind="_model.Notes" rows="2" placeholder="e.g. Weekly family dinner items"
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">@L["Common.NotesOptional"]</label>
+                <textarea @bind="_model.Notes" rows="2" placeholder="@L["Receipts.Modal.NotesPlaceholder"]"
                           class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] dark:focus:ring-[#FDEEE9] focus:outline-none text-slate-900 dark:text-slate-100"></textarea>
             </div>
         </div>
@@ -85,18 +85,18 @@
         <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#EADECF] dark:border-[#3D2F28]">
             <button @onclick="Close" disabled="@_isSubmitting"
                     class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#3D2F28] rounded-lg transition-colors">
-                Cancel
+                @L["Common.Cancel"]
             </button>
             <button @onclick="SubmitAsync" disabled="@_isSubmitting"
                     class="px-5 py-2 text-sm font-semibold text-white bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] dark:text-[#7B2F14] rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
                 @if (_isSubmitting)
                 {
                     <span class="animate-spin h-4 w-4 border-2 border-white dark:border-[#7B2F14] border-t-transparent rounded-full"></span>
-                    <span>Archiving...</span>
+                    <span>@L["Receipts.Modal.Archiving"]</span>
                 }
                 else
                 {
-                    <span>Save & Archive</span>
+                    <span>@L["Receipts.Modal.SaveAndArchive"]</span>
                 }
             </button>
         </div>
@@ -149,7 +149,7 @@
             _model.ContentType = file.ContentType;
 
             using var memoryStream = new MemoryStream();
-            await file.OpenReadStream(maxAllowedSize: 15 * 1024 * 1024).CopyToAsync(memoryStream);
+            await file.OpenReadStream(maxAllowedSize: 8 * 1024 * 1024).CopyToAsync(memoryStream);
             _model.FileBytes = memoryStream.ToArray();
         }
     }
@@ -160,13 +160,13 @@
 
         if (string.IsNullOrWhiteSpace(_model.Merchant))
         {
-            _errorMessage = "Merchant is required.";
+            _errorMessage = L["Receipts.Validation.MerchantRequired"];
             return;
         }
 
         if (_model.FileBytes is null || _model.FileBytes.Length == 0)
         {
-            _errorMessage = "Please choose a receipt file or image.";
+            _errorMessage = L["Receipts.Validation.FileRequired"];
             return;
         }
 

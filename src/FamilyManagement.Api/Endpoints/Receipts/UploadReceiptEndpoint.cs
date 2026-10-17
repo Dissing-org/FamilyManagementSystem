@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs;
 using FamilyManagement.Application.UseCases.Receipts.Commands;
 
@@ -25,7 +25,6 @@ public class UploadReceiptEndpoint : Endpoint<UploadReceiptRequest, ReceiptRespo
     public override void Configure()
     {
         Post("/api/receipts");
-        AllowAnonymous();
         AllowFileUploads();
         Summary(s =>
         {

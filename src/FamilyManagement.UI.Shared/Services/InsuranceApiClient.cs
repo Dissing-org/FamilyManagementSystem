@@ -24,23 +24,8 @@ public class InsuranceApiClient : IInsuranceApiClient
         _baseUrlProvider = baseUrlProvider;
     }
 
-    private string BuildUrl(string relativePath)
-    {
-        var baseUri = _baseUrlProvider.GetBaseUrl();
-        if (string.IsNullOrWhiteSpace(baseUri))
-        {
-            return relativePath.TrimStart('/');
-        }
-
-        if (_httpClient.BaseAddress != null &&
-            Uri.TryCreate(baseUri, UriKind.Absolute, out var parsedBase) &&
-            string.Equals(parsedBase.Host, _httpClient.BaseAddress.Host, StringComparison.OrdinalIgnoreCase))
-        {
-            return relativePath.TrimStart('/');
-        }
-
-        return $"{baseUri.TrimEnd('/')}/{relativePath.TrimStart('/')}";
-    }
+    private string BuildUrl(string relativePath) =>
+        _baseUrlProvider.ResolveUrl(_httpClient, relativePath);
 
     public async Task<InsuranceOverviewModel?> GetOverviewAsync(int daysAhead = 90, CancellationToken ct = default)
     {

@@ -40,10 +40,7 @@ public class MileageLogEntry
         int mileageKm,
         string? notes = null)
     {
-        if (vehicleId is null)
-        {
-            throw new ArgumentNullException(nameof(vehicleId));
-        }
+        ArgumentNullException.ThrowIfNull(vehicleId);
 
         if (mileageKm < 0)
         {

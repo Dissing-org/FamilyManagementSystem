@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Commands;
 using FamilyManagement.Domain.Enums;
@@ -57,7 +57,6 @@ public class CreateMilestoneEndpoint : Endpoint<CreateMilestoneRequest, ChildMil
     public override void Configure()
     {
         Post("/api/children/{childId}/milestones");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Add a child milestone";

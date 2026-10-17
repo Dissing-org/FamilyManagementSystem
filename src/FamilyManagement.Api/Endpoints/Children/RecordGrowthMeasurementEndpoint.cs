@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Commands;
 using FluentValidation;
@@ -56,7 +56,6 @@ public class RecordGrowthMeasurementEndpoint : Endpoint<RecordGrowthMeasurementR
     public override void Configure()
     {
         Post("/api/children/{childId}/growth");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Record physical growth measurement";

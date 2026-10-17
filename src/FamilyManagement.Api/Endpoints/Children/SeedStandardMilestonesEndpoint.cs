@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.UseCases.Children.Commands;
 
 namespace FamilyManagement.Api.Endpoints.Children;
@@ -25,7 +25,6 @@ public class SeedStandardMilestonesEndpoint : Endpoint<SeedStandardMilestonesReq
     public override void Configure()
     {
         Post("/api/children/{childId}/milestones/seed");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Seed standard developmental milestones";

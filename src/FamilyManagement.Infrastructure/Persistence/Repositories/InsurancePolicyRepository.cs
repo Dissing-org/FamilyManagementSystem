@@ -47,8 +47,8 @@ public class InsurancePolicyRepository : IInsurancePolicyRepository
 
         if (!string.IsNullOrWhiteSpace(insurer))
         {
-            var trimmed = insurer.Trim().ToLower();
-            query = query.Where(p => p.Insurer.ToLower().Contains(trimmed));
+            var trimmed = insurer.Trim();
+            query = query.Where(p => p.Insurer.Contains(trimmed, StringComparison.OrdinalIgnoreCase));
         }
 
         return await query

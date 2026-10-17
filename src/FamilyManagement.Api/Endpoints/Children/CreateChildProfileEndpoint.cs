@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Commands;
 using FamilyManagement.Domain.Enums;
@@ -53,7 +53,6 @@ public class CreateChildProfileEndpoint : Endpoint<CreateChildProfileRequest, Ch
     public override void Configure()
     {
         Post("/api/children");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Register a child profile";

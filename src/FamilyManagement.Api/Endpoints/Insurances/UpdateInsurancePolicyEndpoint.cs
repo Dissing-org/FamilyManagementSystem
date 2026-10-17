@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Insurances;
 using FamilyManagement.Application.UseCases.Insurances.Commands;
 using FamilyManagement.Domain.Enums;
@@ -35,7 +35,6 @@ public class UpdateInsurancePolicyEndpoint : Endpoint<UpdateInsurancePolicyReque
     public override void Configure()
     {
         Put("/api/insurances/{id}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Update insurance policy details";

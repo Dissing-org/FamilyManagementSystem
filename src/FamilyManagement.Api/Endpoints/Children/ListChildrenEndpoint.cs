@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Domain.Repositories;
 
@@ -16,7 +16,6 @@ public class ListChildrenEndpoint : EndpointWithoutRequest<List<ChildProfileDto>
     public override void Configure()
     {
         Get("/api/children");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "List all children";

@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs;
 using FamilyManagement.Application.UseCases.Receipts.Queries;
 
@@ -21,7 +21,6 @@ public class ListReceiptsEndpoint : Endpoint<ListReceiptsRequest, IReadOnlyList<
     public override void Configure()
     {
         Get("/api/receipts");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "List all active receipts";

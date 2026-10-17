@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.DTOs.Insurances;
 using FamilyManagement.Application.UseCases.Insurances.Queries;
 using FamilyManagement.Domain.Enums;
@@ -24,7 +24,6 @@ public class GetInsurancePoliciesEndpoint : Endpoint<GetInsurancePoliciesRequest
     public override void Configure()
     {
         Get("/api/insurances");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "List insurance policies";

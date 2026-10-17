@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.UseCases.Receipts.Queries;
 
 namespace FamilyManagement.Api.Endpoints.Receipts;
@@ -15,7 +15,6 @@ public class GetDistinctMerchantsEndpoint : EndpointWithoutRequest<IReadOnlyList
     public override void Configure()
     {
         Get("/api/receipts/merchants");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Get distinct merchant names";

@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.Vehicles;
 
 namespace FamilyManagement.Api.Endpoints.Vehicles;
@@ -20,7 +20,6 @@ public class DeleteVehicleEndpoint : Endpoint<DeleteVehicleRequest>
     public override void Configure()
     {
         Delete("/api/vehicles/{id}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Delete a vehicle";

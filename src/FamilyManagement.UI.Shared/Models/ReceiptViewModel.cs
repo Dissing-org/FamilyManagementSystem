@@ -13,7 +13,7 @@ public class ReceiptViewModel
     public int Status { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    public string FormattedDate => PurchaseDate.ToString("MMM dd, yyyy");
+    public string FormattedDate => PurchaseDate.ToString("d. MMM yyyy", new System.Globalization.CultureInfo("da-DK"));
 }
 
 public class UploadReceiptModel

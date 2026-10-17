@@ -14,6 +14,8 @@ namespace FamilyManagement.UnitTests.Application;
 
 public class ReceiptQueryAndCommandHandlersTests
 {
+    private static readonly string[] ExpectedStoreNames = ["Store A", "Store B"];
+    private static readonly string[] ExpectedMerchants = ["Costco", "IKEA", "Target"];
     private readonly IReceiptRepository _repository = Substitute.For<IReceiptRepository>();
     private readonly IReceiptFileStorageService _storageService = Substitute.For<IReceiptFileStorageService>();
 
@@ -74,7 +76,7 @@ public class ReceiptQueryAndCommandHandlersTests
 
         // Assert
         result.Should().HaveCount(2);
-        result.Select(r => r.Merchant).Should().Contain(new[] { "Store A", "Store B" });
+        result.Select(r => r.Merchant).Should().Contain(ExpectedStoreNames);
     }
 
     [Fact]
@@ -110,6 +112,6 @@ public class ReceiptQueryAndCommandHandlersTests
         var result = await handler.HandleAsync(new GetDistinctMerchantsQuery());
 
         // Assert
-        result.Should().BeEquivalentTo(new[] { "Costco", "IKEA", "Target" });
+        result.Should().BeEquivalentTo(ExpectedMerchants);
     }
 }

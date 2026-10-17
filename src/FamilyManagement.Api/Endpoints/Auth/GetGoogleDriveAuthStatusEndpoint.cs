@@ -13,16 +13,17 @@ public class GoogleDriveAuthStatusResponse
 public class GetGoogleDriveAuthStatusEndpoint : EndpointWithoutRequest<GoogleDriveAuthStatusResponse>
 {
     private readonly IGoogleDriveAuthService _authService;
+    private readonly ITenantContext _tenantContext;
 
-    public GetGoogleDriveAuthStatusEndpoint(IGoogleDriveAuthService authService)
+    public GetGoogleDriveAuthStatusEndpoint(IGoogleDriveAuthService authService, ITenantContext tenantContext)
     {
         _authService = authService;
+        _tenantContext = tenantContext;
     }
 
     public override void Configure()
     {
         Get("/api/auth/google/status");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Check Google Drive OAuth authorization status";
@@ -32,6 +33,17 @@ public class GetGoogleDriveAuthStatusEndpoint : EndpointWithoutRequest<GoogleDri
 
     public override async Task HandleAsync(CancellationToken ct)
     {
+        if (_tenantContext.IsDemo)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.Ok(new GoogleDriveAuthStatusResponse
+            {
+                IsConfigured = false,
+                IsAuthorized = false,
+                LoginUrl = null
+            }));
+            return;
+        }
+
         var isConfigured = _authService.IsConfigured;
         var isAuthorized = await _authService.IsAuthorizedAsync(ct);
         string? loginUrl = null;

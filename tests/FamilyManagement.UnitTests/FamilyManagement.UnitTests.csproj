@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\src\FamilyManagement.Domain\FamilyManagement.Domain.csproj" />
     <ProjectReference Include="..\..\src\FamilyManagement.Application\FamilyManagement.Application.csproj" />
     <ProjectReference Include="..\..\src\FamilyManagement.Infrastructure\FamilyManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\FamilyManagement.UI.Shared\FamilyManagement.UI.Shared.csproj" />
   </ItemGroup>
 
 </Project>

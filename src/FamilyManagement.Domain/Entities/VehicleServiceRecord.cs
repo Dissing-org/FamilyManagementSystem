@@ -62,10 +62,7 @@ public class VehicleServiceRecord
         string? notes = null,
         Guid? receiptId = null)
     {
-        if (vehicleId is null)
-        {
-            throw new ArgumentNullException(nameof(vehicleId));
-        }
+        ArgumentNullException.ThrowIfNull(vehicleId);
 
         if (string.IsNullOrWhiteSpace(title))
         {

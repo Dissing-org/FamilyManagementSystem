@@ -1,4 +1,4 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FamilyManagement.Application.UseCases.Receipts.Commands;
 
 namespace FamilyManagement.Api.Endpoints.Receipts;
@@ -20,7 +20,6 @@ public class DeleteReceiptEndpoint : Endpoint<DeleteReceiptRequest>
     public override void Configure()
     {
         Delete("/api/receipts/{Id:guid}");
-        AllowAnonymous();
         Summary(s =>
         {
             s.Summary = "Delete (archive) a receipt";
