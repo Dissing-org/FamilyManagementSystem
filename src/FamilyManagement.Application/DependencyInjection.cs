@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using FamilyManagement.Application.UseCases.Freezers.Commands;
+using FamilyManagement.Application.UseCases.Freezers.Queries;
 using FamilyManagement.Application.UseCases.Receipts.Commands;
 using FamilyManagement.Application.UseCases.Receipts.Queries;
 using FamilyManagement.Application.Vehicles;
@@ -45,6 +47,20 @@ public static class DependencyInjection
         services.AddScoped<GetMileageLogsQueryHandler>();
         services.AddScoped<GetServiceRecordsQueryHandler>();
         services.AddScoped<GetVehicleSummaryQueryHandler>();
+
+        services.AddScoped<CreateFreezerCommandHandler>();
+        services.AddScoped<UpdateFreezerCommandHandler>();
+        services.AddScoped<DeleteFreezerCommandHandler>();
+        services.AddScoped<CreateCompartmentCommandHandler>();
+        services.AddScoped<DeleteCompartmentCommandHandler>();
+        services.AddScoped<CreateFreezerItemCommandHandler>();
+        services.AddScoped<UpdateFreezerItemCommandHandler>();
+        services.AddScoped<ConsumeFreezerItemCommandHandler>();
+        services.AddScoped<DeleteFreezerItemCommandHandler>();
+        services.AddScoped<GetFreezersQueryHandler>();
+        services.AddScoped<GetFreezerByIdQueryHandler>();
+        services.AddScoped<GetFreezerItemsQueryHandler>();
+        services.AddScoped<GetFreezerDashboardQueryHandler>();
 
         return services;
     }

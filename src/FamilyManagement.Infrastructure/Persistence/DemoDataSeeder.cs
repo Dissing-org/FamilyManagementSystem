@@ -41,8 +41,9 @@ public class DemoDataSeeder : IDemoDataSeeder
             var hasVehicles = await db.Vehicles.AnyAsync(ct);
             var hasChildren = await db.ChildProfiles.AnyAsync(ct);
             var hasInsurances = await db.InsurancePolicies.AnyAsync(ct);
+            var hasFreezers = await db.Freezers.AnyAsync(ct);
 
-            if (!hasReceipts && !hasVehicles && !hasChildren && !hasInsurances)
+            if (!hasReceipts && !hasVehicles && !hasChildren && !hasInsurances && !hasFreezers)
             {
                 await SeedDataCoreAsync(db, ct);
                 _logger.LogInformation("Initialized demo.db with Danish family showcase dataset.");
@@ -332,6 +333,26 @@ public class DemoDataSeeder : IDemoDataSeeder
 
             db.Receipts.Add(receipt);
         }
+
+        var kitchenFreezer = Freezer.Create("Køkkenfryser", "Køkken", 0);
+        var drawer1 = kitchenFreezer.AddCompartment("Skuffe 1 - Brød & Is", 0);
+        var drawer2 = kitchenFreezer.AddCompartment("Skuffe 2 - Kød & Fisk", 1);
+        var drawer3 = kitchenFreezer.AddCompartment("Skuffe 3 - Grønt & Retter", 2);
+
+        db.Freezers.Add(kitchenFreezer);
+
+        var freezerItems = new List<FreezerItem>
+        {
+            FreezerItem.Create("Surdejsbrød i skiver", drawer1.Id, FreezerCategory.Bakery, 1, FreezerUnit.Pieces, now.AddDays(-14), now.AddDays(76), minimumQuantity: 1, notes: "Fra Meyers bageri"),
+            FreezerItem.Create("Vaniljeis (0.75L)", drawer1.Id, FreezerCategory.DessertsAndIceCream, 2, FreezerUnit.Packages, now.AddDays(-30), now.AddDays(150), minimumQuantity: 1, notes: "Hansen Flødeis"),
+            FreezerItem.Create("Hakket oksekød (500g)", drawer2.Id, FreezerCategory.MeatAndPoultry, 3, FreezerUnit.Packages, now.AddDays(-20), now.AddDays(100), minimumQuantity: 2, notes: "Kødkvæg 8-12%"),
+            FreezerItem.Create("Kyllingebrystfilet", drawer2.Id, FreezerCategory.MeatAndPoultry, 4, FreezerUnit.Pieces, now.AddDays(-10), now.AddDays(170), minimumQuantity: 2, notes: "Dansk velfærdskylling"),
+            FreezerItem.Create("Lakseportioner", drawer2.Id, FreezerCategory.Seafood, 2, FreezerUnit.Portions, now.AddDays(-45), now.AddDays(75), minimumQuantity: 2, notes: "Norsk laks"),
+            FreezerItem.Create("Frosne ærter (1kg)", drawer3.Id, FreezerCategory.VegetablesAndFruits, 2, FreezerUnit.Packages, now.AddDays(-60), now.AddDays(240), minimumQuantity: 1, notes: "Danske fine ærter"),
+            FreezerItem.Create("Hjemmelavet lasagne", drawer3.Id, FreezerCategory.PreparedMeals, 2, FreezerUnit.Portions, now.AddDays(-75), now.AddDays(15), minimumQuantity: 1, notes: "Portionsopdelt i ovnfaste forme")
+        };
+
+        db.FreezerItems.AddRange(freezerItems);
 
         await db.SaveChangesAsync(ct);
     }

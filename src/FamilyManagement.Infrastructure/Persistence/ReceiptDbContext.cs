@@ -13,6 +13,10 @@ public class ReceiptDbContext : DbContext
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
     public DbSet<MileageLogEntry> MileageLogs => Set<MileageLogEntry>();
     public DbSet<VehicleServiceRecord> VehicleServices => Set<VehicleServiceRecord>();
+    public DbSet<Freezer> Freezers => Set<Freezer>();
+    public DbSet<FreezerCompartment> FreezerCompartments => Set<FreezerCompartment>();
+    public DbSet<FreezerItem> FreezerItems => Set<FreezerItem>();
+    public DbSet<FreezerTransaction> FreezerTransactions => Set<FreezerTransaction>();
 
     public ReceiptDbContext(DbContextOptions<ReceiptDbContext> options) : base(options)
     {

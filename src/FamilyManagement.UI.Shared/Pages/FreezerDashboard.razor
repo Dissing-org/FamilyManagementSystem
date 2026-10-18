@@ -1,0 +1,535 @@
+@page "/freezer"
+@using FamilyManagement.UI.Shared.Components
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+@inject FreezerApiClient FreezerApi
+
+<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-24 md:pb-16 selection:bg-[#FDEEE9] selection:text-[#C85A32]">
+    <!-- Top Header -->
+    <AppHeader CurrentSectionSubtitle="@L["Freezer.Subtitle"]" OnSettingsSaved="LoadDataAsync" />
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 space-y-6">
+        <!-- Hero Section: Overview & Metrics -->
+        <div class="relative overflow-hidden pb-6 border-b border-[#EADECF]/80 dark:border-[#3D2F28]/80">
+            <div class="absolute -top-12 -left-12 w-64 h-64 bg-[#C85A32]/10 dark:bg-[#C85A32]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs uppercase font-bold tracking-wider text-[#7F6A5D] dark:text-[#A8988B]">
+                        @L["Nav.Freezer"]
+                    </p>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-[#2B1D16] dark:text-[#FAF0E6] mt-1 flex items-center gap-2.5">
+                        <span>@L["Freezer.Title"]</span>
+                    </h1>
+                    <p class="text-sm text-[#7F6A5D] dark:text-[#A8988B] mt-1">
+                        @L["Freezer.Description"]
+                    </p>
+                </div>
+
+                <!-- Primary Action Buttons -->
+                <div class="flex items-center gap-2.5">
+                    <button @onclick="() => _showFreezerModal = true"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] hover:border-[#C85A32] hover:text-[#C85A32] shadow-2xs transition-all cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>@L["Freezer.AddFreezer"]</span>
+                    </button>
+                    <button @onclick="() => OpenAddItemModal()"
+                            disabled="@(_dashboard?.Freezers.Count == 0)"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#C85A32] text-white hover:bg-[#A8431F] shadow-xs disabled:opacity-50 transition-all cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>@L["Freezer.AddItem"]</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (_isLoading)
+        {
+            <div class="py-20 text-center">
+                <span class="animate-spin inline-block h-8 w-8 border-3 border-[#C85A32] border-t-transparent rounded-full"></span>
+                <p class="text-xs font-medium text-[#7F6A5D] dark:text-[#A8988B] mt-3">@L["Common.Loading"]</p>
+            </div>
+        }
+        else if (_dashboard is null)
+        {
+            <div class="p-8 text-center bg-white dark:bg-[#261D19] border border-red-200 rounded-3xl">
+                <p class="text-sm font-bold text-red-600">@L["Freezer.LoadFailed"]</p>
+                <button @onclick="LoadDataAsync" class="mt-3 text-xs font-bold text-[#C85A32] hover:underline">
+                    @L["Common.Retry"] &rarr;
+                </button>
+            </div>
+        }
+        else
+        {
+            <!-- Metric Summary Pill Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white/80 dark:bg-[#261D19]/80 border border-[#EADECF] dark:border-[#3D2F28] p-4 rounded-2xl shadow-xs">
+                    <p class="text-xs font-medium text-[#7F6A5D] dark:text-[#A8988B]">@L["Freezer.TotalItems"]</p>
+                    <p class="text-2xl font-black text-[#2B1D16] dark:text-[#FAF0E6] mt-0.5">@_dashboard.TotalItemCount</p>
+                </div>
+                <div class="bg-white/80 dark:bg-[#261D19]/80 border border-[#EADECF] dark:border-[#3D2F28] p-4 rounded-2xl shadow-xs cursor-pointer hover:border-amber-400"
+                     @onclick='() => _activeView = "urgent"'>
+                    <p class="text-xs font-medium text-[#7F6A5D] dark:text-[#A8988B] flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        @L["Freezer.ExpiringSoon"]
+                    </p>
+                    <p class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-0.5">@_dashboard.ExpiringSoonCount</p>
+                </div>
+                <div class="bg-white/80 dark:bg-[#261D19]/80 border border-[#EADECF] dark:border-[#3D2F28] p-4 rounded-2xl shadow-xs cursor-pointer hover:border-red-400"
+                     @onclick='() => _activeView = "urgent"'>
+                    <p class="text-xs font-medium text-[#7F6A5D] dark:text-[#A8988B] flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        @L["Freezer.Expired"]
+                    </p>
+                    <p class="text-2xl font-black text-red-600 dark:text-red-400 mt-0.5">@_dashboard.ExpiredCount</p>
+                </div>
+                <div class="bg-white/80 dark:bg-[#261D19]/80 border border-[#EADECF] dark:border-[#3D2F28] p-4 rounded-2xl shadow-xs cursor-pointer hover:border-[#D9822B]"
+                     @onclick='() => _activeView = "urgent"'>
+                    <p class="text-xs font-medium text-[#7F6A5D] dark:text-[#A8988B] flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-[#D9822B]"></span>
+                        @L["Freezer.LowStock"]
+                    </p>
+                    <p class="text-2xl font-black text-[#D9822B] mt-0.5">@_dashboard.LowStockCount</p>
+                </div>
+            </div>
+
+            <!-- View Switcher & Filters -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+                <!-- Segmented Tabs -->
+                <div class="inline-flex bg-[#EADECF]/50 dark:bg-[#261D19] p-1 rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] self-start">
+                    <button @onclick='() => _activeView = "locations"'
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all @(_activeView == "locations" ? "bg-white dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] shadow-xs" : "text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32]")">
+                        @L["Freezer.ViewByLocation"]
+                    </button>
+                    <button @onclick='() => _activeView = "categories"'
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all @(_activeView == "categories" ? "bg-white dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] shadow-xs" : "text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32]")">
+                        @L["Freezer.ViewByCategory"]
+                    </button>
+                    <button @onclick='() => _activeView = "urgent"'
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 @(_activeView == "urgent" ? "bg-white dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] shadow-xs" : "text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32]")">
+                        <span>@L["Freezer.ViewUrgent"]</span>
+                        @if (_dashboard.ExpiringSoonCount + _dashboard.ExpiredCount + _dashboard.LowStockCount > 0)
+                        {
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                        }
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative min-w-[240px]">
+                    <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#7F6A5D] dark:text-[#A8988B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text"
+                           placeholder="@L["Freezer.SearchPlaceholder"]"
+                           @bind="_searchQuery"
+                           @bind:event="oninput"
+                           class="w-full pl-9 pr-3.5 py-1.5 rounded-xl text-xs bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]" />
+                </div>
+            </div>
+
+            <!-- Category Filter Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                <button @onclick='() => _selectedCategoryFilter = null'
+                        class="px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all @(_selectedCategoryFilter == null ? "bg-[#C85A32] text-white shadow-xs font-bold" : "bg-white/80 dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#7F6A5D] dark:text-[#A8988B] hover:border-[#C85A32]")">
+                    @L["Common.All"] (@_allItems.Count)
+                </button>
+                @foreach (var cat in new[] { "MeatAndPoultry", "Seafood", "VegetablesAndFruits", "PreparedMeals", "Bakery", "DessertsAndIceCream", "Other" })
+                {
+                    var count = _dashboard.ItemsByCategory.GetValueOrDefault(cat, 0);
+                    <button @onclick="() => _selectedCategoryFilter = cat"
+                            class="px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all @(_selectedCategoryFilter == cat ? "bg-[#C85A32] text-white shadow-xs font-bold" : "bg-white/80 dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#7F6A5D] dark:text-[#A8988B] hover:border-[#C85A32]")">
+                        @L[$"Freezer.Category.{cat}"] (@count)
+                    </button>
+                }
+            </div>
+
+            <!-- Tab Content -->
+            @if (_activeView == "locations")
+            {
+                <!-- Location View: Freezers with Drawer Cards -->
+                @if (_dashboard.Freezers.Count == 0)
+                {
+                    <div class="py-16 text-center border border-dashed border-[#EADECF] dark:border-[#3D2F28] rounded-3xl bg-white/40 dark:bg-[#261D19]/40">
+                        <p class="text-sm font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@L["Freezer.NoFreezersYet"]</p>
+                        <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B] mt-1">@L["Freezer.NoFreezersSubtitle"]</p>
+                        <button @onclick="() => _showFreezerModal = true"
+                                class="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-[#C85A32] text-white hover:bg-[#A8431F]">
+                            @L["Freezer.AddFreezer"]
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="space-y-6">
+                        @foreach (var freezer in _dashboard.Freezers)
+                        {
+                            <div class="bg-[#FAF6F0]/40 dark:bg-[#1C1512]/40 border border-[#EADECF] dark:border-[#3D2F28] rounded-3xl p-5 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h2 class="text-lg font-black text-[#2B1D16] dark:text-[#FAF0E6] flex items-center gap-2">
+                                            <span>@freezer.Name</span>
+                                            @if (!string.IsNullOrWhiteSpace(freezer.Location))
+                                            {
+                                                <span class="text-xs font-normal px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-[#7F6A5D] dark:text-[#A8988B]">
+                                                    @freezer.Location
+                                                </span>
+                                            }
+                                        </h2>
+                                        <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">
+                                            @L.Format("Freezer.CompartmentCount", freezer.Compartments.Count)
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button @onclick="() => OpenAddCompartment(freezer.Id)"
+                                                class="px-2.5 py-1 rounded-lg text-xs font-bold text-[#C85A32] hover:bg-[#C85A32]/10 transition-colors">
+                                            + @L["Freezer.AddDrawer"]
+                                        </button>
+                                        <button @onclick="() => EditFreezer(freezer)"
+                                                class="p-1 rounded-lg text-[#7F6A5D] hover:text-[#C85A32]"
+                                                title="@L["Common.Edit"]">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </button>
+                                        <button @onclick="() => DeleteFreezerAsync(freezer.Id)"
+                                                class="p-1 rounded-lg text-[#7F6A5D] hover:text-red-600"
+                                                title="@L["Common.Delete"]">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    @foreach (var comp in freezer.Compartments)
+                                    {
+                                        var compItems = GetFilteredItemsForCompartment(comp.Id);
+                                        <FreezerCompartmentCard @key="comp.Id"
+                                                                Compartment="comp"
+                                                                Items="compItems"
+                                                                OnAddItem="OpenAddItemForCompartment"
+                                                                OnDeleteCompartment="DeleteCompartmentAsync"
+                                                                OnEditItem="OpenEditItemModal"
+                                                                OnDeleteItem="DeleteItemAsync"
+                                                                OnConsumeItem="OpenConsumeModal"
+                                                                OnAddQuantity="QuickAddQuantityAsync" />
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+            else if (_activeView == "categories")
+            {
+                <!-- By Category View -->
+                <div class="space-y-6">
+                    @foreach (var cat in GetActiveCategories())
+                    {
+                        var catItems = GetFilteredItemsForCategory(cat);
+                        @if (catItems.Count > 0)
+                        {
+                            <div class="bg-white/80 dark:bg-[#261D19]/80 border border-[#EADECF] dark:border-[#3D2F28] rounded-3xl p-5 shadow-xs space-y-3">
+                                <div class="flex items-center justify-between border-b border-[#EADECF]/60 dark:border-[#3D2F28]/60 pb-3">
+                                    <h3 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">
+                                        @L[$"Freezer.Category.{cat}"]
+                                    </h3>
+                                    <span class="text-xs text-[#7F6A5D] dark:text-[#A8988B] font-semibold">
+                                        @L.Format("Freezer.ItemCount", catItems.Count)
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    @foreach (var item in catItems)
+                                    {
+                                        <FreezerItemCard @key="item.Id"
+                                                         Item="item"
+                                                         OnEdit="OpenEditItemModal"
+                                                         OnDelete="DeleteItemAsync"
+                                                         OnConsume="OpenConsumeModal"
+                                                         OnAddQuantity="QuickAddQuantityAsync" />
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else if (_activeView == "urgent")
+            {
+                <!-- Urgent & Restock View -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">
+                                @L["Freezer.UrgentOverviewTitle"]
+                            </h3>
+                            <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">
+                                @L["Freezer.UrgentOverviewSubtitle"]
+                            </p>
+                        </div>
+                    </div>
+
+                    @{
+                        var urgentItems = GetUrgentFilteredItems();
+                    }
+
+                    @if (urgentItems.Count == 0)
+                    {
+                        <div class="py-16 text-center border border-dashed border-[#EADECF] dark:border-[#3D2F28] rounded-3xl bg-white/40 dark:bg-[#261D19]/40">
+                            <span class="inline-block p-3 rounded-2xl bg-[#5B7553]/10 text-[#5B7553] mb-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </span>
+                            <p class="text-sm font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@L["Freezer.NoUrgentItems"]</p>
+                            <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B] mt-1">@L["Freezer.AllItemsFresh"]</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            @foreach (var item in urgentItems)
+                            {
+                                <FreezerItemCard @key="item.Id"
+                                                 Item="item"
+                                                 OnEdit="OpenEditItemModal"
+                                                 OnDelete="DeleteItemAsync"
+                                                 OnConsume="OpenConsumeModal"
+                                                 OnAddQuantity="QuickAddQuantityAsync" />
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </main>
+
+    <!-- Modals -->
+    @if (_showItemModal)
+    {
+        <FreezerItemModal ExistingItem="_editingItem"
+                          DefaultCompartmentId="_defaultCompartmentId"
+                          Freezers="_dashboard?.Freezers ?? Array.Empty<FreezerDto>()"
+                          OnClose="() => _showItemModal = false"
+                          OnSaved="OnItemSavedAsync" />
+    }
+
+    @if (_showConsumeModal && _selectedItemForConsume != null)
+    {
+        <ConsumeItemModal Item="_selectedItemForConsume"
+                          OnClose="() => _showConsumeModal = false"
+                          OnConsumed="OnItemConsumedAsync" />
+    }
+
+    @if (_showFreezerModal)
+    {
+        <FreezerModal ExistingFreezer="_editingFreezer"
+                      OnClose="() => _showFreezerModal = false"
+                      OnSaved="OnFreezerSavedAsync" />
+    }
+</div>
+
+@code {
+    private FreezerDashboardDto? _dashboard;
+    private List<FreezerItemDto> _allItems = new();
+    private bool _isLoading = true;
+    private string _activeView = "locations"; // "locations", "categories", "urgent"
+    private string _searchQuery = "";
+    private string? _selectedCategoryFilter;
+
+    private bool _showItemModal;
+    private FreezerItemDto? _editingItem;
+    private Guid? _defaultCompartmentId;
+
+    private bool _showConsumeModal;
+    private FreezerItemDto? _selectedItemForConsume;
+
+    private bool _showFreezerModal;
+    private FreezerDto? _editingFreezer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _dashboard = await FreezerApi.GetDashboardAsync();
+            _allItems = await FreezerApi.GetItemsAsync();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private IReadOnlyList<FreezerItemDto> GetFilteredItemsForCompartment(Guid compartmentId)
+    {
+        var items = _allItems.Where(i => i.CompartmentId == compartmentId);
+        return ApplySearchAndCategoryFilters(items).ToList();
+    }
+
+    private IReadOnlyList<FreezerItemDto> GetFilteredItemsForCategory(string category)
+    {
+        var items = _allItems.Where(i => i.Category == category);
+        return ApplySearchAndCategoryFilters(items).ToList();
+    }
+
+    private IReadOnlyList<FreezerItemDto> GetUrgentFilteredItems()
+    {
+        var items = _allItems.Where(i => i.FreshnessStatus == "Expired" || i.FreshnessStatus == "ExpiringSoon" || i.IsLowStock);
+        return ApplySearchAndCategoryFilters(items).ToList();
+    }
+
+    private IEnumerable<FreezerItemDto> ApplySearchAndCategoryFilters(IEnumerable<FreezerItemDto> items)
+    {
+        if (!string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            var q = _searchQuery.Trim().ToLowerInvariant();
+            items = items.Where(i => i.Name.ToLowerInvariant().Contains(q) || (i.Notes?.ToLowerInvariant().Contains(q) ?? false));
+        }
+
+        if (!string.IsNullOrWhiteSpace(_selectedCategoryFilter))
+        {
+            items = items.Where(i => i.Category == _selectedCategoryFilter);
+        }
+
+        return items;
+    }
+
+    private IEnumerable<string> GetActiveCategories()
+    {
+        if (!string.IsNullOrWhiteSpace(_selectedCategoryFilter))
+        {
+            return new[] { _selectedCategoryFilter };
+        }
+
+        return new[] { "MeatAndPoultry", "Seafood", "VegetablesAndFruits", "PreparedMeals", "Bakery", "DessertsAndIceCream", "Other" };
+    }
+
+    private void OpenAddItemModal()
+    {
+        _editingItem = null;
+        _defaultCompartmentId = _dashboard?.Freezers.FirstOrDefault()?.Compartments.FirstOrDefault()?.Id;
+        _showItemModal = true;
+    }
+
+    private void OpenAddItemForCompartment(FreezerCompartmentDto comp)
+    {
+        _editingItem = null;
+        _defaultCompartmentId = comp.Id;
+        _showItemModal = true;
+    }
+
+    private void OpenEditItemModal(FreezerItemDto item)
+    {
+        _editingItem = item;
+        _defaultCompartmentId = item.CompartmentId;
+        _showItemModal = true;
+    }
+
+    private void OpenConsumeModal(FreezerItemDto item)
+    {
+        _selectedItemForConsume = item;
+        _showConsumeModal = true;
+    }
+
+    private async Task QuickAddQuantityAsync(FreezerItemDto item)
+    {
+        var updateReq = new UpdateFreezerItemRequest
+        {
+            Id = item.Id,
+            CompartmentId = item.CompartmentId,
+            Name = item.Name,
+            Category = item.Category,
+            Quantity = item.Quantity + 1,
+            Unit = item.Unit,
+            FreezeDate = item.FreezeDate,
+            ExpiryDate = item.ExpiryDate,
+            MinimumQuantity = item.MinimumQuantity,
+            Notes = item.Notes
+        };
+
+        var res = await FreezerApi.UpdateItemAsync(item.Id, updateReq);
+        if (res.Success)
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task DeleteItemAsync(FreezerItemDto item)
+    {
+        var success = await FreezerApi.DeleteItemAsync(item.Id);
+        if (success)
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task OnItemSavedAsync(FreezerItemDto item)
+    {
+        _showItemModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task OnItemConsumedAsync(FreezerItemDto item)
+    {
+        _showConsumeModal = false;
+        await LoadDataAsync();
+    }
+
+    private void EditFreezer(FreezerDto freezer)
+    {
+        _editingFreezer = freezer;
+        _showFreezerModal = true;
+    }
+
+    private async Task DeleteFreezerAsync(Guid freezerId)
+    {
+        var success = await FreezerApi.DeleteFreezerAsync(freezerId);
+        if (success)
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task OpenAddCompartment(Guid freezerId)
+    {
+        var freezer = _dashboard?.Freezers.FirstOrDefault(f => f.Id == freezerId);
+        var order = (freezer?.Compartments.Count ?? 0) + 1;
+        var name = $"Skuffe {order}";
+
+        await FreezerApi.CreateCompartmentAsync(freezerId, new CreateCompartmentRequest
+        {
+            FreezerId = freezerId,
+            Name = name,
+            DisplayOrder = order
+        });
+
+        await LoadDataAsync();
+    }
+
+    private async Task DeleteCompartmentAsync(FreezerCompartmentDto comp)
+    {
+        var success = await FreezerApi.DeleteCompartmentAsync(comp.FreezerId, comp.Id);
+        if (success)
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task OnFreezerSavedAsync(FreezerDto freezer)
+    {
+        _showFreezerModal = false;
+        await LoadDataAsync();
+    }
+}

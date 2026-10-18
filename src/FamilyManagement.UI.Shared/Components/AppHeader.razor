@@ -43,6 +43,9 @@
                 <NavLink href="vehicles" class="px-3 py-1 rounded-lg text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] dark:hover:text-[#FAF0E6] hover:bg-white/50 dark:hover:bg-[#3D2F28]/50 transition-all flex items-center gap-1.5" ActiveClass="!bg-white dark:!bg-[#261D19] !text-[#2B1D16] dark:!text-[#FAF0E6] shadow-xs font-bold">
                     @L["Nav.Vehicles"]
                 </NavLink>
+                <NavLink href="freezer" class="px-3 py-1 rounded-lg text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] dark:hover:text-[#FAF0E6] hover:bg-white/50 dark:hover:bg-[#3D2F28]/50 transition-all flex items-center gap-1.5" ActiveClass="!bg-white dark:!bg-[#261D19] !text-[#2B1D16] dark:!text-[#FAF0E6] shadow-xs font-bold">
+                    @L["Nav.Freezer"]
+                </NavLink>
             </nav>
         </div>
 
@@ -142,6 +145,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
         </svg>
         <span>@L["Nav.Vehicles"]</span>
+    </NavLink>
+    <NavLink href="freezer" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m-9-9h18m-4.5-6.5l-9 9m0-9l9 9M5 7l2 2m10 10l2 2m-2-14l-2 2M7 17l-2 2" />
+        </svg>
+        <span>@L["Nav.Freezer"]</span>
     </NavLink>
 </nav>
 

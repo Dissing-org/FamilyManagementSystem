@@ -82,6 +82,7 @@ public static class SqliteSchemaInitializer
             await EnsureTableExistsAsync(connection, logger, "InsurancePolicies", InsurancePoliciesDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "ChildProfiles", ChildDevelopmentDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "Vehicles", VehiclesDdl, ct);
+            await EnsureTableExistsAsync(connection, logger, "Freezers", FreezersDdl, ct);
         }
         catch (Exception ex)
         {
@@ -225,5 +226,51 @@ public static class SqliteSchemaInitializer
         );
         CREATE INDEX "IX_VehicleServiceRecords_VehicleId" ON "VehicleServiceRecords" ("VehicleId");
         CREATE INDEX "IX_VehicleServiceRecords_VehicleId_ServiceDate" ON "VehicleServiceRecords" ("VehicleId", "ServiceDate");
+        """;
+
+    private const string FreezersDdl = """
+        CREATE TABLE "Freezers" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_Freezers" PRIMARY KEY,
+            "Name" TEXT NOT NULL,
+            "Location" TEXT NULL,
+            "DisplayOrder" INTEGER NOT NULL,
+            "CreatedAt" TEXT NOT NULL
+        );
+        CREATE TABLE "FreezerCompartments" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_FreezerCompartments" PRIMARY KEY,
+            "FreezerId" TEXT NOT NULL,
+            "Name" TEXT NOT NULL,
+            "DisplayOrder" INTEGER NOT NULL,
+            CONSTRAINT "FK_FreezerCompartments_Freezers_FreezerId" FOREIGN KEY ("FreezerId") REFERENCES "Freezers" ("Id") ON DELETE CASCADE
+        );
+        CREATE INDEX "IX_FreezerCompartments_FreezerId" ON "FreezerCompartments" ("FreezerId");
+        CREATE TABLE "FreezerItems" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_FreezerItems" PRIMARY KEY,
+            "CompartmentId" TEXT NOT NULL,
+            "Name" TEXT NOT NULL,
+            "Category" TEXT NOT NULL,
+            "Quantity" TEXT NOT NULL,
+            "Unit" TEXT NOT NULL,
+            "FreezeDate" TEXT NOT NULL,
+            "ExpiryDate" TEXT NULL,
+            "MinimumQuantity" TEXT NULL,
+            "Notes" TEXT NULL,
+            "CreatedAt" TEXT NOT NULL,
+            "UpdatedAt" TEXT NULL
+        );
+        CREATE INDEX "IX_FreezerItems_CompartmentId" ON "FreezerItems" ("CompartmentId");
+        CREATE INDEX "IX_FreezerItems_Category" ON "FreezerItems" ("Category");
+        CREATE INDEX "IX_FreezerItems_ExpiryDate" ON "FreezerItems" ("ExpiryDate");
+        CREATE TABLE "FreezerTransactions" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_FreezerTransactions" PRIMARY KEY,
+            "ItemId" TEXT NOT NULL,
+            "QuantityChanged" TEXT NOT NULL,
+            "RemainingQuantity" TEXT NOT NULL,
+            "Reason" TEXT NOT NULL,
+            "Notes" TEXT NULL,
+            "Timestamp" TEXT NOT NULL
+        );
+        CREATE INDEX "IX_FreezerTransactions_ItemId" ON "FreezerTransactions" ("ItemId");
+        CREATE INDEX "IX_FreezerTransactions_Timestamp" ON "FreezerTransactions" ("Timestamp");
         """;
 }

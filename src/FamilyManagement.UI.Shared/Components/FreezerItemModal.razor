@@ -1,0 +1,341 @@
+@using FamilyManagement.UI.Shared.Models
+
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+    <div class="relative w-full max-w-lg bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-3xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-[#EADECF]/80 dark:border-[#3D2F28]/80 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#C85A32]/10 dark:bg-[#C85A32]/20 text-[#C85A32] flex items-center justify-center font-bold">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">
+                        @(IsEdit ? L["Freezer.EditItemTitle"] : L["Freezer.AddItemTitle"])
+                    </h3>
+                    <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">
+                        @L["Freezer.ItemModalSubtitle"]
+                    </p>
+                </div>
+            </div>
+            <button @onclick="OnClose" class="p-1 rounded-lg text-[#7F6A5D] dark:text-[#A8988B] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-6 overflow-y-auto space-y-4">
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/40 text-xs">
+                    @_errorMessage
+                </div>
+            }
+
+            <!-- Item Name -->
+            <div>
+                <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                    @L["Freezer.ItemName"] *
+                </label>
+                <input type="text"
+                       @bind="_model.Name"
+                       placeholder="f.eks. Hakket oksekød, Hjemmelavet suppe"
+                       class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]" />
+            </div>
+
+            <!-- Freezer & Compartment Selection -->
+            <div>
+                <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                    @L["Freezer.Location"] *
+                </label>
+                <select @bind="_model.CompartmentId"
+                        class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]">
+                    @foreach (var freezer in Freezers)
+                    {
+                        <optgroup label="@freezer.Name">
+                            @foreach (var comp in freezer.Compartments)
+                            {
+                                <option value="@comp.Id">@comp.Name</option>
+                            }
+                        </optgroup>
+                    }
+                </select>
+            </div>
+
+            <!-- Category & Unit -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                        @L["Freezer.Category"] *
+                    </label>
+                    <select value="@_model.Category"
+                            @onchange="OnCategoryChanged"
+                            class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]">
+                        <option value="MeatAndPoultry">@L["Freezer.Category.MeatAndPoultry"]</option>
+                        <option value="Seafood">@L["Freezer.Category.Seafood"]</option>
+                        <option value="VegetablesAndFruits">@L["Freezer.Category.VegetablesAndFruits"]</option>
+                        <option value="PreparedMeals">@L["Freezer.Category.PreparedMeals"]</option>
+                        <option value="Bakery">@L["Freezer.Category.Bakery"]</option>
+                        <option value="DessertsAndIceCream">@L["Freezer.Category.DessertsAndIceCream"]</option>
+                        <option value="Other">@L["Freezer.Category.Other"]</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                        @L["Freezer.Unit"] *
+                    </label>
+                    <select @bind="_model.Unit"
+                            class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]">
+                        <option value="Pieces">@L["Freezer.Unit.Pieces"]</option>
+                        <option value="Packages">@L["Freezer.Unit.Packages"]</option>
+                        <option value="Portions">@L["Freezer.Unit.Portions"]</option>
+                        <option value="Grams">@L["Freezer.Unit.Grams"]</option>
+                        <option value="Kilograms">@L["Freezer.Unit.Kilograms"]</option>
+                        <option value="Liters">@L["Freezer.Unit.Liters"]</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quantity & Minimum Threshold -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                        @L["Freezer.Quantity"] *
+                    </label>
+                    <input type="number"
+                           step="any"
+                           min="0"
+                           @bind="_model.Quantity"
+                           class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                        @L["Freezer.MinimumQuantity"]
+                    </label>
+                    <input type="number"
+                           step="any"
+                           min="0"
+                           @bind="_model.MinimumQuantity"
+                           placeholder="Valgfrit genbestillingsniveau"
+                           class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]" />
+                </div>
+            </div>
+
+            <!-- Freeze Date & Expiry Date -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                        @L["Freezer.FreezeDate"] *
+                    </label>
+                    <input type="date"
+                           value="@_model.FreezeDate.ToString("yyyy-MM-dd")"
+                           @onchange="OnFreezeDateChanged"
+                           class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                        @L["Freezer.ExpiryDate"]
+                    </label>
+                    <input type="date"
+                           value="@(_model.ExpiryDate?.ToString("yyyy-MM-dd") ?? "")"
+                           @onchange="OnExpiryDateChanged"
+                           class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]" />
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div>
+                <label class="block text-xs font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">
+                    @L["Common.Notes"]
+                </label>
+                <textarea @bind="_model.Notes"
+                          rows="2"
+                          placeholder="f.eks. optøningstid, opskrift, dato tilberedt..."
+                          class="w-full px-3.5 py-2 rounded-xl text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-none focus:border-[#C85A32]"></textarea>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 bg-[#FAF6F0]/60 dark:bg-[#1C1512]/60 border-t border-[#EADECF]/80 dark:border-[#3D2F28]/80 flex items-center justify-end gap-2.5">
+            <button @onclick="OnClose"
+                    class="px-4 py-2 rounded-xl text-xs font-bold text-[#7F6A5D] dark:text-[#A8988B] hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                @L["Common.Cancel"]
+            </button>
+            <button @onclick="HandleSaveAsync"
+                    disabled="@_isSaving"
+                    class="px-5 py-2 rounded-xl text-xs font-bold bg-[#C85A32] text-white hover:bg-[#A8431F] shadow-xs disabled:opacity-50 transition-all flex items-center gap-1.5 cursor-pointer">
+                @if (_isSaving)
+                {
+                    <span class="animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full"></span>
+                }
+                <span>@(IsEdit ? L["Common.Save"] : L["Freezer.SaveItem"])</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public FreezerItemDto? ExistingItem { get; set; }
+
+    [Parameter]
+    public Guid? DefaultCompartmentId { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<FreezerDto> Freezers { get; set; } = Array.Empty<FreezerDto>();
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<FreezerItemDto> OnSaved { get; set; }
+
+    [Inject]
+    public FreezerApiClient ApiClient { get; set; } = null!;
+
+    private bool IsEdit => ExistingItem is not null;
+    private CreateFreezerItemRequest _model = new();
+    private bool _isSaving;
+    private string? _errorMessage;
+
+    protected override void OnInitialized()
+    {
+        if (ExistingItem is not null)
+        {
+            _model = new CreateFreezerItemRequest
+            {
+                CompartmentId = ExistingItem.CompartmentId,
+                Name = ExistingItem.Name,
+                Category = ExistingItem.Category,
+                Quantity = ExistingItem.Quantity,
+                Unit = ExistingItem.Unit,
+                FreezeDate = ExistingItem.FreezeDate,
+                ExpiryDate = ExistingItem.ExpiryDate,
+                MinimumQuantity = ExistingItem.MinimumQuantity,
+                Notes = ExistingItem.Notes
+            };
+        }
+        else
+        {
+            _model.CompartmentId = DefaultCompartmentId ?? Freezers.FirstOrDefault()?.Compartments.FirstOrDefault()?.Id ?? Guid.Empty;
+            _model.FreezeDate = DateTime.UtcNow.Date;
+            RecalculateExpiry();
+        }
+    }
+
+    private void OnCategoryChanged(ChangeEventArgs e)
+    {
+        _model.Category = e.Value?.ToString() ?? "Other";
+        RecalculateExpiry();
+    }
+
+    private void OnFreezeDateChanged(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var parsedDate))
+        {
+            _model.FreezeDate = parsedDate;
+            RecalculateExpiry();
+        }
+    }
+
+    private void OnExpiryDateChanged(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var parsedDate))
+        {
+            _model.ExpiryDate = parsedDate;
+        }
+        else
+        {
+            _model.ExpiryDate = null;
+        }
+    }
+
+    private void RecalculateExpiry()
+    {
+        var days = _model.Category switch
+        {
+            "MeatAndPoultry" => 180,
+            "Seafood" => 120,
+            "VegetablesAndFruits" => 300,
+            "PreparedMeals" => 90,
+            "Bakery" => 90,
+            "DessertsAndIceCream" => 180,
+            _ => 180
+        };
+
+        _model.ExpiryDate = _model.FreezeDate.AddDays(days);
+    }
+
+    private async Task HandleSaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_model.Name))
+        {
+            _errorMessage = L["Freezer.ItemNameRequired"];
+            return;
+        }
+
+        if (_model.CompartmentId == Guid.Empty)
+        {
+            _errorMessage = L["Freezer.CompartmentRequired"];
+            return;
+        }
+
+        if (_model.Quantity <= 0)
+        {
+            _errorMessage = L["Freezer.QuantityGreaterThanZero"];
+            return;
+        }
+
+        _isSaving = true;
+        _errorMessage = null;
+
+        try
+        {
+            if (IsEdit)
+            {
+                var updateReq = new UpdateFreezerItemRequest
+                {
+                    Id = ExistingItem!.Id,
+                    CompartmentId = _model.CompartmentId,
+                    Name = _model.Name,
+                    Category = _model.Category,
+                    Quantity = _model.Quantity,
+                    Unit = _model.Unit,
+                    FreezeDate = _model.FreezeDate,
+                    ExpiryDate = _model.ExpiryDate,
+                    MinimumQuantity = _model.MinimumQuantity,
+                    Notes = _model.Notes
+                };
+
+                var res = await ApiClient.UpdateItemAsync(ExistingItem.Id, updateReq);
+                if (res.Success && res.Item != null)
+                {
+                    await OnSaved.InvokeAsync(res.Item);
+                }
+                else
+                {
+                    _errorMessage = res.Error ?? "Failed to update item.";
+                }
+            }
+            else
+            {
+                var res = await ApiClient.CreateItemAsync(_model);
+                if (res.Success && res.Item != null)
+                {
+                    await OnSaved.InvokeAsync(res.Item);
+                }
+                else
+                {
+                    _errorMessage = res.Error ?? "Failed to create item.";
+                }
+            }
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+}

@@ -36,6 +36,8 @@ public static class DependencyInjection
         services.AddScoped<IVehicleRepository, FamilyManagement.Infrastructure.Repositories.VehicleRepository>();
         services.AddScoped<IMileageLogRepository, FamilyManagement.Infrastructure.Repositories.MileageLogRepository>();
         services.AddScoped<IVehicleServiceRepository, FamilyManagement.Infrastructure.Repositories.VehicleServiceRepository>();
+        services.AddScoped<IFreezerRepository, FreezerRepository>();
+        services.AddScoped<IFreezerItemRepository, FreezerItemRepository>();
 
         services.Configure<GoogleDriveOptions>(
             configuration.GetSection(GoogleDriveOptions.SectionName));

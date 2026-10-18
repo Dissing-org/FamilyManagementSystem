@@ -40,6 +40,7 @@ public static class MauiProgram
 		builder.Services.AddScoped<IInsuranceApiClient, InsuranceApiClient>();
 		builder.Services.AddScoped<ChildApiClient>();
 		builder.Services.AddScoped<VehicleApiClient>();
+		builder.Services.AddScoped<FreezerApiClient>();
 		builder.Services.AddScoped<IAuthSessionService, AuthSessionService>();
 
 		return builder.Build();
