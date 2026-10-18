@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FluentValidation;
+using System.Text.Json.Serialization;
 using FamilyManagement.Application.DTOs.Freezers;
 using FamilyManagement.Application.UseCases.Freezers.Commands;
 using FamilyManagement.Domain.Enums;
@@ -10,9 +11,15 @@ public class CreateFreezerItemRequest
 {
     public Guid CompartmentId { get; set; }
     public string Name { get; set; } = string.Empty;
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public FreezerCategory Category { get; set; } = FreezerCategory.Other;
+
     public decimal Quantity { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public FreezerUnit Unit { get; set; } = FreezerUnit.Pieces;
+
     public DateTime FreezeDate { get; set; } = DateTime.UtcNow;
     public DateTime? ExpiryDate { get; set; }
     public decimal? MinimumQuantity { get; set; }

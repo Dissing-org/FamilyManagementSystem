@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FluentValidation;
+using System.Text.Json.Serialization;
 using FamilyManagement.Application.DTOs.Freezers;
 using FamilyManagement.Application.UseCases.Freezers.Commands;
 using FamilyManagement.Domain.Enums;
@@ -10,7 +11,10 @@ public class ConsumeFreezerItemRequest
 {
     public Guid Id { get; set; }
     public decimal QuantityToConsume { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ConsumptionReason Reason { get; set; } = ConsumptionReason.Consumed;
+
     public string? Notes { get; set; }
 }
 

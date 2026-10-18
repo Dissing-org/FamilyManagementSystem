@@ -104,6 +104,27 @@ public class FreezersApiTests : IClassFixture<WebApplicationFactory<Program>>
         itemDto.IsLowStock.Should().BeFalse();
         var itemId = itemDto.Id;
 
+        // 6b. Verify raw JSON with string enums deserialization succeeds (HTTP 201 Created)
+        var rawJsonPayload = $$"""
+        {
+            "compartmentId": "{{compId}}",
+            "name": "Kyllingebryst",
+            "category": "MeatAndPoultry",
+            "quantity": 2,
+            "unit": "Packages",
+            "freezeDate": "{{DateTime.UtcNow:O}}",
+            "minimumQuantity": 1,
+            "notes": "Testing string enum deserialization"
+        }
+        """;
+        var rawJsonContent = new StringContent(rawJsonPayload, System.Text.Encoding.UTF8, "application/json");
+        var rawItemRes = await client.PostAsync("/api/freezer-items", rawJsonContent);
+        rawItemRes.StatusCode.Should().Be(HttpStatusCode.Created);
+        var rawItemDto = await rawItemRes.Content.ReadFromJsonAsync<FreezerItemDto>();
+        rawItemDto.Should().NotBeNull();
+        rawItemDto!.Category.Should().Be("MeatAndPoultry");
+        rawItemDto.Unit.Should().Be("Packages");
+
         // 7. List Items
         var listItemsRes = await client.GetAsync("/api/freezer-items");
         listItemsRes.StatusCode.Should().Be(HttpStatusCode.OK);

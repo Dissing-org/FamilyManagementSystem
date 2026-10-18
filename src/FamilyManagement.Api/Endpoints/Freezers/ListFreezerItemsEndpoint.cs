@@ -1,4 +1,5 @@
 using FastEndpoints;
+using System.Text.Json.Serialization;
 using FamilyManagement.Application.DTOs.Freezers;
 using FamilyManagement.Application.UseCases.Freezers.Queries;
 using FamilyManagement.Domain.Enums;
@@ -8,8 +9,13 @@ namespace FamilyManagement.Api.Endpoints.Freezers;
 public class ListFreezerItemsRequest
 {
     public Guid? CompartmentId { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public FreezerCategory? Category { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public FreshnessStatus? Freshness { get; set; }
+
     public bool? LowStockOnly { get; set; }
 }
 

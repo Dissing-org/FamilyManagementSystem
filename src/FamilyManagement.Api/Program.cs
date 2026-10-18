@@ -90,7 +90,10 @@ app.UseCors();
 app.UseDefaultExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseFastEndpoints();
+app.UseFastEndpoints(c =>
+{
+    c.Serializer.Options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
 app.UseSwaggerGen();
 
 await app.RunAsync();
