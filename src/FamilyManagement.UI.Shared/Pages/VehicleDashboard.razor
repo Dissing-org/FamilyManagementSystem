@@ -4,7 +4,7 @@
 @using FamilyManagement.UI.Shared.Services
 @inject VehicleApiClient VehicleApi
 
-<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-16">
+<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-24">
     <AppHeader CurrentSectionSubtitle="@L["Vehicles.Subtitle"]" OnSettingsSaved="LoadVehiclesAsync">
         <ActionContent>
             <button @onclick="OpenAddVehicleModal" 

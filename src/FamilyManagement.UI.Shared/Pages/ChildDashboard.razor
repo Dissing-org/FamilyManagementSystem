@@ -4,7 +4,7 @@
 @using FamilyManagement.UI.Shared.Components
 @inject ChildApiClient ChildApi
 
-<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-16">
+<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-24">
     <AppHeader CurrentSectionSubtitle="@L["Children.Subtitle"]" OnSettingsSaved="LoadChildrenAsync">
         <ActionContent>
             <button @onclick="() => _showRegisterChildModal = true" 

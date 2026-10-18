@@ -109,49 +109,51 @@
     </div>
 </header>
 
-<!-- Mobile Thumb-Friendly Sticky Bottom Tab Bar (Graft from Candidate 3) -->
-<nav class="md:hidden fixed bottom-0 inset-x-0 z-40 h-16 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#FAF6F0]/95 dark:bg-[#1C1512]/95 backdrop-blur-lg border-t border-[#EADECF]/80 dark:border-[#3D2F28]/80 flex items-center justify-around px-2 shadow-lg transition-colors">
-    <NavLink href="" Match="NavLinkMatch.All" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
-        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-        </svg>
-        <span>@L["Nav.Home"]</span>
-    </NavLink>
-    <NavLink href="receipts" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
-        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
-        </svg>
-        <span>@L["Nav.Receipts"]</span>
-    </NavLink>
-    <NavLink href="insurances" class="relative flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
-        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-        </svg>
-        <span>@L["Nav.Insurances"]</span>
-        @if (UpcomingRenewalCount > 0)
-        {
-            <span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#D9822B] ring-2 ring-white dark:ring-[#1C1512] animate-pulse"></span>
-        }
-    </NavLink>
-    <NavLink href="children" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
-        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-        </svg>
-        <span>@L["Nav.Children"]</span>
-    </NavLink>
-    <NavLink href="vehicles" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
-        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
-        </svg>
-        <span>@L["Nav.Vehicles"]</span>
-    </NavLink>
-    <NavLink href="freezer" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
-        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m-9-9h18m-4.5-6.5l-9 9m0-9l9 9M5 7l2 2m10 10l2 2m-2-14l-2 2M7 17l-2 2" />
-        </svg>
-        <span>@L["Nav.Freezer"]</span>
-    </NavLink>
+<!-- Universal Thumb-Friendly Sticky Bottom Tab Bar -->
+<nav class="fixed bottom-0 inset-x-0 z-40 h-16 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#FAF6F0]/95 dark:bg-[#1C1512]/95 backdrop-blur-lg border-t border-[#EADECF]/80 dark:border-[#3D2F28]/80 shadow-lg transition-colors">
+    <div class="max-w-3xl mx-auto h-full flex items-center justify-around px-2">
+        <NavLink href="" Match="NavLinkMatch.All" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span>@L["Nav.Home"]</span>
+        </NavLink>
+        <NavLink href="receipts" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+            </svg>
+            <span>@L["Nav.Receipts"]</span>
+        </NavLink>
+        <NavLink href="insurances" class="relative flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <span>@L["Nav.Insurances"]</span>
+            @if (UpcomingRenewalCount > 0)
+            {
+                <span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-[#D9822B] ring-2 ring-white dark:ring-[#1C1512] animate-pulse"></span>
+            }
+        </NavLink>
+        <NavLink href="children" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <span>@L["Nav.Children"]</span>
+        </NavLink>
+        <NavLink href="vehicles" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
+            </svg>
+            <span>@L["Nav.Vehicles"]</span>
+        </NavLink>
+        <NavLink href="freezer" class="flex flex-col items-center justify-center py-1 px-2.5 text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] text-[10px] font-semibold transition-colors" ActiveClass="!text-[#C85A32] dark:!text-[#FAF0E6] font-bold">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m-9-9h18m-4.5-6.5l-9 9m0-9l9 9M5 7l2 2m10 10l2 2m-2-14l-2 2M7 17l-2 2" />
+            </svg>
+            <span>@L["Nav.Freezer"]</span>
+        </NavLink>
+    </div>
 </nav>
 
 @if (_showSettingsModal)
