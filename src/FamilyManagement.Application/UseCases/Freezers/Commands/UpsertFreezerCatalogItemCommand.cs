@@ -42,7 +42,22 @@ public class UpsertFreezerCatalogItemCommandHandler
             command.Unit,
             command.MinimumQuantity);
 
-        var saved = await _repository.AddAsync(newItem, ct);
-        return FreezerCatalogItemDto.FromDomain(saved);
+        try
+        {
+            var saved = await _repository.AddAsync(newItem, ct);
+            return FreezerCatalogItemDto.FromDomain(saved);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            var concurrentExisting = await _repository.GetByNameAsync(trimmedName, ct);
+            if (concurrentExisting is not null)
+            {
+                concurrentExisting.UpdateDefaults(command.Category, command.Unit, command.MinimumQuantity);
+                await _repository.UpdateAsync(concurrentExisting, ct);
+                return FreezerCatalogItemDto.FromDomain(concurrentExisting);
+            }
+
+            throw;
+        }
     }
 }

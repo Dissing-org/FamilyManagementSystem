@@ -23,7 +23,7 @@ public class FreezerCatalogApplicationTests
             Task.FromResult(Items.FirstOrDefault(i => i.Id == id));
 
         public Task<FreezerCatalogItem?> GetByNameAsync(string name, CancellationToken ct = default) =>
-            Task.FromResult(Items.FirstOrDefault(i => string.Equals(i.Name, name.Trim(), StringComparison.OrdinalIgnoreCase)));
+            Task.FromResult(Items.FirstOrDefault(i => i.NormalizedName == name.Trim().ToUpperInvariant()));
 
         public Task<FreezerCatalogItem> AddAsync(FreezerCatalogItem item, CancellationToken ct = default)
         {
@@ -55,20 +55,27 @@ public class FreezerCatalogApplicationTests
     }
 
     [Fact]
-    public async Task GetFreezerCatalogQuery_ReturnsAlphabeticallyOrderedItems()
+    public async Task GetFreezerCatalogQuery_ReturnsDanishAlphabeticallyOrderedItems()
     {
         var repo = new FakeFreezerCatalogRepository();
+        repo.Items.Add(FreezerCatalogItem.Create("Ål", FreezerCategory.Seafood, FreezerUnit.Pieces));
         repo.Items.Add(FreezerCatalogItem.Create("Suppe", FreezerCategory.PreparedMeals, FreezerUnit.Portions));
+        repo.Items.Add(FreezerCatalogItem.Create("Ørred", FreezerCategory.Seafood, FreezerUnit.Pieces));
         repo.Items.Add(FreezerCatalogItem.Create("Agurk", FreezerCategory.VegetablesAndFruits, FreezerUnit.Pieces));
+        repo.Items.Add(FreezerCatalogItem.Create("Æbleskiver", FreezerCategory.Bakery, FreezerUnit.Pieces));
         repo.Items.Add(FreezerCatalogItem.Create("Bøf", FreezerCategory.MeatAndPoultry, FreezerUnit.Packages));
 
         var handler = new GetFreezerCatalogQueryHandler(repo);
         var result = await handler.HandleAsync(new GetFreezerCatalogQuery());
 
-        result.Should().HaveCount(3);
-        result[0].Name.Should().Be("Agurk");
-        result[1].Name.Should().Be("Bøf");
-        result[2].Name.Should().Be("Suppe");
+        result.Should().HaveCount(6);
+        result.Select(r => r.Name).Should().ContainInOrder(
+            "Agurk",
+            "Bøf",
+            "Suppe",
+            "Æbleskiver",
+            "Ørred",
+            "Ål");
     }
 
     [Fact]

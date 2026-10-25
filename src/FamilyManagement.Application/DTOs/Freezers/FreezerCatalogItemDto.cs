@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FamilyManagement.Domain.Entities;
 using FamilyManagement.Domain.Enums;
 
@@ -6,8 +7,8 @@ namespace FamilyManagement.Application.DTOs.Freezers;
 public record FreezerCatalogItemDto(
     Guid Id,
     string Name,
-    FreezerCategory DefaultCategory,
-    FreezerUnit DefaultUnit,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] FreezerCategory DefaultCategory,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] FreezerUnit DefaultUnit,
     decimal? DefaultMinimumQuantity,
     DateTime LastUsedAt)
 {

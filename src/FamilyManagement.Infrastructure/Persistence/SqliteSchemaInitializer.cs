@@ -84,6 +84,7 @@ public static class SqliteSchemaInitializer
             await EnsureTableExistsAsync(connection, logger, "Vehicles", VehiclesDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "Freezers", FreezersDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "FreezerCatalogItems", FreezerCatalogItemsDdl, ct);
+            await EnsureCatalogNormalizedNameColumnAsync(connection, logger, ct);
             await SeedCatalogFromFreezerItemsIfEmptyAsync(connection, logger, ct);
         }
         catch (Exception ex)
@@ -280,14 +281,90 @@ public static class SqliteSchemaInitializer
         CREATE TABLE "FreezerCatalogItems" (
             "Id" TEXT NOT NULL CONSTRAINT "PK_FreezerCatalogItems" PRIMARY KEY,
             "Name" TEXT NOT NULL,
+            "NormalizedName" TEXT NOT NULL DEFAULT '',
             "DefaultCategory" TEXT NOT NULL,
             "DefaultUnit" TEXT NOT NULL,
             "DefaultMinimumQuantity" TEXT NULL,
             "CreatedAt" TEXT NOT NULL,
             "LastUsedAt" TEXT NOT NULL
         );
-        CREATE UNIQUE INDEX "IX_FreezerCatalogItems_Name" ON "FreezerCatalogItems" ("Name");
+        CREATE INDEX "IX_FreezerCatalogItems_Name" ON "FreezerCatalogItems" ("Name");
+        CREATE UNIQUE INDEX "IX_FreezerCatalogItems_NormalizedName" ON "FreezerCatalogItems" ("NormalizedName");
         """;
+
+    private static async Task EnsureCatalogNormalizedNameColumnAsync(
+        System.Data.Common.DbConnection connection,
+        ILogger logger,
+        CancellationToken ct)
+    {
+        var catalogColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        await using (var cmd = connection.CreateCommand())
+        {
+            cmd.CommandText = "PRAGMA table_info(\"FreezerCatalogItems\");";
+            await using var reader = await cmd.ExecuteReaderAsync(ct);
+            while (await reader.ReadAsync(ct))
+            {
+                catalogColumns.Add(reader.GetString(1));
+            }
+        }
+
+        if (catalogColumns.Contains("NormalizedName"))
+        {
+            return;
+        }
+
+        await using (var alterCmd = connection.CreateCommand())
+        {
+            alterCmd.CommandText = "ALTER TABLE \"FreezerCatalogItems\" ADD COLUMN \"NormalizedName\" TEXT NOT NULL DEFAULT '';";
+            await alterCmd.ExecuteNonQueryAsync(ct);
+        }
+
+        var existingRows = new List<(string Id, string Name)>();
+        await using (var selectCmd = connection.CreateCommand())
+        {
+            selectCmd.CommandText = "SELECT \"Id\", \"Name\" FROM \"FreezerCatalogItems\";";
+            await using var reader = await selectCmd.ExecuteReaderAsync(ct);
+            while (await reader.ReadAsync(ct))
+            {
+                existingRows.Add((reader.GetString(0), reader.GetString(1)));
+            }
+        }
+
+        var seenNormalized = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var row in existingRows)
+        {
+            var normalized = row.Name.Trim().ToUpperInvariant();
+            if (!seenNormalized.Add(normalized))
+            {
+                await using var deleteCmd = connection.CreateCommand();
+                deleteCmd.CommandText = "DELETE FROM \"FreezerCatalogItems\" WHERE \"Id\" = @id;";
+                var pDelId = deleteCmd.CreateParameter(); pDelId.ParameterName = "@id"; pDelId.Value = row.Id; deleteCmd.Parameters.Add(pDelId);
+                await deleteCmd.ExecuteNonQueryAsync(ct);
+                continue;
+            }
+
+            await using var updateCmd = connection.CreateCommand();
+            updateCmd.CommandText = "UPDATE \"FreezerCatalogItems\" SET \"NormalizedName\" = @normalized WHERE \"Id\" = @id;";
+            var pNorm = updateCmd.CreateParameter(); pNorm.ParameterName = "@normalized"; pNorm.Value = normalized; updateCmd.Parameters.Add(pNorm);
+            var pId = updateCmd.CreateParameter(); pId.ParameterName = "@id"; pId.Value = row.Id; updateCmd.Parameters.Add(pId);
+            await updateCmd.ExecuteNonQueryAsync(ct);
+        }
+
+        await using (var indexCmd = connection.CreateCommand())
+        {
+            indexCmd.CommandText = """
+                DROP INDEX IF EXISTS "IX_FreezerCatalogItems_Name";
+                CREATE INDEX IF NOT EXISTS "IX_FreezerCatalogItems_Name" ON "FreezerCatalogItems" ("Name");
+                CREATE UNIQUE INDEX IF NOT EXISTS "IX_FreezerCatalogItems_NormalizedName" ON "FreezerCatalogItems" ("NormalizedName");
+                """;
+            await indexCmd.ExecuteNonQueryAsync(ct);
+        }
+
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation("Migrated FreezerCatalogItems table to include NormalizedName column and unique index.");
+        }
+    }
 
     private static async Task SeedCatalogFromFreezerItemsIfEmptyAsync(
         System.Data.Common.DbConnection connection,
@@ -317,30 +394,44 @@ public static class SqliteSchemaInitializer
             GROUP BY "Name";
             """;
 
-        var itemsToSeed = new List<(string Name, string Category, string Unit, string? MinQty, string CreatedAt)>();
+        var itemsByNormalizedName = new Dictionary<string, (string Name, string NormalizedName, string Category, string Unit, string? MinQty, string CreatedAt)>(StringComparer.Ordinal);
         await using (var reader = await selectCmd.ExecuteReaderAsync(ct))
         {
             while (await reader.ReadAsync(ct))
             {
-                var name = reader.GetString(0);
+                var rawName = reader.GetString(0);
+                if (string.IsNullOrWhiteSpace(rawName))
+                {
+                    continue;
+                }
+
+                var trimmedName = rawName.Trim();
+                var normalized = trimmedName.ToUpperInvariant();
                 var category = reader.GetString(1);
                 var unit = reader.GetString(2);
                 var minQty = reader.IsDBNull(3) ? null : reader.GetString(3);
                 var createdAt = reader.GetString(4);
-                itemsToSeed.Add((name, category, unit, minQty, createdAt));
+
+                if (!itemsByNormalizedName.ContainsKey(normalized))
+                {
+                    itemsByNormalizedName[normalized] = (trimmedName, normalized, category, unit, minQty, createdAt);
+                }
             }
         }
 
         var nowStr = DateTime.UtcNow.ToString("O");
-        foreach (var item in itemsToSeed)
+        await using var tx = await connection.BeginTransactionAsync(ct);
+        foreach (var item in itemsByNormalizedName.Values)
         {
             await using var insertCmd = connection.CreateCommand();
+            insertCmd.Transaction = tx;
             insertCmd.CommandText = """
-                INSERT INTO "FreezerCatalogItems" ("Id", "Name", "DefaultCategory", "DefaultUnit", "DefaultMinimumQuantity", "CreatedAt", "LastUsedAt")
-                VALUES (@id, @name, @category, @unit, @minQty, @createdAt, @lastUsedAt);
+                INSERT OR IGNORE INTO "FreezerCatalogItems" ("Id", "Name", "NormalizedName", "DefaultCategory", "DefaultUnit", "DefaultMinimumQuantity", "CreatedAt", "LastUsedAt")
+                VALUES (@id, @name, @normalizedName, @category, @unit, @minQty, @createdAt, @lastUsedAt);
                 """;
             var pId = insertCmd.CreateParameter(); pId.ParameterName = "@id"; pId.Value = Guid.NewGuid().ToString(); insertCmd.Parameters.Add(pId);
             var pName = insertCmd.CreateParameter(); pName.ParameterName = "@name"; pName.Value = item.Name; insertCmd.Parameters.Add(pName);
+            var pNorm = insertCmd.CreateParameter(); pNorm.ParameterName = "@normalizedName"; pNorm.Value = item.NormalizedName; insertCmd.Parameters.Add(pNorm);
             var pCat = insertCmd.CreateParameter(); pCat.ParameterName = "@category"; pCat.Value = item.Category; insertCmd.Parameters.Add(pCat);
             var pUnit = insertCmd.CreateParameter(); pUnit.ParameterName = "@unit"; pUnit.Value = item.Unit; insertCmd.Parameters.Add(pUnit);
             var pMin = insertCmd.CreateParameter(); pMin.ParameterName = "@minQty"; pMin.Value = (object?)item.MinQty ?? DBNull.Value; insertCmd.Parameters.Add(pMin);
@@ -350,9 +441,11 @@ public static class SqliteSchemaInitializer
             await insertCmd.ExecuteNonQueryAsync(ct);
         }
 
+        await tx.CommitAsync(ct);
+
         if (logger.IsEnabled(LogLevel.Information))
         {
-            logger.LogInformation("Seeded {Count} items into FreezerCatalogItems from existing FreezerItems.", itemsToSeed.Count);
+            logger.LogInformation("Seeded {Count} items into FreezerCatalogItems from existing FreezerItems.", itemsByNormalizedName.Count);
         }
     }
 }

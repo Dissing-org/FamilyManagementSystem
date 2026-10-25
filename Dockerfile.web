@@ -3,6 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy project files for layer caching
+COPY ["src/FamilyManagement.Domain/FamilyManagement.Domain.csproj", "src/FamilyManagement.Domain/"]
 COPY ["src/FamilyManagement.UI.Shared/FamilyManagement.UI.Shared.csproj", "src/FamilyManagement.UI.Shared/"]
 COPY ["src/FamilyManagement.Web/FamilyManagement.Web.csproj", "src/FamilyManagement.Web/"]
 
@@ -10,6 +11,7 @@ COPY ["src/FamilyManagement.Web/FamilyManagement.Web.csproj", "src/FamilyManagem
 RUN dotnet restore "src/FamilyManagement.Web/FamilyManagement.Web.csproj"
 
 # Copy source code and publish
+COPY ["src/FamilyManagement.Domain/", "src/FamilyManagement.Domain/"]
 COPY ["src/FamilyManagement.UI.Shared/", "src/FamilyManagement.UI.Shared/"]
 COPY ["src/FamilyManagement.Web/", "src/FamilyManagement.Web/"]
 

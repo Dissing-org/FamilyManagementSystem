@@ -30,16 +30,29 @@ public class FreezerCatalogRepository : IFreezerCatalogRepository
 
     public async Task<FreezerCatalogItem?> GetByNameAsync(string name, CancellationToken ct = default)
     {
-        var normalized = name.Trim().ToLower();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        var normalized = name.Trim().ToUpperInvariant();
         return await _context.FreezerCatalogItems
-            .FirstOrDefaultAsync(c => c.Name.ToLower() == normalized, ct);
+            .FirstOrDefaultAsync(c => c.NormalizedName == normalized, ct);
     }
 
     public async Task<FreezerCatalogItem> AddAsync(FreezerCatalogItem item, CancellationToken ct = default)
     {
         await _context.FreezerCatalogItems.AddAsync(item, ct);
-        await _context.SaveChangesAsync(ct);
-        return item;
+        try
+        {
+            await _context.SaveChangesAsync(ct);
+            return item;
+        }
+        catch (DbUpdateException)
+        {
+            _context.Entry(item).State = EntityState.Detached;
+            throw;
+        }
     }
 
     public async Task UpdateAsync(FreezerCatalogItem item, CancellationToken ct = default)

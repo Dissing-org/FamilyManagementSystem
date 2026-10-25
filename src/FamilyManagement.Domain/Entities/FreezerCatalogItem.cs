@@ -7,6 +7,7 @@ public class FreezerCatalogItem
 {
     public FreezerCatalogItemId Id { get; private set; }
     public string Name { get; private set; }
+    public string NormalizedName { get; private set; }
     public FreezerCategory DefaultCategory { get; private set; }
     public FreezerUnit DefaultUnit { get; private set; }
     public decimal? DefaultMinimumQuantity { get; private set; }
@@ -17,11 +18,13 @@ public class FreezerCatalogItem
     {
         Id = null!;
         Name = null!;
+        NormalizedName = null!;
     }
 
     private FreezerCatalogItem(
         FreezerCatalogItemId id,
         string name,
+        string normalizedName,
         FreezerCategory defaultCategory,
         FreezerUnit defaultUnit,
         decimal? defaultMinimumQuantity,
@@ -30,6 +33,7 @@ public class FreezerCatalogItem
     {
         Id = id;
         Name = name;
+        NormalizedName = normalizedName;
         DefaultCategory = defaultCategory;
         DefaultUnit = defaultUnit;
         DefaultMinimumQuantity = defaultMinimumQuantity;
@@ -48,6 +52,12 @@ public class FreezerCatalogItem
             throw new ArgumentException("Catalog item name is required.", nameof(name));
         }
 
+        var trimmed = name.Trim();
+        if (trimmed.Length > 150)
+        {
+            throw new ArgumentException("Catalog item name cannot exceed 150 characters.", nameof(name));
+        }
+
         if (defaultMinimumQuantity.HasValue && defaultMinimumQuantity.Value < 0)
         {
             throw new ArgumentException("Default minimum quantity cannot be negative.", nameof(defaultMinimumQuantity));
@@ -56,7 +66,8 @@ public class FreezerCatalogItem
         var now = DateTime.UtcNow;
         return new FreezerCatalogItem(
             FreezerCatalogItemId.New(),
-            name.Trim(),
+            trimmed,
+            trimmed.ToUpperInvariant(),
             defaultCategory,
             defaultUnit,
             defaultMinimumQuantity,
@@ -73,7 +84,7 @@ public class FreezerCatalogItem
 
         DefaultCategory = category;
         DefaultUnit = unit;
-        DefaultMinimumQuantity = minimumQuantity;
+        DefaultMinimumQuantity = minimumQuantity ?? DefaultMinimumQuantity;
         LastUsedAt = DateTime.UtcNow;
     }
 

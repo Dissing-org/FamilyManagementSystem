@@ -1,3 +1,4 @@
+using System.Globalization;
 using FamilyManagement.Application.DTOs.Freezers;
 using FamilyManagement.Domain.Repositories;
 
@@ -7,6 +8,9 @@ public record GetFreezerCatalogQuery();
 
 public class GetFreezerCatalogQueryHandler
 {
+    private static readonly StringComparer DanishComparer =
+        StringComparer.Create(new CultureInfo("da-DK"), ignoreCase: true);
+
     private readonly IFreezerCatalogRepository _repository;
 
     public GetFreezerCatalogQueryHandler(IFreezerCatalogRepository repository)
@@ -18,7 +22,7 @@ public class GetFreezerCatalogQueryHandler
     {
         var items = await _repository.GetAllAsync(ct);
         return items
-            .OrderBy(i => i.Name, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(i => i.Name, DanishComparer)
             .Select(FreezerCatalogItemDto.FromDomain)
             .ToList();
     }

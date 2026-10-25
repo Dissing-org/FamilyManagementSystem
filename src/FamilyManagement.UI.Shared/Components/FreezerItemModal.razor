@@ -200,6 +200,7 @@
     private bool IsEdit => ExistingItem is not null;
     private CreateFreezerItemRequest _model = new();
     private bool _isSaving;
+    private bool _isCustomExpiryModified;
     private string? _errorMessage;
     private List<FreezerCatalogItemDto> _catalogItems = new();
 
@@ -234,6 +235,7 @@
         {
             _model.MinimumQuantity = item.DefaultMinimumQuantity.Value;
         }
+        _isCustomExpiryModified = false;
         RecalculateExpiry();
     }
 
@@ -275,6 +277,7 @@
     private void OnCategoryChanged(ChangeEventArgs e)
     {
         _model.Category = e.Value?.ToString() ?? "Other";
+        _isCustomExpiryModified = false;
         RecalculateExpiry();
     }
 
@@ -283,12 +286,16 @@
         if (DateTime.TryParse(e.Value?.ToString(), out var parsedDate))
         {
             _model.FreezeDate = parsedDate;
-            RecalculateExpiry();
+            if (!_isCustomExpiryModified && !IsEdit)
+            {
+                RecalculateExpiry();
+            }
         }
     }
 
     private void OnExpiryDateChanged(ChangeEventArgs e)
     {
+        _isCustomExpiryModified = true;
         if (DateTime.TryParse(e.Value?.ToString(), out var parsedDate))
         {
             _model.ExpiryDate = parsedDate;
@@ -301,18 +308,11 @@
 
     private void RecalculateExpiry()
     {
-        var days = _model.Category switch
-        {
-            "MeatAndPoultry" => 180,
-            "Seafood" => 120,
-            "VegetablesAndFruits" => 300,
-            "PreparedMeals" => 90,
-            "Bakery" => 90,
-            "DessertsAndIceCream" => 180,
-            _ => 180
-        };
+        var categoryEnum = Enum.TryParse<FamilyManagement.Domain.Enums.FreezerCategory>(_model.Category, out var cat)
+            ? cat
+            : FamilyManagement.Domain.Enums.FreezerCategory.Other;
 
-        _model.ExpiryDate = _model.FreezeDate.AddDays(days);
+        _model.ExpiryDate = FamilyManagement.Domain.Services.FreezerShelfLifeRules.CalculateDefaultExpiry(categoryEnum, _model.FreezeDate);
     }
 
     private async Task HandleSaveAsync()

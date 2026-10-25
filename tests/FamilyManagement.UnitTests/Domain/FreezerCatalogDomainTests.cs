@@ -64,6 +64,37 @@ public class FreezerCatalogDomainTests
     }
 
     [Fact]
+    public void FreezerCatalogItem_Create_WithScandinavianCharacters_SetsNormalizedNameCorrectly()
+    {
+        var item = FreezerCatalogItem.Create(
+            "  æbleskiver ",
+            FreezerCategory.Bakery,
+            FreezerUnit.Pieces);
+
+        item.Name.Should().Be("æbleskiver");
+        item.NormalizedName.Should().Be("ÆBLESKIVER");
+    }
+
+    [Fact]
+    public void FreezerCatalogItem_Create_WhenNameExceeds150Characters_ThrowsArgumentException()
+    {
+        var longName = new string('a', 151);
+        var action = () => FreezerCatalogItem.Create(longName, FreezerCategory.Other, FreezerUnit.Pieces);
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void FreezerCatalogItem_UpdateDefaults_WhenMinimumQuantityIsNull_PreservesExistingMinimumQuantity()
+    {
+        var item = FreezerCatalogItem.Create("Laks", FreezerCategory.Seafood, FreezerUnit.Pieces, 3);
+
+        item.UpdateDefaults(FreezerCategory.Seafood, FreezerUnit.Packages, null);
+
+        item.DefaultUnit.Should().Be(FreezerUnit.Packages);
+        item.DefaultMinimumQuantity.Should().Be(3);
+    }
+
+    [Fact]
     public void FreezerCatalogItem_TouchUsage_UpdatesLastUsedAt()
     {
         var item = FreezerCatalogItem.Create("Is", FreezerCategory.DessertsAndIceCream, FreezerUnit.Liters);

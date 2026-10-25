@@ -619,8 +619,6 @@ public sealed class LocalizationService : ILocalizationService
             ["Freezer.CompartmentRequired"] = "Vælg venligst en skuffe.",
             ["Freezer.NameRequired"] = "Fryserens navn er påkrævet.",
             ["Freezer.CatalogSuggestionDelete"] = "Slet fra forslag",
-            ["Freezer.CatalogItemDeleted"] = "Forslag slettet",
-            ["Freezer.NewItemPrompt"] = "Opret som ny vare...",
             ["Freezer.SearchCatalogPlaceholder"] = "f.eks. Hakket oksekød, Hjemmelavet suppe..."
         };
 

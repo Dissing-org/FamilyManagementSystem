@@ -2,19 +2,25 @@
 @using FamilyManagement.UI.Shared.Services
 @inject ILocalizationService L
 
-<div class="relative w-full" @onfocusout="OnFocusOut">
+<div class="relative w-full">
     <div class="relative">
         <input type="text"
+               role="combobox"
+               aria-expanded="@(_isOpen && _filteredSuggestions.Count > 0 ? "true" : "false")"
+               aria-autocomplete="list"
                value="@Value"
                @oninput="OnInputChanged"
                @onfocus="OnInputFocused"
+               @onblur="OnInputBlur"
                @onkeydown="OnKeyDown"
+               @onkeydown:preventDefault="@(_isOpen && _highlightedIndex >= 0 && _highlightedIndex < _filteredSuggestions.Count)"
                placeholder="@(Placeholder ?? L["Freezer.SearchCatalogPlaceholder"])"
                class="w-full px-3.5 py-2 pr-9 rounded-xl text-sm bg-slate-50 border border-slate-200/80 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white transition-all" />
         
         @if (!string.IsNullOrWhiteSpace(Value))
         {
             <button type="button"
+                    @onmousedown:preventDefault
                     @onclick="ClearInput"
                     tabindex="-1"
                     class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-md transition-colors">
@@ -25,16 +31,21 @@
         }
     </div>
 
-    @if (_isOpen && FilteredSuggestions.Count > 0)
+    @if (_isOpen && _filteredSuggestions.Count > 0)
     {
-        <div class="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200/90 rounded-2xl shadow-xl py-1 text-sm divide-y divide-slate-100/60">
-            @for (int i = 0; i < FilteredSuggestions.Count; i++)
+        <div role="listbox"
+             @onmousedown:preventDefault
+             class="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200/90 rounded-2xl shadow-xl py-1 text-sm divide-y divide-slate-100/60">
+            @for (int i = 0; i < _filteredSuggestions.Count; i++)
             {
-                var item = FilteredSuggestions[i];
-                var isHighlighted = i == _highlightedIndex;
-                <div class="group px-3 py-2 flex items-center justify-between cursor-pointer transition-colors @(isHighlighted ? "bg-sky-50/70" : "hover:bg-slate-50")"
-                     @onmousedown="@(() => SelectItem(item))"
-                     @onmouseover="@(() => _highlightedIndex = i)">
+                var index = i;
+                var item = _filteredSuggestions[index];
+                var isHighlighted = index == _highlightedIndex;
+                <div role="option"
+                     aria-selected="@(isHighlighted ? "true" : "false")"
+                     class="group px-3 py-2 flex items-center justify-between cursor-pointer transition-colors @(isHighlighted ? "bg-sky-50/70" : "hover:bg-slate-50")"
+                     @onclick="@(() => SelectItem(item))"
+                     @onmouseover="@(() => _highlightedIndex = index)">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="font-medium text-slate-800 truncate">@item.Name</span>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium @GetCategoryBadgeClass(item.DefaultCategory)">
@@ -45,9 +56,10 @@
 
                     <button type="button"
                             title="@L["Freezer.CatalogSuggestionDelete"]"
-                            @onmousedown:stopPropagation="true"
-                            @onmousedown="@(() => HandleDelete(item.Id))"
-                            class="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all ml-2 shrink-0">
+                            @onmousedown:preventDefault
+                            @onclick:stopPropagation="true"
+                            @onclick="@(() => HandleDelete(item.Id))"
+                            class="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all ml-2 shrink-0">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
@@ -79,56 +91,65 @@
 
     private bool _isOpen;
     private int _highlightedIndex = -1;
+    private List<FreezerCatalogItemDto> _filteredSuggestions = new();
 
-    private List<FreezerCatalogItemDto> FilteredSuggestions
+    protected override void OnParametersSet()
     {
-        get
-        {
-            if (string.IsNullOrWhiteSpace(Value))
-            {
-                return CatalogItems.Take(8).ToList();
-            }
+        UpdateFilteredSuggestions(Value);
+    }
 
-            return CatalogItems
-                .Where(c => c.Name.Contains(Value, StringComparison.OrdinalIgnoreCase))
+    private void UpdateFilteredSuggestions(string? filterText)
+    {
+        if (string.IsNullOrWhiteSpace(filterText))
+        {
+            _filteredSuggestions = CatalogItems.Take(8).ToList();
+        }
+        else
+        {
+            _filteredSuggestions = CatalogItems
+                .Where(c => c.Name.Contains(filterText, StringComparison.OrdinalIgnoreCase))
                 .Take(8)
                 .ToList();
+        }
+
+        if (_highlightedIndex >= _filteredSuggestions.Count)
+        {
+            _highlightedIndex = _filteredSuggestions.Count - 1;
         }
     }
 
     private async Task OnInputChanged(ChangeEventArgs e)
     {
         var newValue = e.Value?.ToString() ?? string.Empty;
-        Value = newValue;
-        await ValueChanged.InvokeAsync(newValue);
+        UpdateFilteredSuggestions(newValue);
         _isOpen = true;
-        _highlightedIndex = 0;
+        _highlightedIndex = _filteredSuggestions.Count > 0 ? 0 : -1;
+        await ValueChanged.InvokeAsync(newValue);
     }
 
     private void OnInputFocused()
     {
+        UpdateFilteredSuggestions(Value);
         _isOpen = true;
-        _highlightedIndex = 0;
+        _highlightedIndex = _filteredSuggestions.Count > 0 ? 0 : -1;
     }
 
-    private async Task OnFocusOut(FocusEventArgs e)
+    private void OnInputBlur()
     {
-        // Delay closing so that clicks on suggestions or delete button can execute
-        await Task.Delay(250);
         _isOpen = false;
     }
 
     private async Task ClearInput()
     {
-        Value = string.Empty;
+        UpdateFilteredSuggestions(string.Empty);
         await ValueChanged.InvokeAsync(string.Empty);
     }
 
     private async Task SelectItem(FreezerCatalogItemDto item)
     {
-        Value = item.Name;
-        await ValueChanged.InvokeAsync(item.Name);
         _isOpen = false;
+        UpdateFilteredSuggestions(item.Name);
+        await ValueChanged.InvokeAsync(item.Name);
         await OnItemSelected.InvokeAsync(item);
     }
 
@@ -141,13 +162,15 @@
     {
         if (!_isOpen && (e.Key == "ArrowDown" || e.Key == "ArrowUp"))
         {
+            UpdateFilteredSuggestions(Value);
             _isOpen = true;
+            _highlightedIndex = _filteredSuggestions.Count > 0 ? 0 : -1;
             return;
         }
 
         if (e.Key == "ArrowDown")
         {
-            if (_highlightedIndex < FilteredSuggestions.Count - 1)
+            if (_highlightedIndex < _filteredSuggestions.Count - 1)
             {
                 _highlightedIndex++;
             }
@@ -161,9 +184,9 @@
         }
         else if (e.Key == "Enter")
         {
-            if (_isOpen && _highlightedIndex >= 0 && _highlightedIndex < FilteredSuggestions.Count)
+            if (_isOpen && _highlightedIndex >= 0 && _highlightedIndex < _filteredSuggestions.Count)
             {
-                await SelectItem(FilteredSuggestions[_highlightedIndex]);
+                await SelectItem(_filteredSuggestions[_highlightedIndex]);
             }
         }
         else if (e.Key == "Escape")

@@ -21,7 +21,13 @@ public class FreezerCatalogItemConfiguration : IEntityTypeConfiguration<FreezerC
             .HasMaxLength(150)
             .IsRequired();
 
-        builder.HasIndex(c => c.Name)
+        builder.HasIndex(c => c.Name);
+
+        builder.Property(c => c.NormalizedName)
+            .HasMaxLength(150)
+            .IsRequired();
+
+        builder.HasIndex(c => c.NormalizedName)
             .IsUnique();
 
         builder.Property(c => c.DefaultCategory)

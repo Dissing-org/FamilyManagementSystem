@@ -3,6 +3,7 @@ using FamilyManagement.Domain.Entities;
 using FamilyManagement.Domain.Enums;
 using FamilyManagement.Domain.Repositories;
 using FamilyManagement.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyManagement.Application.UseCases.Freezers.Commands;
 
@@ -22,13 +23,16 @@ public class UpdateFreezerItemCommandHandler
 {
     private readonly IFreezerItemRepository _repository;
     private readonly IFreezerCatalogRepository? _catalogRepository;
+    private readonly ILogger<UpdateFreezerItemCommandHandler>? _logger;
 
     public UpdateFreezerItemCommandHandler(
         IFreezerItemRepository repository,
-        IFreezerCatalogRepository? catalogRepository = null)
+        IFreezerCatalogRepository? catalogRepository = null,
+        ILogger<UpdateFreezerItemCommandHandler>? logger = null)
     {
         _repository = repository;
         _catalogRepository = catalogRepository;
+        _logger = logger;
     }
 
     public async Task<FreezerItemDto> HandleAsync(UpdateFreezerItemCommand command, CancellationToken ct = default)
@@ -68,9 +72,9 @@ public class UpdateFreezerItemCommandHandler
                     await _catalogRepository.AddAsync(newCatalogItem, ct);
                 }
             }
-            catch
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                // Catalog sync should not prevent item update
+                _logger?.LogWarning(ex, "Failed to auto-sync catalog item for '{Name}'.", item.Name);
             }
         }
 

@@ -15,4 +15,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FamilyManagement.Domain\FamilyManagement.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

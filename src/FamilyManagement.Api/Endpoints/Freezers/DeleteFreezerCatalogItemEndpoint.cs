@@ -1,4 +1,5 @@
 using FastEndpoints;
+using FluentValidation;
 using FamilyManagement.Application.UseCases.Freezers.Commands;
 
 namespace FamilyManagement.Api.Endpoints.Freezers;
@@ -6,6 +7,14 @@ namespace FamilyManagement.Api.Endpoints.Freezers;
 public class DeleteFreezerCatalogItemRequest
 {
     public Guid Id { get; set; }
+}
+
+public class DeleteFreezerCatalogItemValidator : Validator<DeleteFreezerCatalogItemRequest>
+{
+    public DeleteFreezerCatalogItemValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty();
+    }
 }
 
 public class DeleteFreezerCatalogItemEndpoint : Endpoint<DeleteFreezerCatalogItemRequest>
@@ -29,7 +38,14 @@ public class DeleteFreezerCatalogItemEndpoint : Endpoint<DeleteFreezerCatalogIte
 
     public override async Task HandleAsync(DeleteFreezerCatalogItemRequest req, CancellationToken ct)
     {
-        await _handler.HandleAsync(new DeleteFreezerCatalogItemCommand(req.Id), ct);
-        await HttpContext.Response.SendResultAsync(TypedResults.NoContent());
+        try
+        {
+            await _handler.HandleAsync(new DeleteFreezerCatalogItemCommand(req.Id), ct);
+            await HttpContext.Response.SendResultAsync(TypedResults.NoContent());
+        }
+        catch (ArgumentException ex)
+        {
+            await HttpContext.Response.SendResultAsync(TypedResults.BadRequest(new { error = ex.Message }));
+        }
     }
 }
