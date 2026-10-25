@@ -83,6 +83,8 @@ public static class SqliteSchemaInitializer
             await EnsureTableExistsAsync(connection, logger, "ChildProfiles", ChildDevelopmentDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "Vehicles", VehiclesDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "Freezers", FreezersDdl, ct);
+            await EnsureTableExistsAsync(connection, logger, "FreezerCatalogItems", FreezerCatalogItemsDdl, ct);
+            await SeedCatalogFromFreezerItemsIfEmptyAsync(connection, logger, ct);
         }
         catch (Exception ex)
         {
@@ -273,4 +275,84 @@ public static class SqliteSchemaInitializer
         CREATE INDEX "IX_FreezerTransactions_ItemId" ON "FreezerTransactions" ("ItemId");
         CREATE INDEX "IX_FreezerTransactions_Timestamp" ON "FreezerTransactions" ("Timestamp");
         """;
+
+    private const string FreezerCatalogItemsDdl = """
+        CREATE TABLE "FreezerCatalogItems" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_FreezerCatalogItems" PRIMARY KEY,
+            "Name" TEXT NOT NULL,
+            "DefaultCategory" TEXT NOT NULL,
+            "DefaultUnit" TEXT NOT NULL,
+            "DefaultMinimumQuantity" TEXT NULL,
+            "CreatedAt" TEXT NOT NULL,
+            "LastUsedAt" TEXT NOT NULL
+        );
+        CREATE UNIQUE INDEX "IX_FreezerCatalogItems_Name" ON "FreezerCatalogItems" ("Name");
+        """;
+
+    private static async Task SeedCatalogFromFreezerItemsIfEmptyAsync(
+        System.Data.Common.DbConnection connection,
+        ILogger logger,
+        CancellationToken ct)
+    {
+        await using var countCmd = connection.CreateCommand();
+        countCmd.CommandText = "SELECT COUNT(*) FROM \"FreezerCatalogItems\";";
+        var catalogCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync(ct));
+        if (catalogCount > 0)
+        {
+            return;
+        }
+
+        await using var itemCountCmd = connection.CreateCommand();
+        itemCountCmd.CommandText = "SELECT COUNT(*) FROM \"FreezerItems\";";
+        var itemCount = Convert.ToInt32(await itemCountCmd.ExecuteScalarAsync(ct));
+        if (itemCount == 0)
+        {
+            return;
+        }
+
+        await using var selectCmd = connection.CreateCommand();
+        selectCmd.CommandText = """
+            SELECT "Name", "Category", "Unit", "MinimumQuantity", MAX("CreatedAt") as "LatestCreated"
+            FROM "FreezerItems"
+            GROUP BY "Name";
+            """;
+
+        var itemsToSeed = new List<(string Name, string Category, string Unit, string? MinQty, string CreatedAt)>();
+        await using (var reader = await selectCmd.ExecuteReaderAsync(ct))
+        {
+            while (await reader.ReadAsync(ct))
+            {
+                var name = reader.GetString(0);
+                var category = reader.GetString(1);
+                var unit = reader.GetString(2);
+                var minQty = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var createdAt = reader.GetString(4);
+                itemsToSeed.Add((name, category, unit, minQty, createdAt));
+            }
+        }
+
+        var nowStr = DateTime.UtcNow.ToString("O");
+        foreach (var item in itemsToSeed)
+        {
+            await using var insertCmd = connection.CreateCommand();
+            insertCmd.CommandText = """
+                INSERT INTO "FreezerCatalogItems" ("Id", "Name", "DefaultCategory", "DefaultUnit", "DefaultMinimumQuantity", "CreatedAt", "LastUsedAt")
+                VALUES (@id, @name, @category, @unit, @minQty, @createdAt, @lastUsedAt);
+                """;
+            var pId = insertCmd.CreateParameter(); pId.ParameterName = "@id"; pId.Value = Guid.NewGuid().ToString(); insertCmd.Parameters.Add(pId);
+            var pName = insertCmd.CreateParameter(); pName.ParameterName = "@name"; pName.Value = item.Name; insertCmd.Parameters.Add(pName);
+            var pCat = insertCmd.CreateParameter(); pCat.ParameterName = "@category"; pCat.Value = item.Category; insertCmd.Parameters.Add(pCat);
+            var pUnit = insertCmd.CreateParameter(); pUnit.ParameterName = "@unit"; pUnit.Value = item.Unit; insertCmd.Parameters.Add(pUnit);
+            var pMin = insertCmd.CreateParameter(); pMin.ParameterName = "@minQty"; pMin.Value = (object?)item.MinQty ?? DBNull.Value; insertCmd.Parameters.Add(pMin);
+            var pCreated = insertCmd.CreateParameter(); pCreated.ParameterName = "@createdAt"; pCreated.Value = item.CreatedAt; insertCmd.Parameters.Add(pCreated);
+            var pUsed = insertCmd.CreateParameter(); pUsed.ParameterName = "@lastUsedAt"; pUsed.Value = nowStr; insertCmd.Parameters.Add(pUsed);
+
+            await insertCmd.ExecuteNonQueryAsync(ct);
+        }
+
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation("Seeded {Count} items into FreezerCatalogItems from existing FreezerItems.", itemsToSeed.Count);
+        }
+    }
 }

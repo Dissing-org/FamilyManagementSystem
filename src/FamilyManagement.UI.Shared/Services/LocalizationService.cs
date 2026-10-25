@@ -617,7 +617,11 @@ public sealed class LocalizationService : ILocalizationService
             ["Freezer.LoadFailed"] = "Kunne ikke indlæse fryserdata.",
             ["Freezer.ItemNameRequired"] = "Varenavn er påkrævet.",
             ["Freezer.CompartmentRequired"] = "Vælg venligst en skuffe.",
-            ["Freezer.NameRequired"] = "Fryserens navn er påkrævet."
+            ["Freezer.NameRequired"] = "Fryserens navn er påkrævet.",
+            ["Freezer.CatalogSuggestionDelete"] = "Slet fra forslag",
+            ["Freezer.CatalogItemDeleted"] = "Forslag slettet",
+            ["Freezer.NewItemPrompt"] = "Opret som ny vare...",
+            ["Freezer.SearchCatalogPlaceholder"] = "f.eks. Hakket oksekød, Hjemmelavet suppe..."
         };
 
     private static readonly IReadOnlyDictionary<string, string> LegacyMilestoneTextMap =

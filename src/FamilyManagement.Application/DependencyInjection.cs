@@ -61,6 +61,9 @@ public static class DependencyInjection
         services.AddScoped<GetFreezerByIdQueryHandler>();
         services.AddScoped<GetFreezerItemsQueryHandler>();
         services.AddScoped<GetFreezerDashboardQueryHandler>();
+        services.AddScoped<GetFreezerCatalogQueryHandler>();
+        services.AddScoped<UpsertFreezerCatalogItemCommandHandler>();
+        services.AddScoped<DeleteFreezerCatalogItemCommandHandler>();
 
         return services;
     }

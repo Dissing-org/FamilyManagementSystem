@@ -107,3 +107,20 @@ public class ConsumeItemRequest
     public string Reason { get; set; } = "Consumed";
     public string? Notes { get; set; }
 }
+
+public record FreezerCatalogItemDto(
+    Guid Id,
+    string Name,
+    string DefaultCategory,
+    string DefaultUnit,
+    decimal? DefaultMinimumQuantity,
+    DateTime LastUsedAt);
+
+public class UpsertFreezerCatalogItemRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Category { get; set; } = "Other";
+    public string Unit { get; set; } = "Pieces";
+    public decimal? MinimumQuantity { get; set; }
+}
+

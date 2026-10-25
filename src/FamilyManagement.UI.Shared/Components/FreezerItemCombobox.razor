@@ -1,0 +1,188 @@
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+@inject ILocalizationService L
+
+<div class="relative w-full" @onfocusout="OnFocusOut">
+    <div class="relative">
+        <input type="text"
+               value="@Value"
+               @oninput="OnInputChanged"
+               @onfocus="OnInputFocused"
+               @onkeydown="OnKeyDown"
+               placeholder="@(Placeholder ?? L["Freezer.SearchCatalogPlaceholder"])"
+               class="w-full px-3.5 py-2 pr-9 rounded-xl text-sm bg-slate-50 border border-slate-200/80 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white transition-all" />
+        
+        @if (!string.IsNullOrWhiteSpace(Value))
+        {
+            <button type="button"
+                    @onclick="ClearInput"
+                    tabindex="-1"
+                    class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-md transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        }
+    </div>
+
+    @if (_isOpen && FilteredSuggestions.Count > 0)
+    {
+        <div class="absolute z-50 left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200/90 rounded-2xl shadow-xl py-1 text-sm divide-y divide-slate-100/60">
+            @for (int i = 0; i < FilteredSuggestions.Count; i++)
+            {
+                var item = FilteredSuggestions[i];
+                var isHighlighted = i == _highlightedIndex;
+                <div class="group px-3 py-2 flex items-center justify-between cursor-pointer transition-colors @(isHighlighted ? "bg-sky-50/70" : "hover:bg-slate-50")"
+                     @onmousedown="@(() => SelectItem(item))"
+                     @onmouseover="@(() => _highlightedIndex = i)">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="font-medium text-slate-800 truncate">@item.Name</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium @GetCategoryBadgeClass(item.DefaultCategory)">
+                            @GetCategoryLabel(item.DefaultCategory)
+                        </span>
+                        <span class="text-xs text-slate-400">@L[$"Freezer.Unit.{item.DefaultUnit}"]</span>
+                    </div>
+
+                    <button type="button"
+                            title="@L["Freezer.CatalogSuggestionDelete"]"
+                            @onmousedown:stopPropagation="true"
+                            @onmousedown="@(() => HandleDelete(item.Id))"
+                            class="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all ml-2 shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<FreezerCatalogItemDto> CatalogItems { get; set; } = Array.Empty<FreezerCatalogItemDto>();
+
+    [Parameter]
+    public EventCallback<FreezerCatalogItemDto> OnItemSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnDeleteItem { get; set; }
+
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    private bool _isOpen;
+    private int _highlightedIndex = -1;
+
+    private List<FreezerCatalogItemDto> FilteredSuggestions
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(Value))
+            {
+                return CatalogItems.Take(8).ToList();
+            }
+
+            return CatalogItems
+                .Where(c => c.Name.Contains(Value, StringComparison.OrdinalIgnoreCase))
+                .Take(8)
+                .ToList();
+        }
+    }
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        var newValue = e.Value?.ToString() ?? string.Empty;
+        Value = newValue;
+        await ValueChanged.InvokeAsync(newValue);
+        _isOpen = true;
+        _highlightedIndex = 0;
+    }
+
+    private void OnInputFocused()
+    {
+        _isOpen = true;
+        _highlightedIndex = 0;
+    }
+
+    private async Task OnFocusOut(FocusEventArgs e)
+    {
+        // Delay closing so that clicks on suggestions or delete button can execute
+        await Task.Delay(250);
+        _isOpen = false;
+    }
+
+    private async Task ClearInput()
+    {
+        Value = string.Empty;
+        await ValueChanged.InvokeAsync(string.Empty);
+    }
+
+    private async Task SelectItem(FreezerCatalogItemDto item)
+    {
+        Value = item.Name;
+        await ValueChanged.InvokeAsync(item.Name);
+        _isOpen = false;
+        await OnItemSelected.InvokeAsync(item);
+    }
+
+    private async Task HandleDelete(Guid id)
+    {
+        await OnDeleteItem.InvokeAsync(id);
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (!_isOpen && (e.Key == "ArrowDown" || e.Key == "ArrowUp"))
+        {
+            _isOpen = true;
+            return;
+        }
+
+        if (e.Key == "ArrowDown")
+        {
+            if (_highlightedIndex < FilteredSuggestions.Count - 1)
+            {
+                _highlightedIndex++;
+            }
+        }
+        else if (e.Key == "ArrowUp")
+        {
+            if (_highlightedIndex > 0)
+            {
+                _highlightedIndex--;
+            }
+        }
+        else if (e.Key == "Enter")
+        {
+            if (_isOpen && _highlightedIndex >= 0 && _highlightedIndex < FilteredSuggestions.Count)
+            {
+                await SelectItem(FilteredSuggestions[_highlightedIndex]);
+            }
+        }
+        else if (e.Key == "Escape")
+        {
+            _isOpen = false;
+        }
+    }
+
+    private string GetCategoryLabel(string category) =>
+        L[$"Freezer.Category.{category}"];
+
+    private static string GetCategoryBadgeClass(string category) => category switch
+    {
+        "MeatAndPoultry" => "bg-rose-50 text-rose-700 border border-rose-200/60",
+        "Seafood" => "bg-sky-50 text-sky-700 border border-sky-200/60",
+        "VegetablesAndFruits" => "bg-emerald-50 text-emerald-700 border border-emerald-200/60",
+        "PreparedMeals" => "bg-amber-50 text-amber-700 border border-amber-200/60",
+        "Bakery" => "bg-orange-50 text-orange-800 border border-orange-200/60",
+        "DessertsAndIceCream" => "bg-purple-50 text-purple-700 border border-purple-200/60",
+        _ => "bg-slate-100 text-slate-700 border border-slate-200/60"
+    };
+}

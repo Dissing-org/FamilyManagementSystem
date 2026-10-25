@@ -35,15 +35,16 @@
                 </div>
             }
 
-            <!-- Item Name -->
+            <!-- Item Name with Catalog Combobox -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">
                     @L["Freezer.ItemName"] *
                 </label>
-                <input type="text"
-                       @bind="_model.Name"
-                       placeholder="f.eks. Hakket oksekød, Hjemmelavet suppe"
-                       class="w-full px-3.5 py-2 rounded-xl text-sm bg-slate-50 border border-slate-200/80 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white transition-all" />
+                <FreezerItemCombobox Value="@_model.Name"
+                                     ValueChanged="OnItemNameChanged"
+                                     CatalogItems="_catalogItems"
+                                     OnItemSelected="OnCatalogItemSelected"
+                                     OnDeleteItem="OnDeleteCatalogItem" />
             </div>
 
             <!-- Freezer & Compartment Selection -->
@@ -200,6 +201,51 @@
     private CreateFreezerItemRequest _model = new();
     private bool _isSaving;
     private string? _errorMessage;
+    private List<FreezerCatalogItemDto> _catalogItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCatalogAsync();
+    }
+
+    private async Task LoadCatalogAsync()
+    {
+        try
+        {
+            _catalogItems = await ApiClient.GetCatalogAsync();
+        }
+        catch
+        {
+            _catalogItems = new();
+        }
+    }
+
+    private void OnItemNameChanged(string name)
+    {
+        _model.Name = name;
+    }
+
+    private void OnCatalogItemSelected(FreezerCatalogItemDto item)
+    {
+        _model.Name = item.Name;
+        _model.Category = item.DefaultCategory;
+        _model.Unit = item.DefaultUnit;
+        if (item.DefaultMinimumQuantity.HasValue && (!_model.MinimumQuantity.HasValue || _model.MinimumQuantity.Value == 0))
+        {
+            _model.MinimumQuantity = item.DefaultMinimumQuantity.Value;
+        }
+        RecalculateExpiry();
+    }
+
+    private async Task OnDeleteCatalogItem(Guid id)
+    {
+        var success = await ApiClient.DeleteCatalogItemAsync(id);
+        if (success)
+        {
+            _catalogItems.RemoveAll(c => c.Id == id);
+            StateHasChanged();
+        }
+    }
 
     protected override void OnInitialized()
     {

@@ -17,6 +17,7 @@ public class ReceiptDbContext : DbContext
     public DbSet<FreezerCompartment> FreezerCompartments => Set<FreezerCompartment>();
     public DbSet<FreezerItem> FreezerItems => Set<FreezerItem>();
     public DbSet<FreezerTransaction> FreezerTransactions => Set<FreezerTransaction>();
+    public DbSet<FreezerCatalogItem> FreezerCatalogItems => Set<FreezerCatalogItem>();
 
     public ReceiptDbContext(DbContextOptions<ReceiptDbContext> options) : base(options)
     {
