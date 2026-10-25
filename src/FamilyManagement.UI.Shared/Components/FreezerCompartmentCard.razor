@@ -1,19 +1,19 @@
 @using FamilyManagement.UI.Shared.Models
 
-<div class="bg-white/80 dark:bg-[#261D19]/90 border border-[#EADECF] dark:border-[#3D2F28] rounded-2xl shadow-xs overflow-hidden transition-all">
+<div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all">
     <!-- Compartment Header -->
-    <div class="px-5 py-3.5 bg-[#FAF6F0]/60 dark:bg-[#1C1512]/60 border-b border-[#EADECF]/80 dark:border-[#3D2F28]/80 flex items-center justify-between gap-3">
+    <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between gap-3">
         <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-7 h-7 rounded-lg bg-[#C85A32]/10 dark:bg-[#C85A32]/20 text-[#C85A32] flex items-center justify-center shrink-0">
+            <div class="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <h4 class="text-sm font-bold text-[#2B1D16] dark:text-[#FAF0E6] truncate">
+                <h4 class="text-sm font-bold text-slate-900 truncate">
                     @Compartment.Name
                 </h4>
-                <p class="text-[11px] text-[#7F6A5D] dark:text-[#A8988B]">
+                <p class="text-[11px] text-slate-500">
                     @L.Format("Freezer.ItemCount", Items.Count)
                 </p>
             </div>
@@ -21,14 +21,14 @@
 
         <div class="flex items-center gap-1.5 shrink-0">
             <button @onclick="() => OnAddItem.InvokeAsync(Compartment)"
-                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-[#C85A32] text-white hover:bg-[#A8431F] shadow-2xs transition-all cursor-pointer">
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold bg-sky-600 text-white hover:bg-sky-700 shadow-xs transition-all cursor-pointer">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
                 <span>@L["Freezer.AddItem"]</span>
             </button>
             <button @onclick="() => OnDeleteCompartment.InvokeAsync(Compartment)"
-                    class="p-1.5 rounded-lg text-[#7F6A5D] dark:text-[#A8988B] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                     title="@L["Common.Delete"]">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -41,10 +41,10 @@
     <div class="p-4">
         @if (Items.Count == 0)
         {
-            <div class="py-6 text-center text-xs text-[#7F6A5D] dark:text-[#A8988B] border border-dashed border-[#EADECF] dark:border-[#3D2F28] rounded-xl bg-[#FAF6F0]/30 dark:bg-[#1C1512]/30">
+            <div class="py-6 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                 <p>@L["Freezer.CompartmentEmpty"]</p>
                 <button @onclick="() => OnAddItem.InvokeAsync(Compartment)"
-                        class="mt-2 text-xs font-bold text-[#C85A32] hover:underline">
+                        class="mt-2 text-xs font-bold text-sky-600 hover:underline">
                     @L["Freezer.AddFirstItem"] &rarr;
                 </button>
             </div>

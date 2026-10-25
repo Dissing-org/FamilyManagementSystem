@@ -10,75 +10,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'media',
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         hearth: {
-                            DEFAULT: '#C85A32',
-                            hover: '#A8431F',
-                            wash: '#FDEEE9',
-                            50: '#FDF6F3',
-                            100: '#FDEEE9',
-                            500: '#C85A32',
-                            600: '#B84B24',
-                            700: '#993B19',
-                            800: '#7B2F14'
+                            DEFAULT: '#0284C7',
+                            hover: '#0369A1',
+                            wash: '#F0F9FF'
                         },
-                        terracotta: {
-                            DEFAULT: '#C85A32',
-                            hover: '#A8431F',
-                            wash: '#FDEEE9',
-                            50: '#FDF6F3',
-                            100: '#FDEEE9',
-                            500: '#C85A32',
-                            600: '#B84B24',
-                            700: '#993B19',
-                            800: '#7B2F14'
-                        },
-                        honey: {
-                            DEFAULT: '#D9822B',
-                            50: '#FEF9F2',
-                            100: '#FEF3E2',
-                            500: '#D9822B',
-                            600: '#C06B1F'
-                        },
-                        amber: {
-                            DEFAULT: '#D9822B',
-                            50: '#FEF9F2',
-                            100: '#FEF3E2',
-                            500: '#D9822B',
-                            600: '#C06B1F'
-                        },
-                        sage: {
-                            DEFAULT: '#5B7553',
-                            50: '#F5F7F4',
-                            100: '#EAF0EB',
-                            500: '#5B7553',
-                            600: '#4A6243'
-                        },
-                        olive: {
-                            DEFAULT: '#5B7553',
-                            50: '#F5F7F4',
-                            100: '#EAF0EB',
-                            500: '#5B7553',
-                            600: '#4A6243'
-                        },
-                        lingonberry: {
-                            DEFAULT: '#B84A39',
-                            50: '#FCEEEB'
+                        nordic: {
+                            DEFAULT: '#0284C7',
+                            hover: '#0369A1',
+                            wash: '#F0F9FF'
                         },
                         sand: {
-                            50: '#FAF6F0',
-                            100: '#F3ECE1',
-                            200: '#EADECF',
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                            200: '#E2E8F0',
                             card: '#FFFFFF'
-                        },
-                        espresso: {
-                            950: '#1C1512',
-                            900: '#261D19',
-                            800: '#3D2F28',
-                            700: '#523F34'
                         }
                     }
                 }
@@ -98,12 +48,12 @@
     </style>
 </head>
 
-<body class="bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen font-sans antialiased">
     <div id="app">
-        <div class="min-h-screen flex items-center justify-center bg-[#FAF6F0] dark:bg-[#1C1512]">
+        <div class="min-h-screen flex items-center justify-center bg-slate-50">
             <div class="text-center">
-                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#C85A32] border-t-transparent"></div>
-                <p class="mt-4 text-sm font-medium text-[#7F6A5D] dark:text-[#EADECF]">Indlæser Familie Hub...</p>
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-sky-600 border-t-transparent"></div>
+                <p class="mt-4 text-sm font-medium text-slate-500">Indlæser Familie Hub...</p>
             </div>
         </div>
     </div>

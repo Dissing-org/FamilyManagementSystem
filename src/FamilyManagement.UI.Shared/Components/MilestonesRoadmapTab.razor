@@ -5,17 +5,17 @@
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@L["Roadmap.Title"]</h3>
-            <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B]">@L["Roadmap.Subtitle"]</p>
+            <h3 class="text-lg font-bold text-slate-900">@L["Roadmap.Title"]</h3>
+            <p class="text-xs text-slate-500">@L["Roadmap.Subtitle"]</p>
         </div>
         <div class="flex items-center gap-2">
-            <button @onclick="SeedGuidelinesAsync" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-[#261D19] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] font-bold text-xs rounded-xl shadow-2xs transition-colors">
-                <svg class="w-3.5 h-3.5 text-[#C85A32] dark:text-[#FDEEE9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button @onclick="SeedGuidelinesAsync" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-800 font-bold text-xs rounded-xl shadow-xs transition-colors">
+                <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                 </svg>
                 @L["Roadmap.LoadGuidelines"]
             </button>
-            <button @onclick="() => _showAddExpectationModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] font-bold text-sm rounded-xl shadow-xs transition-colors">
+            <button @onclick="() => _showAddExpectationModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-xs transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -26,20 +26,20 @@
 
     @if (_loading)
     {
-        <div class="py-12 text-center text-[#7F6A5D] dark:text-[#A8988B] text-sm">@L["Roadmap.Loading"]</div>
+        <div class="py-12 text-center text-slate-500 text-sm">@L["Roadmap.Loading"]</div>
     }
     else if (_expectations.Count == 0)
     {
-        <div class="bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-2xl p-12 text-center">
-            <div class="w-16 h-16 rounded-full bg-[#C85A32]/10 dark:bg-[#FDEEE9]/15 text-[#C85A32] dark:text-[#FDEEE9] flex items-center justify-center mx-auto mb-4">
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                 </svg>
             </div>
-            <h4 class="text-base font-bold text-[#2B1D16] dark:text-[#FAF0E6]">@L["Roadmap.EmptyTitle"]</h4>
-            <p class="text-sm text-[#7F6A5D] dark:text-[#A8988B] mt-1 mb-6">@L["Roadmap.EmptySubtitle"]</p>
+            <h4 class="text-base font-bold text-slate-900">@L["Roadmap.EmptyTitle"]</h4>
+            <p class="text-sm text-slate-500 mt-1 mb-6">@L["Roadmap.EmptySubtitle"]</p>
             <div class="flex justify-center gap-3">
-                <button @onclick="SeedGuidelinesAsync" class="px-5 py-2.5 bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:text-[#7B2F14] text-white text-sm font-semibold rounded-xl shadow-xs">
+                <button @onclick="SeedGuidelinesAsync" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-xl shadow-xs">
                     @L["Roadmap.LoadGuidelines"]
                 </button>
             </div>
@@ -53,11 +53,11 @@
             {
                 <div class="space-y-3">
                     <div class="flex items-center gap-3">
-                        <h4 class="text-sm font-black text-[#C85A32] dark:text-[#FDEEE9] uppercase tracking-wider">
+                        <h4 class="text-sm font-black text-sky-700 uppercase tracking-wider">
                             @group.Key
                         </h4>
-                        <div class="flex-1 h-px bg-[#EADECF] dark:bg-[#3D2F28]"></div>
-                        <span class="text-xs font-semibold text-[#7F6A5D] dark:text-[#A8988B]">
+                        <div class="flex-1 h-px bg-slate-200/80"></div>
+                        <span class="text-xs font-semibold text-slate-500">
                             @L.Format("Roadmap.CompletedCount", group.Count(m => m.IsAchieved), group.Count())
                         </span>
                     </div>
@@ -65,32 +65,32 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         @foreach (var m in group)
                         {
-                            <div class="bg-white dark:bg-[#261D19] border @(m.IsAchieved ? "border-[#5B7553]/40 dark:border-[#5B7553]/60 bg-[#5B7553]/5 dark:bg-[#5B7553]/10" : "border-[#EADECF] dark:border-[#3D2F28]") rounded-2xl p-4 shadow-2xs flex items-start justify-between gap-3">
+                            <div class="bg-white border @(m.IsAchieved ? "border-emerald-200 bg-emerald-50/20" : "border-slate-200/80") rounded-2xl p-4 shadow-xs flex items-start justify-between gap-3">
                                 <div class="space-y-1">
                                     <div class="flex items-center gap-2">
                                         <span class="px-2 py-0.5 rounded text-[10px] font-bold @GetCategoryBadgeColor(m.Category)">
                                             @L.MilestoneCategory(m.Category)
                                         </span>
-                                        <h5 class="text-sm font-bold @(m.IsAchieved ? "text-[#7F6A5D] line-through dark:text-[#A8988B]" : "text-[#2B1D16] dark:text-[#FAF0E6]")">
+                                        <h5 class="text-sm font-bold @(m.IsAchieved ? "text-slate-500 line-through" : "text-slate-900")">
                                             @L.MilestoneText(m.Title)
                                         </h5>
                                     </div>
 
                                     @if (!string.IsNullOrEmpty(m.Description))
                                     {
-                                        <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B] leading-relaxed">
+                                        <p class="text-xs text-slate-600 leading-relaxed">
                                             @L.MilestoneText(m.Description)
                                         </p>
                                     }
 
-                                    <div class="flex items-center gap-2 pt-1 text-[11px] text-[#7F6A5D] dark:text-[#A8988B]">
+                                    <div class="flex items-center gap-2 pt-1 text-[11px] text-slate-500">
                                         @if (m.ExpectedAgeMonths.HasValue)
                                         {
                                             <span>@L.Format("Roadmap.TargetAge", L.FormatAgeWindow(m.ExpectedAgeMonths.Value, m.ExpectedWindowMaxMonths))</span>
                                         }
                                         @if (m.IsAchieved && m.AchievedDate.HasValue)
                                         {
-                                            <span class="text-[#5B7553] dark:text-[#9BBA93] font-semibold">@L.Format("Roadmap.AchievedOn", L.FormatDate(m.AchievedDate.Value))</span>
+                                            <span class="text-emerald-700 font-semibold">@L.Format("Roadmap.AchievedOn", L.FormatDate(m.AchievedDate.Value))</span>
                                         }
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                                 <div>
                                     @if (m.IsAchieved)
                                     {
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#5B7553]/15 text-[#5B7553] dark:bg-[#5B7553]/30 dark:text-[#9BBA93] text-xs font-bold">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                             </svg>
@@ -107,7 +107,7 @@
                                     }
                                     else
                                     {
-                                        <button @onclick="() => OpenAchieveModal(m)" class="px-3 py-1.5 bg-[#C85A32]/10 hover:bg-[#C85A32]/20 text-[#C85A32] dark:bg-[#FDEEE9]/15 dark:hover:bg-[#FDEEE9]/25 dark:text-[#FDEEE9] font-bold text-xs rounded-lg transition-colors whitespace-nowrap">
+                                        <button @onclick="() => OpenAchieveModal(m)" class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-xs rounded-lg transition-colors whitespace-nowrap">
                                             @L["Roadmap.MarkDone"]
                                         </button>
                                     }
@@ -124,25 +124,25 @@
 <!-- Modal: Mark Done -->
 @if (_targetToAchieve != null)
 {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-        <div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] p-6 max-w-sm w-full shadow-2xl">
-            <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-1">@L["Roadmap.Modal.AchieveTitle"]</h3>
-            <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B] mb-4 font-semibold">@L.MilestoneText(_targetToAchieve.Title)</p>
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-sm w-full shadow-xl">
+            <h3 class="text-lg font-bold text-slate-900 mb-1">@L["Roadmap.Modal.AchieveTitle"]</h3>
+            <p class="text-xs text-slate-500 mb-4 font-semibold">@L.MilestoneText(_targetToAchieve.Title)</p>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Roadmap.Modal.DateAchieved"]</label>
-                    <input @bind="_achieveDate" type="date" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Roadmap.Modal.DateAchieved"]</label>
+                    <input @bind="_achieveDate" type="date" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Roadmap.Modal.MemoryNote"]</label>
-                    <textarea @bind="_achieveNote" rows="2" placeholder="@L["Roadmap.Modal.MemoryPlaceholder"]" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]"></textarea>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Roadmap.Modal.MemoryNote"]</label>
+                    <textarea @bind="_achieveNote" rows="2" placeholder="@L["Roadmap.Modal.MemoryPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white"></textarea>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-6">
-                <button @onclick="() => _targetToAchieve = null" class="px-4 py-2 text-sm font-semibold text-[#7F6A5D] dark:text-[#EADECF] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28]/50 rounded-xl">@L["Common.Cancel"]</button>
-                <button @onclick="ConfirmAchieveAsync" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs">@L["Roadmap.Modal.CompleteButton"]</button>
+                <button @onclick="() => _targetToAchieve = null" class="px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">@L["Common.Cancel"]</button>
+                <button @onclick="ConfirmAchieveAsync" class="px-5 py-2 text-sm font-semibold bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-xs transition-colors">@L["Roadmap.Modal.CompleteButton"]</button>
             </div>
         </div>
     </div>
@@ -151,24 +151,24 @@
 <!-- Modal: Add Expectation Target -->
 @if (_showAddExpectationModal)
 {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-        <div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] p-6 max-w-md w-full shadow-2xl">
-            <h3 class="text-lg font-bold text-[#2B1D16] dark:text-[#FAF0E6] mb-4">@L["Roadmap.Modal.AddTitle"]</h3>
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-md w-full shadow-xl">
+            <h3 class="text-lg font-bold text-slate-900 mb-4">@L["Roadmap.Modal.AddTitle"]</h3>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Roadmap.Modal.MilestoneTitle"]</label>
-                    <input @bind="_newTitle" placeholder="@L["Roadmap.Modal.MilestonePlaceholder"]" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Roadmap.Modal.MilestoneTitle"]</label>
+                    <input @bind="_newTitle" placeholder="@L["Roadmap.Modal.MilestonePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Roadmap.Modal.ExpectedAgeMonths"]</label>
-                        <input @bind="_newExpectedMonths" type="number" placeholder="f.eks. 12" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]" />
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Roadmap.Modal.ExpectedAgeMonths"]</label>
+                        <input @bind="_newExpectedMonths" type="number" placeholder="f.eks. 12" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Common.Category"]</label>
-                        <select @bind="_newCategory" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Common.Category"]</label>
+                        <select @bind="_newCategory" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white">
                             <option value="GrossMotor">@L.MilestoneCategory("GrossMotor")</option>
                             <option value="FineMotor">@L.MilestoneCategory("FineMotor")</option>
                             <option value="LanguageSpeech">@L.MilestoneCategory("LanguageSpeech")</option>
@@ -181,14 +181,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-[#7F6A5D] dark:text-[#EADECF] mb-1">@L["Roadmap.Modal.GuidelineDetails"]</label>
-                    <textarea @bind="_newDescription" rows="2" placeholder="@L["Roadmap.Modal.GuidelinePlaceholder"]" class="w-full px-3 py-2 text-sm bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-[#2B1D16] dark:text-[#FAF0E6] focus:outline-hidden focus:border-[#C85A32]"></textarea>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Roadmap.Modal.GuidelineDetails"]</label>
+                    <textarea @bind="_newDescription" rows="2" placeholder="@L["Roadmap.Modal.GuidelinePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white"></textarea>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-6">
-                <button @onclick="() => _showAddExpectationModal = false" class="px-4 py-2 text-sm font-semibold text-[#7F6A5D] dark:text-[#EADECF] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28]/50 rounded-xl">@L["Common.Cancel"]</button>
-                <button @onclick="SaveExpectationAsync" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#B54E29] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs">@L["Roadmap.AddTarget"]</button>
+                <button @onclick="() => _showAddExpectationModal = false" class="px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">@L["Common.Cancel"]</button>
+                <button @onclick="SaveExpectationAsync" class="px-5 py-2 text-sm font-semibold bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-xs transition-colors">@L["Roadmap.AddTarget"]</button>
             </div>
         </div>
     </div>
@@ -200,11 +200,9 @@
 
     private List<ChildMilestoneModel> _expectations = new();
     private bool _loading = true;
-
     private ChildMilestoneModel? _targetToAchieve;
     private DateTime _achieveDate = DateTime.Today;
     private string? _achieveNote;
-
     private bool _showAddExpectationModal;
     private string _newTitle = string.Empty;
     private int _newExpectedMonths = 12;
@@ -280,6 +278,7 @@
         {
             _showAddExpectationModal = false;
             _newTitle = string.Empty;
+            _newExpectedMonths = 12;
             _newDescription = null;
             await LoadExpectationsAsync();
             await OnExpectationsChanged.InvokeAsync();
@@ -293,13 +292,13 @@
         await OnExpectationsChanged.InvokeAsync();
     }
 
-    private string GetCategoryBadgeColor(string cat) => cat switch
+    private static string GetCategoryBadgeColor(string cat) => cat switch
     {
-        "GrossMotor" => "bg-[#C85A32]/15 text-[#C85A32] dark:bg-[#C85A32]/30 dark:text-[#FDEEE9]",
-        "FineMotor" => "bg-[#D9822B]/15 text-[#8F4E0E] dark:bg-[#D9822B]/25 dark:text-[#F4C596]",
-        "LanguageSpeech" => "bg-[#5B7553]/15 text-[#5B7553] dark:bg-[#5B7553]/30 dark:text-[#9BBA93]",
-        "Dental" => "bg-[#FAF0E6] text-[#7B2F14] dark:bg-[#3D2F28] dark:text-[#EADECF]",
-        "SocialEmotional" => "bg-[#FDEEE9] text-[#7B2F14] dark:bg-[#3D2F28] dark:text-[#FDEEE9]",
-        _ => "bg-[#FAF6F0] text-[#7F6A5D] dark:bg-[#1C1512] dark:text-[#EADECF]"
+        "GrossMotor" => "bg-blue-50 text-blue-700 border border-blue-200/60",
+        "FineMotor" => "bg-amber-50 text-amber-800 border border-amber-200/60",
+        "LanguageSpeech" => "bg-emerald-50 text-emerald-700 border border-emerald-200/60",
+        "Dental" => "bg-cyan-50 text-cyan-700 border border-cyan-200/60",
+        "SocialEmotional" => "bg-purple-50 text-purple-700 border border-purple-200/60",
+        _ => "bg-slate-50 text-slate-700 border border-slate-200/60"
     };
 }

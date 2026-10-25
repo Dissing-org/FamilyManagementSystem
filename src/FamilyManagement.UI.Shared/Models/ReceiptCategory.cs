@@ -23,12 +23,12 @@ public static class ReceiptCategories
 
     public static string GetBadgeClasses(string? category) => category switch
     {
-        Groceries => "bg-[#FDEEE9] text-[#7B2F14] border-[#F9DDD4] dark:bg-[#C85A32]/20 dark:text-[#FDEEE9] dark:border-[#C85A32]/40",
-        Dining => "bg-[#FEF3E2] text-[#B86B1E] border-[#FCE6C7] dark:bg-[#FEF3E2]/15 dark:text-[#E89E4E] dark:border-[#D9822B]/40",
-        Utilities => "bg-[#EAF0EB] text-[#4A6243] border-[#D4E2D6] dark:bg-[#5B7553]/25 dark:text-[#8EAE84] dark:border-[#5B7553]/40",
-        Entertainment => "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/40 dark:text-purple-300",
-        Health => "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/40 dark:text-rose-300",
-        Shopping => "bg-[#FDF6F3] text-[#993B19] border-[#EADECF] dark:bg-[#3D2F28] dark:text-[#FAF0E6] dark:border-[#523F34]",
-        _ => "bg-[#FAF6F0] text-[#7F6A5D] border-[#EADECF] dark:bg-[#261D19] dark:text-[#FAF0E6] dark:border-[#3D2F28]"
+        Groceries => "bg-emerald-50 text-emerald-800 border-emerald-200/60",
+        Dining => "bg-amber-50 text-amber-800 border-amber-200/60",
+        Utilities => "bg-cyan-50 text-cyan-800 border-cyan-200/60",
+        Entertainment => "bg-purple-50 text-purple-700 border-purple-200/60",
+        Health => "bg-rose-50 text-rose-700 border-rose-200/60",
+        Shopping => "bg-sky-50 text-sky-700 border-sky-200/60",
+        _ => "bg-slate-50 text-slate-700 border-slate-200/60"
     };
 }

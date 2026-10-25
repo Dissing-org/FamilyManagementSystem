@@ -4,11 +4,11 @@
 @using FamilyManagement.UI.Shared.Services
 @inject VehicleApiClient VehicleApi
 
-<div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] text-[#2B1D16] dark:text-[#FAF0E6] font-sans pb-24">
+<div class="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
     <AppHeader CurrentSectionSubtitle="@L["Vehicles.Subtitle"]" OnSettingsSaved="LoadVehiclesAsync">
         <ActionContent>
             <button @onclick="OpenAddVehicleModal" 
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#FDEEE9] hover:bg-[#F9DDD4] text-[#7B2F14] text-sm font-black rounded-xl shadow-md transition-all hover:shadow-lg">
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold rounded-xl shadow-xs transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -21,26 +21,26 @@
         @if (_loading)
         {
             <div class="py-24 text-center">
-                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#C85A32] border-t-transparent"></div>
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-sky-600 border-t-transparent"></div>
                 <p class="mt-4 text-sm font-medium text-slate-500">@L["Vehicles.Loading"]</p>
             </div>
         }
         else if (_vehicles.Count == 0)
         {
             <!-- Empty state -->
-            <div class="max-w-lg mx-auto bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-3xl p-8 sm:p-10 text-center shadow-lg my-12">
-                <div class="w-20 h-20 rounded-3xl bg-[#C85A32]/10 dark:bg-[#FDEEE9]/15 text-[#C85A32] dark:text-[#FDEEE9] flex items-center justify-center mx-auto mb-6">
+            <div class="max-w-lg mx-auto bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-10 text-center shadow-xs my-12">
+                <div class="w-20 h-20 rounded-3xl bg-sky-50 text-sky-600 flex items-center justify-center mx-auto mb-6">
                     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10M5 16h10m4 0h1a1 1 0 001-1v-3.5a1 1 0 00-.293-.707l-3.5-3.5A1 1 0 0016.5 7H15v9m4 0a2 2 0 100-4 2 2 0 000 4z"/>
                     </svg>
                 </div>
-                <h2 class="text-2xl font-black text-slate-900 dark:text-slate-100">@L["Vehicles.WelcomeTitle"]</h2>
+                <h2 class="text-2xl font-black text-slate-900">@L["Vehicles.WelcomeTitle"]</h2>
                 <p class="text-sm text-slate-500 mt-2 mb-8 leading-relaxed">
                     @L["Vehicles.WelcomeSubtitle"]
                 </p>
 
-                <button @onclick="OpenAddVehicleModal" class="w-full py-3.5 px-6 bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] font-bold text-sm rounded-xl shadow-md transition-all">
+                <button @onclick="OpenAddVehicleModal" class="w-full py-3.5 px-6 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-xs transition-all">
                     @L["Vehicles.RegisterFirst"]
                 </button>
             </div>
@@ -53,12 +53,12 @@
                 <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
                     @foreach (var v in _vehicles)
                     {
-                        <button @onclick="() => SelectVehicleAsync(v.Id)" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 @(v.Id == _selectedVehicleId ? "bg-[#C85A32] text-white dark:bg-[#FDEEE9] dark:text-[#7B2F14] shadow-xs" : "bg-white dark:bg-[#261D19] text-slate-600 dark:text-slate-300 border border-[#EADECF] dark:border-[#3D2F28]")">
+                        <button @onclick="() => SelectVehicleAsync(v.Id)" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 @(v.Id == _selectedVehicleId ? "bg-sky-600 text-white shadow-xs" : "bg-white text-slate-600 border border-slate-200/80 hover:border-sky-500 hover:text-sky-700")">
                             <span>@v.Make @v.Model</span>
                             <span class="opacity-75 font-mono text-[11px]">(@v.LicensePlate)</span>
                         </button>
                     }
-                    <button @onclick="OpenAddVehicleModal" class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <button @onclick="OpenAddVehicleModal" class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-slate-600">
                         @L["Vehicles.AddAnother"]
                     </button>
                 </div>
@@ -71,22 +71,22 @@
                                    OnQuickRecordService="HandleQuickRecordService" />
 
                 <!-- Tabs Navigation -->
-                <div class="flex items-center gap-4 border-b border-[#EADECF] dark:border-[#3D2F28] mb-6">
-                    <button @onclick='() => _activeTab = "mileage"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "mileage" ? "border-[#C85A32] text-[#C85A32] dark:border-[#FDEEE9] dark:text-[#FDEEE9]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                <div class="flex items-center gap-4 border-b border-slate-200/80 mb-6">
+                    <button @onclick='() => _activeTab = "mileage"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "mileage" ? "border-sky-600 text-sky-600" : "border-transparent text-slate-500 hover:text-slate-800")">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                         <span>@L["Vehicles.TabMileage"]</span>
                     </button>
 
-                    <button @onclick='() => _activeTab = "services"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "services" ? "border-[#C85A32] text-[#C85A32] dark:border-[#FDEEE9] dark:text-[#FDEEE9]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                    <button @onclick='() => _activeTab = "services"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "services" ? "border-sky-600 text-sky-600" : "border-transparent text-slate-500 hover:text-slate-800")">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
                         <span>@L["Vehicles.TabService"]</span>
                     </button>
 
-                    <button @onclick='() => _activeTab = "settings"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "settings" ? "border-[#C85A32] text-[#C85A32] dark:border-[#FDEEE9] dark:text-[#FDEEE9]" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200")">
+                    <button @onclick='() => _activeTab = "settings"' class="pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 @(_activeTab == "settings" ? "border-sky-600 text-sky-600" : "border-transparent text-slate-500 hover:text-slate-800")">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -111,12 +111,12 @@
                 }
                 else if (_activeTab == "settings")
                 {
-                    <div class="bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-2xl p-6 shadow-xs max-w-2xl">
-                        <h4 class="text-base font-bold text-slate-900 dark:text-slate-100 mb-4">@L["Vehicles.EditSpecsTitle"]</h4>
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs max-w-2xl">
+                        <h4 class="text-base font-bold text-slate-900 mb-4">@L["Vehicles.EditSpecsTitle"]</h4>
 
                         @if (!string.IsNullOrEmpty(_updateError))
                         {
-                            <div class="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
+                            <div class="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200/60 text-rose-700 text-xs">
                                 @_updateError
                             </div>
                         }
@@ -124,27 +124,27 @@
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.Make"]</label>
-                                    <input @bind="_editMake" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.Make"]</label>
+                                    <input @bind="_editMake" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.Model"]</label>
-                                    <input @bind="_editModel" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.Model"]</label>
+                                    <input @bind="_editModel" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.Year"]</label>
-                                    <input type="number" @bind="_editYear" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.Year"]</label>
+                                    <input type="number" @bind="_editYear" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.LicensePlate"]</label>
-                                    <input @bind="_editLicensePlate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.LicensePlate"]</label>
+                                    <input @bind="_editLicensePlate" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.FuelType"]</label>
-                                    <select @bind="_editFuelType" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.FuelType"]</label>
+                                    <select @bind="_editFuelType" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white">
                                         <option value="Gasoline">@L.FuelType("Gasoline")</option>
                                         <option value="Diesel">@L.FuelType("Diesel")</option>
                                         <option value="Electric">@L.FuelType("Electric")</option>
@@ -156,32 +156,32 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.ServiceIntervalKm"]</label>
-                                    <input type="number" @bind="_editServiceIntervalKm" placeholder="@L["Vehicles.ServiceIntervalKmPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.ServiceIntervalKm"]</label>
+                                    <input type="number" @bind="_editServiceIntervalKm" placeholder="@L["Vehicles.ServiceIntervalKmPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.ServiceIntervalMonths"]</label>
-                                    <input type="number" @bind="_editServiceIntervalMonths" placeholder="@L["Vehicles.ServiceIntervalMonthsPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.ServiceIntervalMonths"]</label>
+                                    <input type="number" @bind="_editServiceIntervalMonths" placeholder="@L["Vehicles.ServiceIntervalMonthsPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.NextInspectionDate"]</label>
-                                    <input type="date" @bind="_editNextInspectionDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.NextInspectionDate"]</label>
+                                    <input type="date" @bind="_editNextInspectionDate" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.VinOptional"]</label>
-                                    <input @bind="_editVin" placeholder="@L["Vehicles.VinPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.VinOptional"]</label>
+                                    <input @bind="_editVin" placeholder="@L["Vehicles.VinPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-between pt-6 mt-6 border-t border-[#EADECF] dark:border-[#3D2F28]">
-                            <button @onclick="DeleteCurrentVehicleAsync" class="px-4 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors">
+                        <div class="flex items-center justify-between pt-6 mt-6 border-t border-slate-100">
+                            <button @onclick="DeleteCurrentVehicleAsync" class="px-4 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors">
                                 @L["Vehicles.DeleteVehicle"]
                             </button>
-                            <button @onclick="SaveVehicleSpecsAsync" disabled="@_savingSpecs" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs transition-colors disabled:opacity-50">
+                            <button @onclick="SaveVehicleSpecsAsync" disabled="@_savingSpecs" class="px-5 py-2 text-sm font-semibold bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-xs transition-colors disabled:opacity-50">
                                 @(_savingSpecs ? L["Common.Saving"] : L["Common.SaveChanges"])
                             </button>
                         </div>
@@ -194,11 +194,11 @@
     <!-- Register Vehicle Modal -->
     @if (_showAddVehicleModal)
     {
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-            <div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] p-6 max-w-lg w-full shadow-2xl">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-lg w-full shadow-xl">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">@L["Vehicles.RegisterNewTitle"]</h3>
-                    <button @onclick="() => _showAddVehicleModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <h3 class="text-lg font-bold text-slate-900">@L["Vehicles.RegisterNewTitle"]</h3>
+                    <button @onclick="() => _showAddVehicleModal = false" class="text-slate-400 hover:text-slate-600">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -207,7 +207,7 @@
 
                 @if (!string.IsNullOrEmpty(_addVehicleError))
                 {
-                    <div class="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
+                    <div class="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200/60 text-rose-700 text-xs">
                         @_addVehicleError
                     </div>
                 }
@@ -215,27 +215,27 @@
                 <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.MakeRequired"]</label>
-                            <input @bind="_newMake" placeholder="@L["Vehicles.MakePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.MakeRequired"]</label>
+                            <input @bind="_newMake" placeholder="@L["Vehicles.MakePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.ModelRequired"]</label>
-                            <input @bind="_newModel" placeholder="@L["Vehicles.ModelPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.ModelRequired"]</label>
+                            <input @bind="_newModel" placeholder="@L["Vehicles.ModelPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.YearRequired"]</label>
-                            <input type="number" @bind="_newYear" min="1900" max="2100" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.YearRequired"]</label>
+                            <input type="number" @bind="_newYear" min="1900" max="2100" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.LicensePlateRequired"]</label>
-                            <input @bind="_newLicensePlate" placeholder="@L["Vehicles.LicensePlatePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.LicensePlateRequired"]</label>
+                            <input @bind="_newLicensePlate" placeholder="@L["Vehicles.LicensePlatePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.FuelTypeRequired"]</label>
-                            <select @bind="_newFuelType" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.FuelTypeRequired"]</label>
+                            <select @bind="_newFuelType" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white">
                                 <option value="Gasoline">@L.FuelType("Gasoline")</option>
                                 <option value="Diesel">@L.FuelType("Diesel")</option>
                                 <option value="Electric">@L.FuelType("Electric")</option>
@@ -247,37 +247,37 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.InitialMileageKm"]</label>
-                            <input type="number" @bind="_newCurrentMileageKm" min="0" placeholder="@L["Vehicles.InitialMileagePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.InitialMileageKm"]</label>
+                            <input type="number" @bind="_newCurrentMileageKm" min="0" placeholder="@L["Vehicles.InitialMileagePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.VinOptional"]</label>
-                            <input @bind="_newVin" placeholder="@L["Vehicles.VinPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.VinOptional"]</label>
+                            <input @bind="_newVin" placeholder="@L["Vehicles.VinPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.ServiceIntervalKm"]</label>
-                            <input type="number" @bind="_newServiceIntervalKm" placeholder="@L["Vehicles.ServiceIntervalKmPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.ServiceIntervalKm"]</label>
+                            <input type="number" @bind="_newServiceIntervalKm" placeholder="@L["Vehicles.ServiceIntervalKmPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.ServiceIntervalMonths"]</label>
-                            <input type="number" @bind="_newServiceIntervalMonths" placeholder="@L["Vehicles.ServiceIntervalMonthsPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.ServiceIntervalMonths"]</label>
+                            <input type="number" @bind="_newServiceIntervalMonths" placeholder="@L["Vehicles.ServiceIntervalMonthsPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Vehicles.NextInspectionDate"]</label>
-                        <input type="date" @bind="_newNextInspectionDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Vehicles.NextInspectionDate"]</label>
+                        <input type="date" @bind="_newNextInspectionDate" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-2 mt-6">
-                    <button @onclick="() => _showAddVehicleModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    <button @onclick="() => _showAddVehicleModal = false" class="px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
                         @L["Common.Cancel"]
                     </button>
-                    <button @onclick="CreateVehicleAsync" disabled="@_savingNewVehicle" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs transition-colors disabled:opacity-50">
+                    <button @onclick="CreateVehicleAsync" disabled="@_savingNewVehicle" class="px-5 py-2 text-sm font-semibold bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-xs transition-colors disabled:opacity-50">
                         @(_savingNewVehicle ? L["Vehicles.Registering"] : L["Vehicles.RegisterButton"])
                     </button>
                 </div>

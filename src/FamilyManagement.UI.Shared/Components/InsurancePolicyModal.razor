@@ -1,19 +1,19 @@
 @using FamilyManagement.UI.Shared.Models
 @using FamilyManagement.UI.Shared.Services
 
-<div class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-[#261D19] rounded-2xl shadow-xl border border-[#EADECF] dark:border-[#3D2F28] max-w-lg w-full p-6 text-[#2B1D16] dark:text-[#FAF0E6]">
+<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/30 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-lg w-full p-6 text-slate-900">
         <!-- Header -->
-        <div class="flex items-center justify-between pb-4 border-b border-[#EADECF] dark:border-[#3D2F28]">
-            <h2 class="text-xl font-bold flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-[#FDEEE9] dark:bg-[#C85A32]/20 text-[#C85A32] dark:text-[#FDEEE9] flex items-center justify-center">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <h2 class="text-xl font-bold flex items-center gap-2 text-slate-900">
+                <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                     </svg>
                 </div>
                 <span>@(IsEditMode ? L["Insurances.Modal.EditTitle"] : L["Insurances.Modal.AddTitle"])</span>
             </h2>
-            <button @onclick="Close" class="text-[#7F6A5D] hover:text-[#2B1D16] dark:hover:text-[#FAF0E6] transition-colors">
+            <button @onclick="Close" class="text-slate-400 hover:text-slate-600 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -22,7 +22,7 @@
 
         @if (!string.IsNullOrEmpty(_errorMessage))
         {
-            <div class="mt-4 p-3 bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-700 dark:text-rose-300 text-sm">
+            <div class="mt-4 p-3 bg-rose-50 border border-rose-200/60 rounded-xl text-rose-700 text-sm">
                 @_errorMessage
             </div>
         }
@@ -32,23 +32,23 @@
             <!-- Insurer & Policy Number -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.InsurerLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.InsurerLabel"]</label>
                     <input @bind="_model.Insurer" type="text" placeholder="@L["Insurances.Modal.InsurerPlaceholder"]" required
-                           class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]" />
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.PolicyNumberLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.PolicyNumberLabel"]</label>
                     <input @bind="_model.PolicyNumber" type="text" placeholder="@L["Insurances.Modal.PolicyNumberPlaceholder"]"
-                           class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]" />
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900" />
                 </div>
             </div>
 
             <!-- Category & Insured Party -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.CategoryLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.CategoryLabel"]</label>
                     <select @bind="_model.Category"
-                            class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900">
                         @foreach (var cat in InsuranceConstants.Categories)
                         {
                             <option value="@cat">@L.InsuranceCategory(cat)</option>
@@ -56,23 +56,23 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.InsuredPartyLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.InsuredPartyLabel"]</label>
                     <input @bind="_model.InsuredParty" type="text" placeholder="@L["Insurances.Modal.InsuredPartyPlaceholder"]" required
-                           class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]" />
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900" />
                 </div>
             </div>
 
             <!-- Premium & Currency & Frequency -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.PremiumLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.PremiumLabel"]</label>
                     <input @bind="_model.PremiumAmount" type="number" step="0.01" min="0" required
-                           class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]" />
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900 font-mono" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.CurrencyLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.CurrencyLabel"]</label>
                     <select @bind="_model.Currency"
-                            class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900">
                         @foreach (var curr in InsuranceConstants.Currencies)
                         {
                             <option value="@curr">@curr</option>
@@ -80,9 +80,9 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.FrequencyLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.FrequencyLabel"]</label>
                     <select @bind="_model.Frequency"
-                            class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900">
                         @foreach (var freq in InsuranceConstants.Frequencies)
                         {
                             <option value="@freq">@L.Frequency(freq)</option>
@@ -94,40 +94,40 @@
             <!-- Dates -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.StartDateLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.StartDateLabel"]</label>
                     <input @bind="_model.StartDate" type="date"
-                           class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]" />
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900" />
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.RenewalDateLabel"]</label>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.RenewalDateLabel"]</label>
                     <input @bind="_model.RenewalDate" type="date"
-                           class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]" />
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900" />
                 </div>
             </div>
 
             <!-- Deductible -->
             <div>
-                <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Insurances.Modal.DeductibleLabel"]</label>
+                <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Insurances.Modal.DeductibleLabel"]</label>
                 <input @bind="_model.DeductibleAmount" type="number" step="0.01" min="0" placeholder="@L["Insurances.Modal.DeductiblePlaceholder"]"
-                       class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]" />
+                       class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900 font-mono" />
             </div>
 
             <!-- Notes -->
             <div>
-                <label class="block text-sm font-semibold mb-1 text-[#2B1D16] dark:text-[#FAF0E6]">@L["Common.NotesOptional"]</label>
+                <label class="block text-sm font-semibold mb-1 text-slate-700">@L["Common.NotesOptional"]</label>
                 <textarea @bind="_model.Notes" rows="2" placeholder="@L["Insurances.Modal.NotesPlaceholder"]"
-                          class="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-lg focus:ring-2 focus:ring-[#C85A32] focus:outline-none text-sm text-[#2B1D16] dark:text-[#FAF0E6]"></textarea>
+                          class="w-full px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:outline-none focus:bg-white text-sm text-slate-900"></textarea>
             </div>
         </div>
 
         <!-- Buttons -->
-        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#EADECF] dark:border-[#3D2F28]">
+        <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <button @onclick="Close" disabled="@_isSubmitting"
-                    class="px-4 py-2 text-sm font-medium text-[#7F6A5D] dark:text-[#EADECF] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28] rounded-lg transition-colors">
+                    class="px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
                 @L["Common.Cancel"]
             </button>
             <button @onclick="SubmitAsync" disabled="@_isSubmitting"
-                    class="px-5 py-2 text-sm font-semibold text-white bg-[#C85A32] hover:bg-[#B84B24] rounded-lg shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
+                    class="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-xs transition-colors flex items-center gap-2 disabled:opacity-50">
                 @if (_isSubmitting)
                 {
                     <span class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>

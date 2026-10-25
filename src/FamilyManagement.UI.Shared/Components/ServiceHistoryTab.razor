@@ -6,10 +6,10 @@
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">@L["Service.Title"]</h3>
+            <h3 class="text-lg font-bold text-slate-900">@L["Service.Title"]</h3>
             <p class="text-xs text-slate-500">@L["Service.Subtitle"]</p>
         </div>
-        <button @onclick="OpenRecordServiceModal" class="inline-flex items-center gap-2 px-4 py-2 bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] font-bold text-sm rounded-xl shadow-xs transition-colors">
+        <button @onclick="OpenRecordServiceModal" class="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-xs transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
@@ -19,22 +19,22 @@
 
     @if (_loading)
     {
-        <div class="py-12 text-center text-slate-400 text-sm">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-3 border-[#C85A32] border-t-transparent mb-2"></div>
+        <div class="py-12 text-center text-slate-500 text-sm">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-3 border-sky-600 border-t-transparent mb-2"></div>
             <p>@L["Service.Loading"]</p>
         </div>
     }
     else if (_records.Count == 0)
     {
-        <div class="bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-2xl p-12 text-center">
-            <div class="w-16 h-16 rounded-full bg-[#FDEEE9]/20 text-[#C85A32] dark:text-[#FDEEE9] flex items-center justify-center mx-auto mb-4">
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
             </div>
-            <h4 class="text-base font-bold text-slate-800 dark:text-slate-200">@L["Service.EmptyTitle"]</h4>
+            <h4 class="text-base font-bold text-slate-800">@L["Service.EmptyTitle"]</h4>
             <p class="text-sm text-slate-500 mt-1 mb-6">@L["Service.EmptySubtitle"]</p>
-            <button @onclick="OpenRecordServiceModal" class="px-5 py-2.5 bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:text-[#7B2F14] text-white text-sm font-semibold rounded-xl shadow-xs">
+            <button @onclick="OpenRecordServiceModal" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-xl shadow-xs">
                 @L["Service.RecordFirst"]
             </button>
         </div>
@@ -43,7 +43,7 @@
     {
         <!-- Filter Tabs -->
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-            <button @onclick='() => _selectedFilter = null' class="px-3 py-1.5 rounded-lg font-bold transition-colors @(_selectedFilter == null ? "bg-[#C85A32] text-white dark:bg-[#FDEEE9] dark:text-[#7B2F14]" : "bg-white dark:bg-[#261D19] text-slate-600 dark:text-slate-300 border border-[#EADECF] dark:border-[#3D2F28]")">
+            <button @onclick='() => _selectedFilter = null' class="px-3 py-1.5 rounded-lg font-bold transition-colors @(_selectedFilter == null ? "bg-sky-600 text-white shadow-xs font-bold" : "bg-white text-slate-600 border border-slate-200/80 hover:border-sky-500 hover:text-sky-700")">
                 @L["Common.All"] (@_records.Count)
             </button>
             @foreach (var type in ServiceTypes)
@@ -51,7 +51,7 @@
                 var count = _records.Count(r => r.Type == type);
                 if (count > 0)
                 {
-                    <button @onclick='() => _selectedFilter = type' class="px-3 py-1.5 rounded-lg font-bold transition-colors @(_selectedFilter == type ? "bg-[#C85A32] text-white dark:bg-[#FDEEE9] dark:text-[#7B2F14]" : "bg-white dark:bg-[#261D19] text-slate-600 dark:text-slate-300 border border-[#EADECF] dark:border-[#3D2F28]")">
+                    <button @onclick='() => _selectedFilter = type' class="px-3 py-1.5 rounded-lg font-bold transition-colors @(_selectedFilter == type ? "bg-sky-600 text-white shadow-xs font-bold" : "bg-white text-slate-600 border border-slate-200/80 hover:border-sky-500 hover:text-sky-700")">
                         @L.ServiceType(type) (@count)
                     </button>
                 }
@@ -62,14 +62,14 @@
         <div class="space-y-3">
             @foreach (var record in FilteredRecords)
             {
-                <div class="bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] rounded-2xl p-5 shadow-xs transition-shadow hover:shadow-md">
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs transition-shadow hover:shadow-md">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div class="flex items-start gap-3">
                             <span class="px-2.5 py-1 rounded-lg text-xs font-bold @GetServiceTypeBadgeClass(record.Type) whitespace-nowrap">
                                 @L.ServiceType(record.Type)
                             </span>
                             <div>
-                                <h4 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                                <h4 class="text-base font-bold text-slate-900">
                                     @record.Title
                                 </h4>
                                 <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500">
@@ -79,8 +79,8 @@
                                     @if (!string.IsNullOrWhiteSpace(record.Workshop))
                                     {
                                         <span>•</span>
-                                        <span class="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <span class="inline-flex items-center gap-1 text-slate-700 font-medium">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                             </svg>
                                             @record.Workshop
@@ -93,7 +93,7 @@
                         <div class="flex items-center sm:flex-col sm:items-end justify-between gap-1">
                             @if (record.Cost.HasValue)
                             {
-                                <div class="text-base font-black text-slate-900 dark:text-slate-100">
+                                <div class="text-base font-black text-slate-900">
                                     @record.Cost.Value.ToString("N0", L.Culture) <span class="text-xs font-semibold text-slate-500">kr.</span>
                                 </div>
                             }
@@ -101,7 +101,7 @@
                             <div class="flex items-center gap-2 mt-1">
                                 @if (record.ReceiptId.HasValue)
                                 {
-                                    <a href="receipts" class="inline-flex items-center gap-1 text-[11px] font-bold text-[#C85A32] dark:text-[#FDEEE9] bg-[#FDEEE9]/20 hover:bg-[#FDEEE9]/30 px-2 py-0.5 rounded-md transition-colors" title="@L["Service.ViewInReceipts"]">
+                                    <a href="receipts" class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-600 bg-sky-50 hover:bg-sky-100 px-2 py-0.5 rounded-md transition-colors" title="@L["Service.ViewInReceipts"]">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
@@ -109,7 +109,7 @@
                                     </a>
                                 }
 
-                                <button @onclick="() => DeleteRecordAsync(record.Id)" class="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors" title="@L["Service.DeleteRecord"]">
+                                <button @onclick="() => DeleteRecordAsync(record.Id)" class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors" title="@L["Service.DeleteRecord"]">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
@@ -120,7 +120,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(record.Notes))
                     {
-                        <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 pt-3 border-t border-[#EADECF]/50 dark:border-[#3D2F28] whitespace-pre-wrap">
+                        <p class="text-sm text-slate-600 mt-3 pt-3 border-t border-slate-100 whitespace-pre-wrap">
                             @record.Notes
                         </p>
                     }
@@ -132,11 +132,11 @@
 
 @if (_showRecordModal)
 {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-        <div class="bg-white dark:bg-[#261D19] rounded-2xl border border-[#EADECF] dark:border-[#3D2F28] p-6 max-w-lg w-full shadow-2xl">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 max-w-lg w-full shadow-xl">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">@L["Service.ModalTitle"]</h3>
-                <button @onclick="() => _showRecordModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <h3 class="text-lg font-bold text-slate-900">@L["Service.ModalTitle"]</h3>
+                <button @onclick="() => _showRecordModal = false" class="text-slate-400 hover:text-slate-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -145,7 +145,7 @@
 
             @if (!string.IsNullOrEmpty(_errorMessage))
             {
-                <div class="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
+                <div class="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200/60 text-rose-700 text-xs">
                     @_errorMessage
                 </div>
             }
@@ -153,8 +153,8 @@
             <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.ServiceType"]</label>
-                        <select @bind="_newType" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.ServiceType"]</label>
+                        <select @bind="_newType" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white">
                             @foreach (var type in ServiceTypes)
                             {
                                 <option value="@type">@L.ServiceType(type)</option>
@@ -163,36 +163,36 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.ServiceDate"]</label>
-                        <input type="date" @bind="_newDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.ServiceDate"]</label>
+                        <input type="date" @bind="_newDate" max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.TitleDescription"]</label>
-                    <input @bind="_newTitle" placeholder="@L["Service.TitlePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.TitleDescription"]</label>
+                    <input @bind="_newTitle" placeholder="@L["Service.TitlePlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.OdometerKm"]</label>
-                        <input type="number" @bind="_newMileage" min="0" placeholder="@L["Service.OdometerPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.OdometerKm"]</label>
+                        <input type="number" @bind="_newMileage" min="0" placeholder="@L["Service.OdometerPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.CostDkk"]</label>
-                        <input type="number" step="0.01" @bind="_newCost" min="0" placeholder="@L["Service.CostPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100 font-mono" />
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.CostDkk"]</label>
+                        <input type="number" step="0.01" @bind="_newCost" min="0" placeholder="@L["Service.CostPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.WorkshopOptional"]</label>
-                    <input @bind="_newWorkshop" placeholder="@L["Service.WorkshopPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100" />
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.WorkshopOptional"]</label>
+                    <input @bind="_newWorkshop" placeholder="@L["Service.WorkshopPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white" />
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.LinkToReceiptOptional"]</label>
-                    <select @bind="_newReceiptId" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.LinkToReceiptOptional"]</label>
+                    <select @bind="_newReceiptId" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white">
                         <option value="">@L["Service.NoLinkedReceipt"]</option>
                         @foreach (var receipt in _availableReceipts)
                         {
@@ -202,16 +202,16 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">@L["Service.NotesOptional"]</label>
-                    <textarea @bind="_newNotes" rows="3" placeholder="@L["Service.NotesPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-[#1C1512] border border-[#EADECF] dark:border-[#3D2F28] rounded-xl text-slate-800 dark:text-slate-100"></textarea>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">@L["Service.NotesOptional"]</label>
+                    <textarea @bind="_newNotes" rows="3" placeholder="@L["Service.NotesPlaceholder"]" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white"></textarea>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-6">
-                <button @onclick="() => _showRecordModal = false" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                <button @onclick="() => _showRecordModal = false" class="px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
                     @L["Common.Cancel"]
                 </button>
-                <button @onclick="SaveServiceRecordAsync" disabled="@_saving" class="px-5 py-2 text-sm font-semibold bg-[#C85A32] hover:bg-[#A8431F] dark:bg-[#FDEEE9] dark:hover:bg-[#F9DDD4] text-white dark:text-[#7B2F14] rounded-xl shadow-xs transition-colors disabled:opacity-50">
+                <button @onclick="SaveServiceRecordAsync" disabled="@_saving" class="px-5 py-2 text-sm font-semibold bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-xs transition-colors disabled:opacity-50">
                     @(_saving ? L["Common.Saving"] : L["Service.SaveRecord"])
                 </button>
             </div>
@@ -361,12 +361,12 @@
 
     private static string GetServiceTypeBadgeClass(string type) => type switch
     {
-        "RegularService" => "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300",
-        "OilChange" => "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300",
-        "InspectionSyn" => "bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300",
-        "TireChange" => "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200",
-        "BrakeService" => "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300",
-        "Repair" => "bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300",
-        _ => "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+        "RegularService" => "bg-blue-100 text-blue-800",
+        "OilChange" => "bg-amber-100 text-amber-800",
+        "InspectionSyn" => "bg-purple-100 text-purple-800",
+        "TireChange" => "bg-slate-200 text-slate-800",
+        "BrakeService" => "bg-rose-100 text-rose-800",
+        "Repair" => "bg-orange-100 text-orange-800",
+        _ => "bg-emerald-100 text-emerald-800"
     };
 }

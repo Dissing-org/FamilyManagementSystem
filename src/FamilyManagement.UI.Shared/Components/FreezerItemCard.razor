@@ -1,6 +1,6 @@
 @using FamilyManagement.UI.Shared.Models
 
-<div class="group relative bg-white dark:bg-[#261D19] border @GetBorderClass() rounded-2xl p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-3">
+<div class="group relative bg-white border @GetBorderClass() rounded-2xl p-4 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3">
     <!-- Top Row: Name, Category, and Action Menu -->
     <div class="flex items-start justify-between gap-2">
         <div class="min-w-0 flex-1">
@@ -10,15 +10,15 @@
                 </span>
                 @if (Item.IsLowStock)
                 {
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FEF3E2] dark:bg-[#382618] text-[#9E530E] dark:text-[#FCE4BF] border border-[#D9822B]/30" title="@L["Freezer.LowStockTooltip"]">
-                        <svg class="w-3 h-3 text-[#D9822B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60" title="@L["Freezer.LowStockTooltip"]">
+                        <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                         <span>@L["Freezer.LowStock"]</span>
                     </span>
                 }
             </div>
-            <h3 class="text-sm font-bold text-[#2B1D16] dark:text-[#FAF0E6] mt-1.5 truncate group-hover:text-[#C85A32] transition-colors" title="@Item.Name">
+            <h3 class="text-sm font-bold text-slate-900 mt-1.5 truncate group-hover:text-sky-600 transition-colors" title="@Item.Name">
                 @Item.Name
             </h3>
         </div>
@@ -26,14 +26,14 @@
         <!-- Edit/Delete Action Icons -->
         <div class="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
             <button @onclick="() => OnEdit.InvokeAsync(Item)"
-                    class="p-1.5 rounded-lg text-[#7F6A5D] dark:text-[#A8988B] hover:text-[#C85A32] hover:bg-[#FAF6F0] dark:hover:bg-[#3D2F28] transition-colors"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-slate-50 transition-colors"
                     title="@L["Common.Edit"]">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
             </button>
             <button @onclick="() => OnDelete.InvokeAsync(Item)"
-                    class="p-1.5 rounded-lg text-[#7F6A5D] dark:text-[#A8988B] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                     title="@L["Common.Delete"]">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -45,20 +45,20 @@
     <!-- Notes if present -->
     @if (!string.IsNullOrWhiteSpace(Item.Notes))
     {
-        <p class="text-xs text-[#7F6A5D] dark:text-[#A8988B] line-clamp-1 italic">
+        <p class="text-xs text-slate-500 line-clamp-1 italic">
             "@Item.Notes"
         </p>
     }
 
     <!-- Bottom Row: Quantity Controls & Freshness Badge -->
-    <div class="pt-2 border-t border-[#EADECF]/60 dark:border-[#3D2F28]/60 flex items-center justify-between gap-2">
+    <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
         <!-- Freshness Indicator -->
         <div class="flex flex-col min-w-0">
             <span class="inline-flex items-center gap-1 text-[11px] font-semibold @GetFreshnessClass()">
                 <span class="w-2 h-2 rounded-full @GetFreshnessDotClass()"></span>
                 <span>@GetFreshnessLabel()</span>
             </span>
-            <span class="text-[10px] text-[#7F6A5D] dark:text-[#A8988B]">
+            <span class="text-[10px] text-slate-500">
                 @if (Item.ExpiryDate.HasValue)
                 {
                     <span>@L["Freezer.Expires"]: @L.FormatDate(Item.ExpiryDate.Value, "d. MMM yyyy")</span>
@@ -71,18 +71,18 @@
         </div>
 
         <!-- Tactile Quantity Controller -->
-        <div class="flex items-center gap-1.5 bg-[#FAF6F0] dark:bg-[#1C1512] px-2 py-1 rounded-xl border border-[#EADECF] dark:border-[#3D2F28] shrink-0">
+        <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-xl border border-slate-200/80 shrink-0">
             <button @onclick="() => OnConsume.InvokeAsync(Item)"
                     disabled="@(Item.Quantity <= 0)"
-                    class="w-6 h-6 rounded-lg bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] hover:bg-[#C85A32] hover:text-white dark:hover:bg-[#C85A32] disabled:opacity-40 transition-all flex items-center justify-center font-black text-xs cursor-pointer"
+                    class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-sky-600 hover:text-white disabled:opacity-40 transition-all flex items-center justify-center font-black text-xs cursor-pointer shadow-xs"
                     title="@L["Freezer.ConsumeOne"]">
                 -
             </button>
-            <span class="text-xs font-bold px-1 text-[#2B1D16] dark:text-[#FAF0E6] min-w-[36px] text-center">
-                @FormatQuantity(Item.Quantity) <span class="text-[10px] font-normal text-[#7F6A5D] dark:text-[#A8988B]">@GetUnitLabel(Item.Unit)</span>
+            <span class="text-xs font-bold px-1 text-slate-900 min-w-[36px] text-center">
+                @FormatQuantity(Item.Quantity) <span class="text-[10px] font-normal text-slate-500">@GetUnitLabel(Item.Unit)</span>
             </span>
             <button @onclick="() => OnAddQuantity.InvokeAsync(Item)"
-                    class="w-6 h-6 rounded-lg bg-white dark:bg-[#261D19] border border-[#EADECF] dark:border-[#3D2F28] text-[#2B1D16] dark:text-[#FAF0E6] hover:bg-[#5B7553] hover:text-white dark:hover:bg-[#5B7553] transition-all flex items-center justify-center font-black text-xs cursor-pointer"
+                    class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-sky-600 hover:text-white transition-all flex items-center justify-center font-black text-xs cursor-pointer shadow-xs"
                     title="@L["Freezer.AddOne"]">
                 +
             </button>
@@ -108,34 +108,34 @@
 
     private string GetBorderClass() => Item.FreshnessStatus switch
     {
-        "Expired" => "border-red-300 dark:border-red-900/50 bg-red-50/10",
-        "ExpiringSoon" => "border-amber-300 dark:border-amber-900/50 bg-amber-50/10",
-        _ => "border-[#EADECF] dark:border-[#3D2F28]"
+        "Expired" => "border-rose-200 bg-rose-50/20",
+        "ExpiringSoon" => "border-amber-200 bg-amber-50/20",
+        _ => "border-slate-200/80"
     };
 
     private string GetCategoryBadgeClass() => Item.Category switch
     {
-        "MeatAndPoultry" => "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300 border border-red-200 dark:border-red-800/40",
-        "Seafood" => "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800/40",
-        "VegetablesAndFruits" => "bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-300 border border-green-200 dark:border-green-800/40",
-        "PreparedMeals" => "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40",
-        "Bakery" => "bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300 border border-orange-200 dark:border-orange-800/40",
-        "DessertsAndIceCream" => "bg-pink-50 text-pink-700 dark:bg-pink-950/40 dark:text-pink-300 border border-pink-200 dark:border-pink-800/40",
-        _ => "bg-stone-50 text-stone-700 dark:bg-stone-800 dark:text-stone-300 border border-stone-200 dark:border-stone-700"
+        "MeatAndPoultry" => "bg-rose-50 text-rose-700 border border-rose-200/60",
+        "Seafood" => "bg-sky-50 text-sky-700 border border-sky-200/60",
+        "VegetablesAndFruits" => "bg-emerald-50 text-emerald-700 border border-emerald-200/60",
+        "PreparedMeals" => "bg-amber-50 text-amber-700 border border-amber-200/60",
+        "Bakery" => "bg-orange-50 text-orange-800 border border-orange-200/60",
+        "DessertsAndIceCream" => "bg-purple-50 text-purple-700 border border-purple-200/60",
+        _ => "bg-slate-50 text-slate-700 border border-slate-200/60"
     };
 
     private string GetFreshnessClass() => Item.FreshnessStatus switch
     {
-        "Expired" => "text-red-600 dark:text-red-400 font-bold",
-        "ExpiringSoon" => "text-amber-600 dark:text-amber-400 font-bold",
-        _ => "text-[#5B7553] dark:text-[#88A67E]"
+        "Expired" => "text-rose-700 font-bold",
+        "ExpiringSoon" => "text-amber-700 font-bold",
+        _ => "text-emerald-700 font-semibold"
     };
 
     private string GetFreshnessDotClass() => Item.FreshnessStatus switch
     {
-        "Expired" => "bg-red-500 animate-pulse",
+        "Expired" => "bg-rose-500 animate-pulse",
         "ExpiringSoon" => "bg-amber-500",
-        _ => "bg-[#5B7553]"
+        _ => "bg-emerald-500"
     };
 
     private string GetFreshnessLabel() => Item.FreshnessStatus switch

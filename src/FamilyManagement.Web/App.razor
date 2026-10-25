@@ -5,9 +5,9 @@
 
 @if (!AuthSession.Current.IsLoaded)
 {
-    <div class="min-h-screen bg-[#FAF6F0] dark:bg-[#1C1512] flex flex-col items-center justify-center text-[#7F6A5D]">
-        <div class="animate-spin h-8 w-8 border-3 border-[#C85A32] border-t-transparent rounded-full mb-3"></div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-[#7F6A5D] dark:text-[#A8988B]">@L["App.VerifyingSession"]</p>
+    <div class="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500">
+        <div class="animate-spin h-8 w-8 border-3 border-sky-600 border-t-transparent rounded-full mb-3"></div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">@L["App.VerifyingSession"]</p>
     </div>
 }
 else if (!AuthSession.Current.IsAuthenticated)
