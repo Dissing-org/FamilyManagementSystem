@@ -87,9 +87,4 @@ public class FreezerCatalogItem
         DefaultMinimumQuantity = minimumQuantity ?? DefaultMinimumQuantity;
         LastUsedAt = DateTime.UtcNow;
     }
-
-    public void TouchUsage()
-    {
-        LastUsedAt = DateTime.UtcNow;
-    }
 }

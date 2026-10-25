@@ -19,9 +19,6 @@ public class FreezerCatalogApplicationTests
         public Task<IReadOnlyList<FreezerCatalogItem>> GetAllAsync(CancellationToken ct = default) =>
             Task.FromResult<IReadOnlyList<FreezerCatalogItem>>(Items.ToList());
 
-        public Task<FreezerCatalogItem?> GetByIdAsync(FreezerCatalogItemId id, CancellationToken ct = default) =>
-            Task.FromResult(Items.FirstOrDefault(i => i.Id == id));
-
         public Task<FreezerCatalogItem?> GetByNameAsync(string name, CancellationToken ct = default) =>
             Task.FromResult(Items.FirstOrDefault(i => i.NormalizedName == name.Trim().ToUpperInvariant()));
 

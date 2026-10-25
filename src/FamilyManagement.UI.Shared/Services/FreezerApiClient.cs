@@ -250,26 +250,6 @@ public class FreezerApiClient
         }
     }
 
-    public async Task<(bool Success, string? Error, FreezerCatalogItemDto? Item)> UpsertCatalogItemAsync(UpsertFreezerCatalogItemRequest request, CancellationToken ct = default)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(BuildUrl("api/freezers/catalog"), request, ct);
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<FreezerCatalogItemDto>(cancellationToken: ct);
-                return (true, null, result);
-            }
-
-            var err = await TryExtractErrorMessageAsync(response, ct);
-            return (false, err, null);
-        }
-        catch (Exception ex)
-        {
-            return (false, ex.Message, null);
-        }
-    }
-
     public async Task<bool> DeleteCatalogItemAsync(Guid id, CancellationToken ct = default)
     {
         try

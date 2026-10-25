@@ -115,12 +115,3 @@ public record FreezerCatalogItemDto(
     string DefaultUnit,
     decimal? DefaultMinimumQuantity,
     DateTime LastUsedAt);
-
-public class UpsertFreezerCatalogItemRequest
-{
-    public string Name { get; set; } = string.Empty;
-    public string Category { get; set; } = "Other";
-    public string Unit { get; set; } = "Pieces";
-    public decimal? MinimumQuantity { get; set; }
-}
-

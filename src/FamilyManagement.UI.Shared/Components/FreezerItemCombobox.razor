@@ -14,7 +14,7 @@
                @onblur="OnInputBlur"
                @onkeydown="OnKeyDown"
                @onkeydown:preventDefault="@(_isOpen && _highlightedIndex >= 0 && _highlightedIndex < _filteredSuggestions.Count)"
-               placeholder="@(Placeholder ?? L["Freezer.SearchCatalogPlaceholder"])"
+               placeholder="@L["Freezer.SearchCatalogPlaceholder"]"
                class="w-full px-3.5 py-2 pr-9 rounded-xl text-sm bg-slate-50 border border-slate-200/80 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white transition-all" />
         
         @if (!string.IsNullOrWhiteSpace(Value))
@@ -49,7 +49,7 @@
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="font-medium text-slate-800 truncate">@item.Name</span>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium @GetCategoryBadgeClass(item.DefaultCategory)">
-                            @GetCategoryLabel(item.DefaultCategory)
+                            @L[$"Freezer.Category.{item.DefaultCategory}"]
                         </span>
                         <span class="text-xs text-slate-400">@L[$"Freezer.Unit.{item.DefaultUnit}"]</span>
                     </div>
@@ -58,7 +58,7 @@
                             title="@L["Freezer.CatalogSuggestionDelete"]"
                             @onmousedown:preventDefault
                             @onclick:stopPropagation="true"
-                            @onclick="@(() => HandleDelete(item.Id))"
+                            @onclick="@(() => OnDeleteItem.InvokeAsync(item.Id))"
                             class="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all ml-2 shrink-0">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -86,32 +86,18 @@
     [Parameter]
     public EventCallback<Guid> OnDeleteItem { get; set; }
 
-    [Parameter]
-    public string? Placeholder { get; set; }
-
     private bool _isOpen;
     private int _highlightedIndex = -1;
     private List<FreezerCatalogItemDto> _filteredSuggestions = new();
 
-    protected override void OnParametersSet()
-    {
-        UpdateFilteredSuggestions(Value);
-    }
+    protected override void OnParametersSet() => UpdateFilteredSuggestions(Value);
 
     private void UpdateFilteredSuggestions(string? filterText)
     {
-        if (string.IsNullOrWhiteSpace(filterText))
-        {
-            _filteredSuggestions = CatalogItems.Take(8).ToList();
-        }
-        else
-        {
-            _filteredSuggestions = CatalogItems
-                .Where(c => c.Name.Contains(filterText, StringComparison.OrdinalIgnoreCase))
-                .Take(8)
-                .ToList();
-        }
-
+        var source = string.IsNullOrWhiteSpace(filterText)
+            ? CatalogItems
+            : CatalogItems.Where(c => c.Name.Contains(filterText, StringComparison.OrdinalIgnoreCase));
+        _filteredSuggestions = source.Take(8).ToList();
         if (_highlightedIndex >= _filteredSuggestions.Count)
         {
             _highlightedIndex = _filteredSuggestions.Count - 1;
@@ -134,10 +120,7 @@
         _highlightedIndex = _filteredSuggestions.Count > 0 ? 0 : -1;
     }
 
-    private void OnInputBlur()
-    {
-        _isOpen = false;
-    }
+    private void OnInputBlur() => _isOpen = false;
 
     private async Task ClearInput()
     {
@@ -153,14 +136,9 @@
         await OnItemSelected.InvokeAsync(item);
     }
 
-    private async Task HandleDelete(Guid id)
-    {
-        await OnDeleteItem.InvokeAsync(id);
-    }
-
     private async Task OnKeyDown(KeyboardEventArgs e)
     {
-        if (!_isOpen && (e.Key == "ArrowDown" || e.Key == "ArrowUp"))
+        if (!_isOpen && e.Key is "ArrowDown" or "ArrowUp")
         {
             UpdateFilteredSuggestions(Value);
             _isOpen = true;
@@ -168,35 +146,22 @@
             return;
         }
 
-        if (e.Key == "ArrowDown")
+        switch (e.Key)
         {
-            if (_highlightedIndex < _filteredSuggestions.Count - 1)
-            {
+            case "ArrowDown" when _highlightedIndex < _filteredSuggestions.Count - 1:
                 _highlightedIndex++;
-            }
-        }
-        else if (e.Key == "ArrowUp")
-        {
-            if (_highlightedIndex > 0)
-            {
+                break;
+            case "ArrowUp" when _highlightedIndex > 0:
                 _highlightedIndex--;
-            }
-        }
-        else if (e.Key == "Enter")
-        {
-            if (_isOpen && _highlightedIndex >= 0 && _highlightedIndex < _filteredSuggestions.Count)
-            {
+                break;
+            case "Enter" when _isOpen && _highlightedIndex >= 0 && _highlightedIndex < _filteredSuggestions.Count:
                 await SelectItem(_filteredSuggestions[_highlightedIndex]);
-            }
-        }
-        else if (e.Key == "Escape")
-        {
-            _isOpen = false;
+                break;
+            case "Escape":
+                _isOpen = false;
+                break;
         }
     }
-
-    private string GetCategoryLabel(string category) =>
-        L[$"Freezer.Category.{category}"];
 
     private static string GetCategoryBadgeClass(string category) => category switch
     {

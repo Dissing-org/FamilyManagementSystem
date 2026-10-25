@@ -338,15 +338,15 @@ public static class SqliteSchemaInitializer
             {
                 await using var deleteCmd = connection.CreateCommand();
                 deleteCmd.CommandText = "DELETE FROM \"FreezerCatalogItems\" WHERE \"Id\" = @id;";
-                var pDelId = deleteCmd.CreateParameter(); pDelId.ParameterName = "@id"; pDelId.Value = row.Id; deleteCmd.Parameters.Add(pDelId);
+                AddParam(deleteCmd, "@id", row.Id);
                 await deleteCmd.ExecuteNonQueryAsync(ct);
                 continue;
             }
 
             await using var updateCmd = connection.CreateCommand();
             updateCmd.CommandText = "UPDATE \"FreezerCatalogItems\" SET \"NormalizedName\" = @normalized WHERE \"Id\" = @id;";
-            var pNorm = updateCmd.CreateParameter(); pNorm.ParameterName = "@normalized"; pNorm.Value = normalized; updateCmd.Parameters.Add(pNorm);
-            var pId = updateCmd.CreateParameter(); pId.ParameterName = "@id"; pId.Value = row.Id; updateCmd.Parameters.Add(pId);
+            AddParam(updateCmd, "@normalized", normalized);
+            AddParam(updateCmd, "@id", row.Id);
             await updateCmd.ExecuteNonQueryAsync(ct);
         }
 
@@ -373,16 +373,14 @@ public static class SqliteSchemaInitializer
     {
         await using var countCmd = connection.CreateCommand();
         countCmd.CommandText = "SELECT COUNT(*) FROM \"FreezerCatalogItems\";";
-        var catalogCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync(ct));
-        if (catalogCount > 0)
+        if (Convert.ToInt32(await countCmd.ExecuteScalarAsync(ct)) > 0)
         {
             return;
         }
 
         await using var itemCountCmd = connection.CreateCommand();
         itemCountCmd.CommandText = "SELECT COUNT(*) FROM \"FreezerItems\";";
-        var itemCount = Convert.ToInt32(await itemCountCmd.ExecuteScalarAsync(ct));
-        if (itemCount == 0)
+        if (Convert.ToInt32(await itemCountCmd.ExecuteScalarAsync(ct)) == 0)
         {
             return;
         }
@@ -407,14 +405,15 @@ public static class SqliteSchemaInitializer
 
                 var trimmedName = rawName.Trim();
                 var normalized = trimmedName.ToUpperInvariant();
-                var category = reader.GetString(1);
-                var unit = reader.GetString(2);
-                var minQty = reader.IsDBNull(3) ? null : reader.GetString(3);
-                var createdAt = reader.GetString(4);
-
                 if (!itemsByNormalizedName.ContainsKey(normalized))
                 {
-                    itemsByNormalizedName[normalized] = (trimmedName, normalized, category, unit, minQty, createdAt);
+                    itemsByNormalizedName[normalized] = (
+                        trimmedName,
+                        normalized,
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.IsDBNull(3) ? null : reader.GetString(3),
+                        reader.GetString(4));
                 }
             }
         }
@@ -429,14 +428,14 @@ public static class SqliteSchemaInitializer
                 INSERT OR IGNORE INTO "FreezerCatalogItems" ("Id", "Name", "NormalizedName", "DefaultCategory", "DefaultUnit", "DefaultMinimumQuantity", "CreatedAt", "LastUsedAt")
                 VALUES (@id, @name, @normalizedName, @category, @unit, @minQty, @createdAt, @lastUsedAt);
                 """;
-            var pId = insertCmd.CreateParameter(); pId.ParameterName = "@id"; pId.Value = Guid.NewGuid().ToString(); insertCmd.Parameters.Add(pId);
-            var pName = insertCmd.CreateParameter(); pName.ParameterName = "@name"; pName.Value = item.Name; insertCmd.Parameters.Add(pName);
-            var pNorm = insertCmd.CreateParameter(); pNorm.ParameterName = "@normalizedName"; pNorm.Value = item.NormalizedName; insertCmd.Parameters.Add(pNorm);
-            var pCat = insertCmd.CreateParameter(); pCat.ParameterName = "@category"; pCat.Value = item.Category; insertCmd.Parameters.Add(pCat);
-            var pUnit = insertCmd.CreateParameter(); pUnit.ParameterName = "@unit"; pUnit.Value = item.Unit; insertCmd.Parameters.Add(pUnit);
-            var pMin = insertCmd.CreateParameter(); pMin.ParameterName = "@minQty"; pMin.Value = (object?)item.MinQty ?? DBNull.Value; insertCmd.Parameters.Add(pMin);
-            var pCreated = insertCmd.CreateParameter(); pCreated.ParameterName = "@createdAt"; pCreated.Value = item.CreatedAt; insertCmd.Parameters.Add(pCreated);
-            var pUsed = insertCmd.CreateParameter(); pUsed.ParameterName = "@lastUsedAt"; pUsed.Value = nowStr; insertCmd.Parameters.Add(pUsed);
+            AddParam(insertCmd, "@id", Guid.NewGuid().ToString());
+            AddParam(insertCmd, "@name", item.Name);
+            AddParam(insertCmd, "@normalizedName", item.NormalizedName);
+            AddParam(insertCmd, "@category", item.Category);
+            AddParam(insertCmd, "@unit", item.Unit);
+            AddParam(insertCmd, "@minQty", item.MinQty);
+            AddParam(insertCmd, "@createdAt", item.CreatedAt);
+            AddParam(insertCmd, "@lastUsedAt", nowStr);
 
             await insertCmd.ExecuteNonQueryAsync(ct);
         }
@@ -447,5 +446,13 @@ public static class SqliteSchemaInitializer
         {
             logger.LogInformation("Seeded {Count} items into FreezerCatalogItems from existing FreezerItems.", itemsByNormalizedName.Count);
         }
+    }
+
+    private static void AddParam(System.Data.Common.DbCommand cmd, string name, object? value)
+    {
+        var param = cmd.CreateParameter();
+        param.ParameterName = name;
+        param.Value = value ?? DBNull.Value;
+        cmd.Parameters.Add(param);
     }
 }

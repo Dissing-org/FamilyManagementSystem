@@ -22,12 +22,6 @@ public class FreezerCatalogRepository : IFreezerCatalogRepository
             .ToListAsync(ct);
     }
 
-    public async Task<FreezerCatalogItem?> GetByIdAsync(FreezerCatalogItemId id, CancellationToken ct = default)
-    {
-        return await _context.FreezerCatalogItems
-            .FirstOrDefaultAsync(c => c.Id == id, ct);
-    }
-
     public async Task<FreezerCatalogItem?> GetByNameAsync(string name, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(name))

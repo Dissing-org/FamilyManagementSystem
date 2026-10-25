@@ -93,15 +93,4 @@ public class FreezerCatalogDomainTests
         item.DefaultUnit.Should().Be(FreezerUnit.Packages);
         item.DefaultMinimumQuantity.Should().Be(3);
     }
-
-    [Fact]
-    public void FreezerCatalogItem_TouchUsage_UpdatesLastUsedAt()
-    {
-        var item = FreezerCatalogItem.Create("Is", FreezerCategory.DessertsAndIceCream, FreezerUnit.Liters);
-        var old = item.LastUsedAt;
-
-        item.TouchUsage();
-
-        item.LastUsedAt.Should().BeOnOrAfter(old);
-    }
 }
