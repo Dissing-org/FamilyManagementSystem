@@ -5,6 +5,9 @@ using FamilyManagement.Application.UseCases.Freezers.Commands;
 
 namespace FamilyManagement.Api.Endpoints.Freezers;
 
+/// <summary>
+/// Request payload for creating a new compartment inside a freezer.
+/// </summary>
 public class CreateCompartmentRequest
 {
     public Guid FreezerId { get; set; }
@@ -12,8 +15,14 @@ public class CreateCompartmentRequest
     public int DisplayOrder { get; set; } = 0;
 }
 
+/// <summary>
+/// Validator for compartment creation requests.
+/// </summary>
 public class CreateCompartmentValidator : Validator<CreateCompartmentRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for creating a freezer compartment.
+    /// </summary>
     public CreateCompartmentValidator()
     {
         RuleFor(x => x.FreezerId)
@@ -25,15 +34,25 @@ public class CreateCompartmentValidator : Validator<CreateCompartmentRequest>
     }
 }
 
+/// <summary>
+/// Endpoint that adds a compartment to an existing freezer.
+/// </summary>
 public class CreateCompartmentEndpoint : Endpoint<CreateCompartmentRequest, FreezerCompartmentDto>
 {
     private readonly CreateCompartmentCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateCompartmentEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to process compartment creation.</param>
     public CreateCompartmentEndpoint(CreateCompartmentCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route mapping and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/freezers/{freezerId}/compartments");
@@ -44,6 +63,12 @@ public class CreateCompartmentEndpoint : Endpoint<CreateCompartmentRequest, Free
         });
     }
 
+    /// <summary>
+    /// Handles the request to create a new freezer compartment.
+    /// </summary>
+    /// <param name="req">The compartment creation request.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(CreateCompartmentRequest req, CancellationToken ct)
     {
         try

@@ -5,13 +5,25 @@ using FamilyManagement.Domain.ValueObjects;
 
 namespace FamilyManagement.Application.UseCases.Children.Commands;
 
+/// <summary>
+/// Command to seed standard developmental milestones for a child.
+/// </summary>
+/// <param name="ChildId">The unique identifier of the child.</param>
 public record SeedStandardMilestonesCommand(Guid ChildId);
 
+/// <summary>
+/// Handler for seeding standard developmental milestones for a child.
+/// </summary>
 public class SeedStandardMilestonesCommandHandler
 {
     private readonly IChildMilestoneRepository _repository;
     private readonly IChildProfileRepository _childRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SeedStandardMilestonesCommandHandler"/> class.
+    /// </summary>
+    /// <param name="repository">The child milestone repository.</param>
+    /// <param name="childRepository">The child profile repository.</param>
     public SeedStandardMilestonesCommandHandler(
         IChildMilestoneRepository repository,
         IChildProfileRepository childRepository)
@@ -20,6 +32,13 @@ public class SeedStandardMilestonesCommandHandler
         _childRepository = childRepository;
     }
 
+    /// <summary>
+    /// Handles seeding standard expected developmental milestones for a child, skipping existing ones.
+    /// </summary>
+    /// <param name="command">The command containing the child identifier.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task representing the asynchronous operation, returning the count of newly seeded milestones.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the child with the specified ID is not found.</exception>
     public async Task<int> HandleAsync(
         SeedStandardMilestonesCommand command,
         CancellationToken cancellationToken = default)

@@ -7,6 +7,9 @@ using FamilyManagement.Domain.Enums;
 
 namespace FamilyManagement.Api.Endpoints.Freezers;
 
+/// <summary>
+/// Request payload for consuming or recording waste/gift of a freezer item.
+/// </summary>
 public class ConsumeFreezerItemRequest
 {
     public Guid Id { get; set; }
@@ -18,8 +21,14 @@ public class ConsumeFreezerItemRequest
     public string? Notes { get; set; }
 }
 
+/// <summary>
+/// Validator for verifying freezer item consumption request fields.
+/// </summary>
 public class ConsumeFreezerItemValidator : Validator<ConsumeFreezerItemRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for consuming or decrementing a freezer item.
+    /// </summary>
     public ConsumeFreezerItemValidator()
     {
         RuleFor(x => x.QuantityToConsume)
@@ -33,15 +42,25 @@ public class ConsumeFreezerItemValidator : Validator<ConsumeFreezerItemRequest>
     }
 }
 
+/// <summary>
+/// Endpoint that records consumption, spoilage, or gifting of a freezer item.
+/// </summary>
 public class ConsumeFreezerItemEndpoint : Endpoint<ConsumeFreezerItemRequest, FreezerItemDto>
 {
     private readonly ConsumeFreezerItemCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsumeFreezerItemEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to process freezer item consumption.</param>
     public ConsumeFreezerItemEndpoint(ConsumeFreezerItemCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route mapping and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/freezer-items/{id}/consume");
@@ -52,6 +71,12 @@ public class ConsumeFreezerItemEndpoint : Endpoint<ConsumeFreezerItemRequest, Fr
         });
     }
 
+    /// <summary>
+    /// Handles the freezer item consumption request, delegating to the consumption command handler.
+    /// </summary>
+    /// <param name="req">The consumption request parameters.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(ConsumeFreezerItemRequest req, CancellationToken ct)
     {
         try

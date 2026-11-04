@@ -5,14 +5,27 @@ using FamilyManagement.Domain.ValueObjects;
 
 namespace FamilyManagement.Application.UseCases.Children.Queries;
 
+/// <summary>
+/// Query to retrieve dashboard summary data for a child.
+/// </summary>
+/// <param name="ChildId">The unique identifier of the child.</param>
 public record GetChildDashboardQuery(Guid ChildId);
 
+/// <summary>
+/// Handler for retrieving the dashboard summary for a child profile.
+/// </summary>
 public class GetChildDashboardQueryHandler
 {
     private readonly IChildProfileRepository _childRepository;
     private readonly IGrowthMeasurementRepository _growthRepository;
     private readonly IChildMilestoneRepository _milestoneRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetChildDashboardQueryHandler"/> class.
+    /// </summary>
+    /// <param name="childRepository">The child profile repository.</param>
+    /// <param name="growthRepository">The growth measurement repository.</param>
+    /// <param name="milestoneRepository">The child milestone repository.</param>
     public GetChildDashboardQueryHandler(
         IChildProfileRepository childRepository,
         IGrowthMeasurementRepository growthRepository,
@@ -23,6 +36,13 @@ public class GetChildDashboardQueryHandler
         _milestoneRepository = milestoneRepository;
     }
 
+    /// <summary>
+    /// Handles retrieving dashboard metrics and recent activity for a child.
+    /// </summary>
+    /// <param name="query">The query containing the child identifier.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task representing the asynchronous operation, returning the aggregated <see cref="ChildDashboardDto"/>.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the child with the specified ID is not found.</exception>
     public async Task<ChildDashboardDto> HandleAsync(
         GetChildDashboardQuery query,
         CancellationToken cancellationToken = default)

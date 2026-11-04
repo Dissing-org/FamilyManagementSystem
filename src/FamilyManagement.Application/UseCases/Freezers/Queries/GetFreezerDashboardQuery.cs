@@ -4,13 +4,24 @@ using FamilyManagement.Domain.Repositories;
 
 namespace FamilyManagement.Application.UseCases.Freezers.Queries;
 
+/// <summary>
+/// Query to retrieve an aggregated overview dashboard for all freezers and items.
+/// </summary>
 public record GetFreezerDashboardQuery();
 
+/// <summary>
+/// Handler for processing <see cref="GetFreezerDashboardQuery"/> requests.
+/// </summary>
 public class GetFreezerDashboardQueryHandler
 {
     private readonly IFreezerRepository _freezerRepository;
     private readonly IFreezerItemRepository _itemRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetFreezerDashboardQueryHandler"/> class.
+    /// </summary>
+    /// <param name="freezerRepository">The repository for accessing freezer aggregate data.</param>
+    /// <param name="itemRepository">The repository for accessing freezer item inventory data.</param>
     public GetFreezerDashboardQueryHandler(
         IFreezerRepository freezerRepository,
         IFreezerItemRepository itemRepository)
@@ -19,6 +30,12 @@ public class GetFreezerDashboardQueryHandler
         _itemRepository = itemRepository;
     }
 
+    /// <summary>
+    /// Handles aggregating metrics, warnings, and categorized items across all freezers into a dashboard view.
+    /// </summary>
+    /// <param name="query">The query requesting dashboard metrics.</param>
+    /// <param name="ct">The cancellation token to observe while awaiting the operation.</param>
+    /// <returns>A <see cref="FreezerDashboardDto"/> containing aggregated inventory statistics and urgent action items.</returns>
     public async Task<FreezerDashboardDto> HandleAsync(GetFreezerDashboardQuery query, CancellationToken ct = default)
     {
         var freezers = await _freezerRepository.GetAllWithCompartmentsAsync(ct);

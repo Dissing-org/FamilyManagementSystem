@@ -41,6 +41,18 @@ public class GrowthMeasurement
         CreatedAt = createdAt;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="GrowthMeasurement"/> instance for a child.
+    /// </summary>
+    /// <param name="childId">The identifier of the child.</param>
+    /// <param name="recordedDate">The date and time when the measurement was taken.</param>
+    /// <param name="heightCm">The optional measured height in centimeters.</param>
+    /// <param name="weightKg">The optional measured weight in kilograms.</param>
+    /// <param name="headCircumferenceCm">The optional measured head circumference in centimeters.</param>
+    /// <param name="notes">Optional notes or remarks regarding the measurement.</param>
+    /// <returns>A new <see cref="GrowthMeasurement"/> instance.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="childId"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="recordedDate"/> is in the future, when no measurement value is provided, or when any provided measurement value is less than or equal to zero.</exception>
     public static GrowthMeasurement Create(
         ChildId childId,
         DateTime recordedDate,
@@ -87,6 +99,15 @@ public class GrowthMeasurement
             DateTime.UtcNow);
     }
 
+    /// <summary>
+    /// Updates the measurement values, date, and notes for this growth record.
+    /// </summary>
+    /// <param name="recordedDate">The updated date and time of the measurement.</param>
+    /// <param name="heightCm">The updated measured height in centimeters.</param>
+    /// <param name="weightKg">The updated measured weight in kilograms.</param>
+    /// <param name="headCircumferenceCm">The updated measured head circumference in centimeters.</param>
+    /// <param name="notes">Updated optional notes or remarks.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="recordedDate"/> is in the future, when no measurement value is provided, or when any provided measurement value is less than or equal to zero.</exception>
     public void Update(
         DateTime recordedDate,
         decimal? heightCm,

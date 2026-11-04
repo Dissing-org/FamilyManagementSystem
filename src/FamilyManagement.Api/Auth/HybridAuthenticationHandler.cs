@@ -7,12 +7,23 @@ using Microsoft.Extensions.Options;
 
 namespace FamilyManagement.Api.Auth;
 
+/// <summary>
+/// Authentication handler supporting Cloudflare Access header/JWT credentials,
+/// falling back to demo cookie authentication or a local development owner principal.
+/// </summary>
 public class HybridAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public const string CfAccessEmailHeader = "Cf-Access-Authenticated-User-Email";
     public const string CfAuthorizationCookieName = "CF_Authorization";
     private readonly IOptionsMonitor<AuthOptions> _authOptions;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HybridAuthenticationHandler"/> class.
+    /// </summary>
+    /// <param name="options">Options monitor for authentication scheme options.</param>
+    /// <param name="logger">Logger factory instance.</param>
+    /// <param name="encoder">URL encoder instance.</param>
+    /// <param name="authOptions">Options monitor for authentication and demo settings.</param>
     public HybridAuthenticationHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
@@ -23,6 +34,10 @@ public class HybridAuthenticationHandler : AuthenticationHandler<AuthenticationS
         _authOptions = authOptions;
     }
 
+    /// <summary>
+    /// Authenticates the current HTTP request by evaluating Cloudflare Access credentials, demo cookies, or development fallback.
+    /// </summary>
+    /// <returns>The result of the authentication attempt.</returns>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var config = _authOptions.CurrentValue;
@@ -121,12 +136,22 @@ public class HybridAuthenticationHandler : AuthenticationHandler<AuthenticationS
         return null;
     }
 
+    /// <summary>
+    /// Handles authentication challenge responses by setting the HTTP status code to 401 Unauthorized.
+    /// </summary>
+    /// <param name="properties">The authentication properties associated with the challenge.</param>
+    /// <returns>A completed task.</returns>
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
         Response.StatusCode = StatusCodes.Status401Unauthorized;
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Handles access forbidden responses by setting the HTTP status code to 403 Forbidden.
+    /// </summary>
+    /// <param name="properties">The authentication properties associated with the forbidden challenge.</param>
+    /// <returns>A completed task.</returns>
     protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
     {
         Response.StatusCode = StatusCodes.Status403Forbidden;

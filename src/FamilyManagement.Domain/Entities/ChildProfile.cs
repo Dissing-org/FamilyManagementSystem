@@ -43,6 +43,17 @@ public class ChildProfile
         CreatedAt = createdAt;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="ChildProfile"/> instance with the specified personal details and initial wardrobe sizes.
+    /// </summary>
+    /// <param name="firstName">The child's first name.</param>
+    /// <param name="lastName">The child's optional last name.</param>
+    /// <param name="dateOfBirth">The child's date of birth.</param>
+    /// <param name="gender">The child's gender.</param>
+    /// <param name="avatarUrl">An optional URL referencing the child's avatar image.</param>
+    /// <param name="initialSizes">Optional initial wardrobe size specifications.</param>
+    /// <returns>A new <see cref="ChildProfile"/> instance.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="firstName"/> is null or whitespace, or when <paramref name="dateOfBirth"/> is in the future.</exception>
     public static ChildProfile Create(
         string firstName,
         string? lastName,
@@ -72,6 +83,15 @@ public class ChildProfile
             DateTime.UtcNow);
     }
 
+    /// <summary>
+    /// Updates the child's personal profile information.
+    /// </summary>
+    /// <param name="firstName">The updated first name.</param>
+    /// <param name="lastName">The updated optional last name.</param>
+    /// <param name="dateOfBirth">The updated date of birth.</param>
+    /// <param name="gender">The updated gender.</param>
+    /// <param name="avatarUrl">The updated optional avatar image URL.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="firstName"/> is null or whitespace, or when <paramref name="dateOfBirth"/> is in the future.</exception>
     public void UpdateProfile(
         string firstName,
         string? lastName,
@@ -97,12 +117,21 @@ public class ChildProfile
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Updates the child's current wardrobe sizes.
+    /// </summary>
+    /// <param name="sizes">The updated wardrobe size specifications.</param>
     public void UpdateSizes(ChildWardrobeSizes sizes)
     {
         CurrentSizes = sizes ?? ChildWardrobeSizes.Empty;
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Calculates the child's age relative to a given date or current time.
+    /// </summary>
+    /// <param name="asOfDate">The optional reference date to calculate age against. Defaults to current UTC date and time if null.</param>
+    /// <returns>A <see cref="ChildAge"/> representing the calculated age in years, months, and total months.</returns>
     public ChildAge GetAge(DateTime? asOfDate = null)
     {
         return ChildAge.Calculate(DateOfBirth, asOfDate ?? DateTime.UtcNow);

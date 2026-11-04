@@ -1,5 +1,8 @@
 namespace FamilyManagement.Api.Auth;
 
+/// <summary>
+/// Configuration options for authentication, workspace authorization, and demo mode.
+/// </summary>
 public class AuthOptions
 {
     public const string SectionName = "Auth";

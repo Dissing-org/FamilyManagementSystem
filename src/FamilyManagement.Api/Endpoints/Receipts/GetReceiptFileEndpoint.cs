@@ -1,26 +1,40 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using Microsoft.Extensions.Options;
 using FamilyManagement.Application.Interfaces;
 using FamilyManagement.Infrastructure.Storage;
 
 namespace FamilyManagement.Api.Endpoints.Receipts;
 
+/// <summary>
+/// Request parameter model for retrieving or streaming a stored receipt file.
+/// </summary>
 public class GetReceiptFileRequest
 {
     public string FileId { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Endpoint for streaming or downloading locally stored receipt image and PDF files.
+/// </summary>
 public class GetReceiptFileEndpoint : Endpoint<GetReceiptFileRequest>
 {
     private readonly GoogleDriveOptions _options;
     private readonly ITenantContext _tenantContext;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetReceiptFileEndpoint"/> class.
+    /// </summary>
+    /// <param name="options">The storage configuration options.</param>
+    /// <param name="tenantContext">The current tenant context.</param>
     public GetReceiptFileEndpoint(IOptions<GoogleDriveOptions> options, ITenantContext tenantContext)
     {
         _options = options.Value;
         _tenantContext = tenantContext;
     }
 
+    /// <summary>
+    /// Configures HTTP route mapping, OpenAPI documentation metadata, and permissions.
+    /// </summary>
     public override void Configure()
     {
         Get("/api/receipts/files/{FileId}");
@@ -31,6 +45,12 @@ public class GetReceiptFileEndpoint : Endpoint<GetReceiptFileRequest>
         });
     }
 
+    /// <summary>
+    /// Handles the request to stream a receipt file from disk asynchronously.
+    /// </summary>
+    /// <param name="req">The request containing the stored file ID.</param>
+    /// <param name="ct">The cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(GetReceiptFileRequest req, CancellationToken ct)
     {
         string baseDir;

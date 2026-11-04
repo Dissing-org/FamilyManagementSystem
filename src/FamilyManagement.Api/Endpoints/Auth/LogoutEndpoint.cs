@@ -4,8 +4,14 @@ using FamilyManagement.Api.Auth;
 
 namespace FamilyManagement.Api.Endpoints.Auth;
 
+/// <summary>
+/// Endpoint that terminates the current demo session and sets a sign-out marker cookie.
+/// </summary>
 public class LogoutEndpoint : EndpointWithoutRequest
 {
+    /// <summary>
+    /// Configures the route mapping, anonymous access, and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/auth/logout");
@@ -17,6 +23,11 @@ public class LogoutEndpoint : EndpointWithoutRequest
         });
     }
 
+    /// <summary>
+    /// Handles the sign-out request by clearing the demo cookie and writing the signed-out cookie.
+    /// </summary>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(CancellationToken ct)
     {
         await HttpContext.SignOutAsync(AuthOptions.DemoCookieScheme);

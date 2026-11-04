@@ -2,6 +2,9 @@ using FamilyManagement.Domain.Entities;
 
 namespace FamilyManagement.Application.Vehicles;
 
+/// <summary>
+/// Data transfer object representing a vehicle service or maintenance record.
+/// </summary>
 public record VehicleServiceRecordDto(
     Guid Id,
     Guid VehicleId,
@@ -15,6 +18,11 @@ public record VehicleServiceRecordDto(
     Guid? ReceiptId,
     DateTime CreatedAt)
 {
+    /// <summary>
+    /// Creates a <see cref="VehicleServiceRecordDto"/> from a <see cref="VehicleServiceRecord"/> domain entity.
+    /// </summary>
+    /// <param name="record">The vehicle service domain entity to map from.</param>
+    /// <returns>A populated <see cref="VehicleServiceRecordDto"/> instance.</returns>
     public static VehicleServiceRecordDto FromDomain(VehicleServiceRecord record) =>
         new(
             record.Id.Value,

@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 using FamilyManagement.Domain.Enums;
@@ -19,8 +19,14 @@ public class RecordVehicleServiceRequest
     public Guid? ReceiptId { get; set; }
 }
 
+/// <summary>
+/// Validator for <see cref="RecordVehicleServiceRequest"/>.
+/// </summary>
 public class RecordVehicleServiceValidator : Validator<RecordVehicleServiceRequest>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RecordVehicleServiceValidator"/> class and configures validation rules.
+    /// </summary>
     public RecordVehicleServiceValidator()
     {
         RuleFor(x => x.Id)
@@ -46,15 +52,25 @@ public class RecordVehicleServiceValidator : Validator<RecordVehicleServiceReque
     }
 }
 
+/// <summary>
+/// Endpoint for recording a vehicle service event.
+/// </summary>
 public class RecordVehicleServiceEndpoint : Endpoint<RecordVehicleServiceRequest, VehicleServiceRecordDto>
 {
     private readonly RecordVehicleServiceCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RecordVehicleServiceEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler for recording vehicle service events.</param>
     public RecordVehicleServiceEndpoint(RecordVehicleServiceCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route and OpenAPI metadata for recording a vehicle service event.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/vehicles/{id}/services");
@@ -65,6 +81,12 @@ public class RecordVehicleServiceEndpoint : Endpoint<RecordVehicleServiceRequest
         });
     }
 
+    /// <summary>
+    /// Handles the HTTP POST request to record a new vehicle service event.
+    /// </summary>
+    /// <param name="req">The request payload containing service record details.</param>
+    /// <param name="ct">The cancellation token to observe.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public override async Task HandleAsync(RecordVehicleServiceRequest req, CancellationToken ct)
     {
         try

@@ -4,17 +4,33 @@ using FamilyManagement.Domain.Repositories;
 
 namespace FamilyManagement.Application.UseCases.Insurances.Queries;
 
+/// <summary>
+/// Query to retrieve an aggregated overview of insurance policies, costs, and upcoming renewals.
+/// </summary>
 public record GetInsuranceOverviewQuery(int DaysAhead = 90);
 
+/// <summary>
+/// Handler for retrieving the insurance overview.
+/// </summary>
 public class GetInsuranceOverviewQueryHandler
 {
     private readonly IInsurancePolicyRepository _repository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetInsuranceOverviewQueryHandler"/> class.
+    /// </summary>
+    /// <param name="repository">The insurance policy repository.</param>
     public GetInsuranceOverviewQueryHandler(IInsurancePolicyRepository repository)
     {
         _repository = repository;
     }
 
+    /// <summary>
+    /// Handles retrieving an overview of insurance policies, costs, and upcoming renewals.
+    /// </summary>
+    /// <param name="query">The query containing parameters for the overview calculation.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>An <see cref="InsuranceOverviewDto"/> containing aggregated insurance metrics and upcoming renewals.</returns>
     public async Task<InsuranceOverviewDto> HandleAsync(
         GetInsuranceOverviewQuery query,
         CancellationToken cancellationToken = default)

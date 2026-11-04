@@ -3,13 +3,24 @@ using FamilyManagement.Domain.ValueObjects;
 
 namespace FamilyManagement.Application.Vehicles;
 
+/// <summary>
+/// Command to delete a mileage log entry for a vehicle.
+/// </summary>
 public record DeleteMileageLogCommand(Guid VehicleId, Guid LogId);
 
+/// <summary>
+/// Handler for deleting a mileage log entry.
+/// </summary>
 public class DeleteMileageLogCommandHandler
 {
     private readonly IMileageLogRepository _mileageLogRepository;
     private readonly IVehicleRepository _vehicleRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DeleteMileageLogCommandHandler"/> class.
+    /// </summary>
+    /// <param name="mileageLogRepository">The mileage log repository.</param>
+    /// <param name="vehicleRepository">The vehicle repository.</param>
     public DeleteMileageLogCommandHandler(
         IMileageLogRepository mileageLogRepository,
         IVehicleRepository vehicleRepository)
@@ -18,6 +29,12 @@ public class DeleteMileageLogCommandHandler
         _vehicleRepository = vehicleRepository;
     }
 
+    /// <summary>
+    /// Handles the deletion of a mileage log entry and recalculates the vehicle's current mileage if necessary.
+    /// </summary>
+    /// <param name="command">The command containing the vehicle and mileage log identifiers.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns><see langword="true"/> if the mileage log entry was found and deleted; otherwise, <see langword="false"/>.</returns>
     public async Task<bool> HandleAsync(DeleteMileageLogCommand command, CancellationToken cancellationToken = default)
     {
         var vehicleId = VehicleId.From(command.VehicleId);

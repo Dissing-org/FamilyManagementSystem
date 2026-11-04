@@ -4,17 +4,28 @@ using FamilyManagement.Domain.ValueObjects;
 
 namespace FamilyManagement.Application.Vehicles;
 
+/// <summary>
+/// Command to log a new mileage entry for a vehicle.
+/// </summary>
 public record LogMileageCommand(
     Guid VehicleId,
     DateTime RecordedDate,
     int MileageKm,
     string? Notes = null);
 
+/// <summary>
+/// Handler for logging a new mileage entry for a vehicle.
+/// </summary>
 public class LogMileageCommandHandler
 {
     private readonly IMileageLogRepository _mileageLogRepository;
     private readonly IVehicleRepository _vehicleRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogMileageCommandHandler"/> class.
+    /// </summary>
+    /// <param name="mileageLogRepository">The mileage log repository.</param>
+    /// <param name="vehicleRepository">The vehicle repository.</param>
     public LogMileageCommandHandler(
         IMileageLogRepository mileageLogRepository,
         IVehicleRepository vehicleRepository)
@@ -23,6 +34,14 @@ public class LogMileageCommandHandler
         _vehicleRepository = vehicleRepository;
     }
 
+    /// <summary>
+    /// Handles logging a new mileage entry for a vehicle and updates the vehicle's current mileage if greater.
+    /// </summary>
+    /// <param name="command">The command containing mileage log details.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A data transfer object representing the created mileage log entry.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the vehicle with the specified identifier is not found.</exception>
+    /// <exception cref="ArgumentException">Thrown when mileage is negative or the recorded date is in the future.</exception>
     public async Task<MileageLogDto> HandleAsync(LogMileageCommand command, CancellationToken cancellationToken = default)
     {
         var vehicleId = VehicleId.From(command.VehicleId);

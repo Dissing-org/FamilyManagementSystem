@@ -1,10 +1,13 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Commands;
 using FluentValidation;
 
 namespace FamilyManagement.Api.Endpoints.Children;
 
+/// <summary>
+/// Request payload for recording a child's physical growth measurement.
+/// </summary>
 public class RecordGrowthMeasurementRequest
 {
     public Guid ChildId { get; set; }
@@ -15,8 +18,14 @@ public class RecordGrowthMeasurementRequest
     public string? Notes { get; set; }
 }
 
+/// <summary>
+/// Validator for <see cref="RecordGrowthMeasurementRequest"/> ensuring valid dates and at least one biometric value.
+/// </summary>
 public class RecordGrowthMeasurementValidator : Validator<RecordGrowthMeasurementRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for growth measurement recording.
+    /// </summary>
     public RecordGrowthMeasurementValidator()
     {
         RuleFor(x => x.ChildId)
@@ -44,15 +53,25 @@ public class RecordGrowthMeasurementValidator : Validator<RecordGrowthMeasuremen
     }
 }
 
+/// <summary>
+/// Endpoint for logging height, weight, or head circumference measurements for a child.
+/// </summary>
 public class RecordGrowthMeasurementEndpoint : Endpoint<RecordGrowthMeasurementRequest, GrowthMeasurementDto>
 {
     private readonly RecordGrowthMeasurementCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RecordGrowthMeasurementEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to record growth measurements.</param>
     public RecordGrowthMeasurementEndpoint(RecordGrowthMeasurementCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures HTTP route mapping, OpenAPI documentation metadata, and permissions.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/children/{childId}/growth");
@@ -63,6 +82,12 @@ public class RecordGrowthMeasurementEndpoint : Endpoint<RecordGrowthMeasurementR
         });
     }
 
+    /// <summary>
+    /// Handles the request to record a growth measurement asynchronously.
+    /// </summary>
+    /// <param name="req">The request containing growth measurements and metadata.</param>
+    /// <param name="ct">The cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(RecordGrowthMeasurementRequest req, CancellationToken ct)
     {
         try

@@ -5,6 +5,9 @@ using FamilyManagement.Domain.ValueObjects;
 
 namespace FamilyManagement.Application.UseCases.Insurances.Commands;
 
+/// <summary>
+/// Command to update the details and premium of an existing insurance policy.
+/// </summary>
 public record UpdateInsurancePolicyCommand(
     Guid Id,
     string Insurer,
@@ -19,15 +22,30 @@ public record UpdateInsurancePolicyCommand(
     decimal? DeductibleAmount = null,
     string? Notes = null);
 
+/// <summary>
+/// Handler for updating an existing insurance policy.
+/// </summary>
 public class UpdateInsurancePolicyCommandHandler
 {
     private readonly IInsurancePolicyRepository _repository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateInsurancePolicyCommandHandler"/> class.
+    /// </summary>
+    /// <param name="repository">The insurance policy repository.</param>
     public UpdateInsurancePolicyCommandHandler(IInsurancePolicyRepository repository)
     {
         _repository = repository;
     }
 
+    /// <summary>
+    /// Handles updating an existing insurance policy.
+    /// </summary>
+    /// <param name="command">The command containing updated policy details.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A data transfer object representing the updated insurance policy.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the insurance policy with the specified identifier is not found.</exception>
+    /// <exception cref="ArgumentException">Thrown when policy data or monetary amounts are invalid.</exception>
     public async Task<InsurancePolicyResponseDto> HandleAsync(
         UpdateInsurancePolicyCommand command,
         CancellationToken cancellationToken = default)

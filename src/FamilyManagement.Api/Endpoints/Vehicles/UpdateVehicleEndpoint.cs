@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 using FamilyManagement.Domain.Enums;
@@ -20,8 +20,14 @@ public class UpdateVehicleRequest
     public DateTime? NextInspectionDate { get; set; }
 }
 
+/// <summary>
+/// Validator for <see cref="UpdateVehicleRequest"/>.
+/// </summary>
 public class UpdateVehicleValidator : Validator<UpdateVehicleRequest>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateVehicleValidator"/> class and configures validation rules.
+    /// </summary>
     public UpdateVehicleValidator()
     {
         RuleFor(x => x.Id)
@@ -55,15 +61,25 @@ public class UpdateVehicleValidator : Validator<UpdateVehicleRequest>
     }
 }
 
+/// <summary>
+/// Endpoint for updating vehicle details and service intervals.
+/// </summary>
 public class UpdateVehicleEndpoint : Endpoint<UpdateVehicleRequest, VehicleDto>
 {
     private readonly UpdateVehicleDetailsCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateVehicleEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler for updating vehicle details.</param>
     public UpdateVehicleEndpoint(UpdateVehicleDetailsCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route and OpenAPI metadata for updating vehicle details.
+    /// </summary>
     public override void Configure()
     {
         Put("/api/vehicles/{id}");
@@ -74,6 +90,12 @@ public class UpdateVehicleEndpoint : Endpoint<UpdateVehicleRequest, VehicleDto>
         });
     }
 
+    /// <summary>
+    /// Handles the HTTP PUT request to update vehicle details.
+    /// </summary>
+    /// <param name="req">The request payload containing updated vehicle details.</param>
+    /// <param name="ct">The cancellation token to observe.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public override async Task HandleAsync(UpdateVehicleRequest req, CancellationToken ct)
     {
         try

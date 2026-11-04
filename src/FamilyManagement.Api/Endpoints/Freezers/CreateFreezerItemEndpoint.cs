@@ -7,6 +7,9 @@ using FamilyManagement.Domain.Enums;
 
 namespace FamilyManagement.Api.Endpoints.Freezers;
 
+/// <summary>
+/// Request payload for creating and storing a new freezer inventory item.
+/// </summary>
 public class CreateFreezerItemRequest
 {
     public Guid CompartmentId { get; set; }
@@ -26,8 +29,14 @@ public class CreateFreezerItemRequest
     public string? Notes { get; set; }
 }
 
+/// <summary>
+/// Validator for freezer item creation requests.
+/// </summary>
 public class CreateFreezerItemValidator : Validator<CreateFreezerItemRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for adding a freezer item.
+    /// </summary>
     public CreateFreezerItemValidator()
     {
         RuleFor(x => x.CompartmentId)
@@ -55,15 +64,25 @@ public class CreateFreezerItemValidator : Validator<CreateFreezerItemRequest>
     }
 }
 
+/// <summary>
+/// Endpoint that adds a newly frozen item or batch into a compartment.
+/// </summary>
 public class CreateFreezerItemEndpoint : Endpoint<CreateFreezerItemRequest, FreezerItemDto>
 {
     private readonly CreateFreezerItemCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateFreezerItemEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to process freezer item creation.</param>
     public CreateFreezerItemEndpoint(CreateFreezerItemCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route mapping and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/freezer-items");
@@ -74,6 +93,12 @@ public class CreateFreezerItemEndpoint : Endpoint<CreateFreezerItemRequest, Free
         });
     }
 
+    /// <summary>
+    /// Handles the request to add a new freezer item into the specified compartment.
+    /// </summary>
+    /// <param name="req">The freezer item creation request.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(CreateFreezerItemRequest req, CancellationToken ct)
     {
         try

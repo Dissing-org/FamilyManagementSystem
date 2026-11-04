@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FamilyManagement.Application.DTOs.Children;
 using FamilyManagement.Application.UseCases.Children.Commands;
 using FamilyManagement.Domain.Enums;
@@ -6,6 +6,9 @@ using FluentValidation;
 
 namespace FamilyManagement.Api.Endpoints.Children;
 
+/// <summary>
+/// Request payload for creating a child profile.
+/// </summary>
 public class CreateChildProfileRequest
 {
     public string FirstName { get; set; } = string.Empty;
@@ -20,8 +23,14 @@ public class CreateChildProfileRequest
     public string? DiaperSize { get; set; }
 }
 
+/// <summary>
+/// Validator for <see cref="CreateChildProfileRequest"/> enforcing required fields and birth date rules.
+/// </summary>
 public class CreateChildProfileValidator : Validator<CreateChildProfileRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for child profile creation.
+    /// </summary>
     public CreateChildProfileValidator()
     {
         RuleFor(x => x.FirstName)
@@ -41,15 +50,25 @@ public class CreateChildProfileValidator : Validator<CreateChildProfileRequest>
     }
 }
 
+/// <summary>
+/// Endpoint for registering a new child profile in the family management system.
+/// </summary>
 public class CreateChildProfileEndpoint : Endpoint<CreateChildProfileRequest, ChildProfileDto>
 {
     private readonly CreateChildProfileCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateChildProfileEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to process child profile creation.</param>
     public CreateChildProfileEndpoint(CreateChildProfileCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures HTTP route mapping, OpenAPI documentation metadata, and permissions.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/children");
@@ -60,6 +79,12 @@ public class CreateChildProfileEndpoint : Endpoint<CreateChildProfileRequest, Ch
         });
     }
 
+    /// <summary>
+    /// Handles the incoming child profile creation request asynchronously.
+    /// </summary>
+    /// <param name="req">The child profile creation request model.</param>
+    /// <param name="ct">The cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(CreateChildProfileRequest req, CancellationToken ct)
     {
         try

@@ -3,6 +3,9 @@ using FamilyManagement.Application.Interfaces;
 
 namespace FamilyManagement.Api.Endpoints.Auth;
 
+/// <summary>
+/// Query parameters returned by Google OAuth callback.
+/// </summary>
 public class GoogleDriveCallbackRequest
 {
     [QueryParam]
@@ -12,17 +15,28 @@ public class GoogleDriveCallbackRequest
     public string? Error { get; set; }
 }
 
+/// <summary>
+/// Endpoint that handles the Google OAuth callback, trading authorization codes for access and refresh tokens.
+/// </summary>
 public class GoogleDriveCallbackEndpoint : Endpoint<GoogleDriveCallbackRequest>
 {
     private readonly IGoogleDriveAuthService _authService;
     private readonly ITenantContext _tenantContext;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GoogleDriveCallbackEndpoint"/> class.
+    /// </summary>
+    /// <param name="authService">The Google Drive authentication service.</param>
+    /// <param name="tenantContext">The tenant context providing workspace identity.</param>
     public GoogleDriveCallbackEndpoint(IGoogleDriveAuthService authService, ITenantContext tenantContext)
     {
         _authService = authService;
         _tenantContext = tenantContext;
     }
 
+    /// <summary>
+    /// Configures the route mapping and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Get("/api/auth/google/callback");
@@ -33,6 +47,12 @@ public class GoogleDriveCallbackEndpoint : Endpoint<GoogleDriveCallbackRequest>
         });
     }
 
+    /// <summary>
+    /// Handles the Google OAuth callback request by verifying codes/errors and storing tokens.
+    /// </summary>
+    /// <param name="req">The callback request containing the authorization code or error message.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(GoogleDriveCallbackRequest req, CancellationToken ct)
     {
         if (_tenantContext.IsDemo)

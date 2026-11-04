@@ -64,6 +64,18 @@ public class ChildMilestone
         CreatedAt = createdAt;
     }
 
+    /// <summary>
+    /// Creates an expected milestone for a child that has not yet been achieved.
+    /// </summary>
+    /// <param name="childId">The identifier of the child.</param>
+    /// <param name="title">The milestone title or headline.</param>
+    /// <param name="category">The developmental category of the milestone.</param>
+    /// <param name="expectedAgeMonths">The expected age in months when this milestone is typically reached.</param>
+    /// <param name="expectedWindowMaxMonths">The optional upper boundary age in months of the expected developmental window.</param>
+    /// <param name="description">An optional description of the milestone.</param>
+    /// <param name="isStandardGuideline">Indicates whether this milestone originates from standard developmental guidelines.</param>
+    /// <returns>A new <see cref="ChildMilestone"/> instance initialized with expected status.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="title"/> is null or whitespace, when <paramref name="expectedAgeMonths"/> is negative, or when <paramref name="expectedWindowMaxMonths"/> is less than <paramref name="expectedAgeMonths"/>.</exception>
     public static ChildMilestone CreateExpected(
         ChildId childId,
         string title,
@@ -105,6 +117,18 @@ public class ChildMilestone
             DateTime.UtcNow);
     }
 
+    /// <summary>
+    /// Creates a milestone record that has already been achieved by the child.
+    /// </summary>
+    /// <param name="childId">The identifier of the child.</param>
+    /// <param name="title">The milestone title or headline.</param>
+    /// <param name="category">The developmental category of the milestone.</param>
+    /// <param name="achievedDate">The date when the milestone was achieved.</param>
+    /// <param name="achievedAgeMonths">The child's age in months when the milestone was achieved.</param>
+    /// <param name="notes">Optional notes or memories about the achievement.</param>
+    /// <param name="photoUrl">An optional photo URL documenting the milestone.</param>
+    /// <returns>A new <see cref="ChildMilestone"/> instance initialized with achieved status.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="title"/> is null or whitespace, or when <paramref name="achievedDate"/> is in the future.</exception>
     public static ChildMilestone CreateAchieved(
         ChildId childId,
         string title,
@@ -141,6 +165,14 @@ public class ChildMilestone
             DateTime.UtcNow);
     }
 
+    /// <summary>
+    /// Marks the milestone as achieved, recording the achievement date, age in months, and optional memories.
+    /// </summary>
+    /// <param name="achievedDate">The date when the milestone was achieved.</param>
+    /// <param name="achievedAgeMonths">The child's age in months at the time of achievement.</param>
+    /// <param name="notes">Optional notes or memories regarding the milestone achievement.</param>
+    /// <param name="photoUrl">An optional photo URL celebrating the milestone.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="achievedDate"/> is in the future.</exception>
     public void MarkAchieved(DateTime achievedDate, int achievedAgeMonths, string? notes = null, string? photoUrl = null)
     {
         if (achievedDate.Date > DateTime.UtcNow.Date.AddDays(1))
@@ -162,6 +194,13 @@ public class ChildMilestone
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Updates the developmental expectation parameters for an upcoming milestone.
+    /// </summary>
+    /// <param name="expectedAgeMonths">The updated expected age in months.</param>
+    /// <param name="expectedWindowMaxMonths">The updated optional developmental window upper boundary in months.</param>
+    /// <param name="description">The updated optional description.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="expectedAgeMonths"/> is negative.</exception>
     public void UpdateExpectation(int expectedAgeMonths, int? expectedWindowMaxMonths, string? description)
     {
         if (expectedAgeMonths < 0)
@@ -175,6 +214,10 @@ public class ChildMilestone
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Marks the milestone as skipped with optional explanatory notes.
+    /// </summary>
+    /// <param name="notes">Optional notes explaining why the milestone was skipped.</param>
     public void MarkSkipped(string? notes = null)
     {
         Status = MilestoneStatus.Skipped;

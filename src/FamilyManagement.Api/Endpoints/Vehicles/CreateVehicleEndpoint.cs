@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 using FamilyManagement.Domain.Enums;
@@ -20,8 +20,14 @@ public class CreateVehicleRequest
     public DateTime? NextInspectionDate { get; set; }
 }
 
+/// <summary>
+/// Validator for <see cref="CreateVehicleRequest"/>.
+/// </summary>
 public class CreateVehicleValidator : Validator<CreateVehicleRequest>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateVehicleValidator"/> class and configures validation rules.
+    /// </summary>
     public CreateVehicleValidator()
     {
         RuleFor(x => x.Make)
@@ -55,15 +61,25 @@ public class CreateVehicleValidator : Validator<CreateVehicleRequest>
     }
 }
 
+/// <summary>
+/// Endpoint for registering a new family vehicle.
+/// </summary>
 public class CreateVehicleEndpoint : Endpoint<CreateVehicleRequest, VehicleDto>
 {
     private readonly CreateVehicleCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateVehicleEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler for creating vehicles.</param>
     public CreateVehicleEndpoint(CreateVehicleCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route and OpenAPI metadata for registering a new vehicle.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/vehicles");
@@ -74,6 +90,12 @@ public class CreateVehicleEndpoint : Endpoint<CreateVehicleRequest, VehicleDto>
         });
     }
 
+    /// <summary>
+    /// Handles the HTTP POST request to register a new vehicle.
+    /// </summary>
+    /// <param name="req">The request payload containing vehicle registration details.</param>
+    /// <param name="ct">The cancellation token to observe.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public override async Task HandleAsync(CreateVehicleRequest req, CancellationToken ct)
     {
         try

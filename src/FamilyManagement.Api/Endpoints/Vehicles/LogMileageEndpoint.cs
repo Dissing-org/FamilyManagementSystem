@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 using FamilyManagement.Application.Vehicles;
 
@@ -12,8 +12,14 @@ public class LogMileageRequest
     public string? Notes { get; set; }
 }
 
+/// <summary>
+/// Validator for <see cref="LogMileageRequest"/>.
+/// </summary>
 public class LogMileageValidator : Validator<LogMileageRequest>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogMileageValidator"/> class and configures validation rules.
+    /// </summary>
     public LogMileageValidator()
     {
         RuleFor(x => x.Id)
@@ -28,15 +34,25 @@ public class LogMileageValidator : Validator<LogMileageRequest>
     }
 }
 
+/// <summary>
+/// Endpoint for logging a mileage reading for a vehicle.
+/// </summary>
 public class LogMileageEndpoint : Endpoint<LogMileageRequest, MileageLogDto>
 {
     private readonly LogMileageCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LogMileageEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler for logging vehicle mileage.</param>
     public LogMileageEndpoint(LogMileageCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route and OpenAPI metadata for logging mileage for a vehicle.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/vehicles/{id}/mileage");
@@ -47,6 +63,12 @@ public class LogMileageEndpoint : Endpoint<LogMileageRequest, MileageLogDto>
         });
     }
 
+    /// <summary>
+    /// Handles the HTTP POST request to log a new mileage reading for a vehicle.
+    /// </summary>
+    /// <param name="req">The request payload containing mileage log details.</param>
+    /// <param name="ct">The cancellation token to observe.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public override async Task HandleAsync(LogMileageRequest req, CancellationToken ct)
     {
         try

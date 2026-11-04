@@ -44,6 +44,17 @@ public class Receipt
         CreatedAt = createdAt;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="Receipt"/> instance with the specified merchant, purchase date, and Google Drive file reference.
+    /// </summary>
+    /// <param name="merchant">The name of the merchant where the purchase was made.</param>
+    /// <param name="purchaseDate">The date and time when the purchase occurred.</param>
+    /// <param name="fileReference">The reference to the receipt file in Google Drive.</param>
+    /// <param name="category">An optional category for classifying the receipt. Defaults to "Other" if null or whitespace.</param>
+    /// <param name="notes">Optional additional notes regarding the purchase.</param>
+    /// <returns>A new <see cref="Receipt"/> instance initialized with active status.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="merchant"/> is null or whitespace, or when <paramref name="purchaseDate"/> is in the future.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="fileReference"/> is null.</exception>
     public static Receipt Create(
         string merchant,
         DateTime purchaseDate,
@@ -81,6 +92,9 @@ public class Receipt
             DateTime.UtcNow);
     }
 
+    /// <summary>
+    /// Archives the receipt by updating its status to archived and setting the archived timestamp.
+    /// </summary>
     public void Archive()
     {
         if (Status == ReceiptStatus.Archived)

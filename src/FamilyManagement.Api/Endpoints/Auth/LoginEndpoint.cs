@@ -8,21 +8,34 @@ using FamilyManagement.Api.Auth;
 
 namespace FamilyManagement.Api.Endpoints.Auth;
 
+/// <summary>
+/// Request payload containing demo login credentials.
+/// </summary>
 public class LoginRequest
 {
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Endpoint that validates demo credentials and issues an HttpOnly demo session cookie.
+/// </summary>
 public class LoginEndpoint : Endpoint<LoginRequest, AuthSessionResponse>
 {
     private readonly IOptionsMonitor<AuthOptions> _authOptions;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoginEndpoint"/> class.
+    /// </summary>
+    /// <param name="authOptions">The options monitor providing configured demo credentials.</param>
     public LoginEndpoint(IOptionsMonitor<AuthOptions> authOptions)
     {
         _authOptions = authOptions;
     }
 
+    /// <summary>
+    /// Configures the route mapping, anonymous access, and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/auth/login");
@@ -34,6 +47,12 @@ public class LoginEndpoint : Endpoint<LoginRequest, AuthSessionResponse>
         });
     }
 
+    /// <summary>
+    /// Handles the demo login request, verifying credentials and issuing a persistent authentication ticket.
+    /// </summary>
+    /// <param name="req">The login request containing email and password credentials.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(LoginRequest req, CancellationToken ct)
     {
         var config = _authOptions.CurrentValue;

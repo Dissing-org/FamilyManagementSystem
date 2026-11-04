@@ -7,6 +7,9 @@ using FamilyManagement.Domain.Enums;
 
 namespace FamilyManagement.Api.Endpoints.Freezers;
 
+/// <summary>
+/// Request payload for creating or updating a persistent freezer catalog suggestion.
+/// </summary>
 public class UpsertFreezerCatalogItemRequest
 {
     public string Name { get; set; } = string.Empty;
@@ -20,8 +23,14 @@ public class UpsertFreezerCatalogItemRequest
     public decimal? MinimumQuantity { get; set; }
 }
 
+/// <summary>
+/// Validator for upserting freezer catalog suggestions.
+/// </summary>
 public class UpsertFreezerCatalogItemValidator : Validator<UpsertFreezerCatalogItemRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for upserting a freezer catalog item.
+    /// </summary>
     public UpsertFreezerCatalogItemValidator()
     {
         RuleFor(x => x.Name)
@@ -40,15 +49,25 @@ public class UpsertFreezerCatalogItemValidator : Validator<UpsertFreezerCatalogI
     }
 }
 
+/// <summary>
+/// Endpoint that creates or updates default category and unit preferences for an item in the catalog.
+/// </summary>
 public class UpsertFreezerCatalogItemEndpoint : Endpoint<UpsertFreezerCatalogItemRequest, FreezerCatalogItemDto>
 {
     private readonly UpsertFreezerCatalogItemCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpsertFreezerCatalogItemEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to process catalog item upserts.</param>
     public UpsertFreezerCatalogItemEndpoint(UpsertFreezerCatalogItemCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route mapping and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/freezers/catalog");
@@ -59,6 +78,12 @@ public class UpsertFreezerCatalogItemEndpoint : Endpoint<UpsertFreezerCatalogIte
         });
     }
 
+    /// <summary>
+    /// Handles the request to upsert a freezer catalog suggestion.
+    /// </summary>
+    /// <param name="req">The upsert request containing catalog item attributes.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(UpsertFreezerCatalogItemRequest req, CancellationToken ct)
     {
         try

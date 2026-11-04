@@ -7,6 +7,9 @@ using FamilyManagement.Domain.Enums;
 
 namespace FamilyManagement.Api.Endpoints.Freezers;
 
+/// <summary>
+/// Request payload for updating the properties, location, or quantity of an existing freezer item.
+/// </summary>
 public class UpdateFreezerItemRequest
 {
     public Guid Id { get; set; }
@@ -27,8 +30,14 @@ public class UpdateFreezerItemRequest
     public string? Notes { get; set; }
 }
 
+/// <summary>
+/// Validator for freezer item update requests.
+/// </summary>
 public class UpdateFreezerItemValidator : Validator<UpdateFreezerItemRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for updating a freezer item.
+    /// </summary>
     public UpdateFreezerItemValidator()
     {
         RuleFor(x => x.CompartmentId)
@@ -56,15 +65,25 @@ public class UpdateFreezerItemValidator : Validator<UpdateFreezerItemRequest>
     }
 }
 
+/// <summary>
+/// Endpoint that modifies a freezer item's details, compartment location, quantity, or dates.
+/// </summary>
 public class UpdateFreezerItemEndpoint : Endpoint<UpdateFreezerItemRequest, FreezerItemDto>
 {
     private readonly UpdateFreezerItemCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateFreezerItemEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to process freezer item updates.</param>
     public UpdateFreezerItemEndpoint(UpdateFreezerItemCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route mapping and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Put("/api/freezer-items/{id}");
@@ -75,6 +94,12 @@ public class UpdateFreezerItemEndpoint : Endpoint<UpdateFreezerItemRequest, Free
         });
     }
 
+    /// <summary>
+    /// Handles the request to update freezer item properties.
+    /// </summary>
+    /// <param name="req">The update request containing modified properties.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(UpdateFreezerItemRequest req, CancellationToken ct)
     {
         try

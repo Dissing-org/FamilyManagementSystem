@@ -59,6 +59,21 @@ public class InsurancePolicy
         CreatedAt = createdAt;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="InsurancePolicy"/> instance with the specified policy details.
+    /// </summary>
+    /// <param name="insurer">The name of the insurance company or provider.</param>
+    /// <param name="policyNumber">An optional policy identifier or contract number.</param>
+    /// <param name="category">The category of the insurance policy.</param>
+    /// <param name="insuredParty">The name of the insured person, vehicle, or asset.</param>
+    /// <param name="premium">The recurring premium cost for the policy.</param>
+    /// <param name="frequency">The payment frequency for the premium.</param>
+    /// <param name="startDate">The date when coverage begins.</param>
+    /// <param name="renewalDate">The optional renewal date of the policy.</param>
+    /// <param name="deductible">The optional deductible amount applicable to claims.</param>
+    /// <param name="notes">Optional notes or terms regarding the policy.</param>
+    /// <returns>A new <see cref="InsurancePolicy"/> instance initialized with active status.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="insurer"/> or <paramref name="insuredParty"/> is null or whitespace, or when <paramref name="premium"/> is null or has an amount less than or equal to zero.</exception>
     public static InsurancePolicy Create(
         string insurer,
         string? policyNumber,
@@ -102,6 +117,18 @@ public class InsurancePolicy
             DateTime.UtcNow);
     }
 
+    /// <summary>
+    /// Updates the descriptive details and validity dates of the insurance policy.
+    /// </summary>
+    /// <param name="insurer">The name of the insurance company or provider.</param>
+    /// <param name="policyNumber">An optional policy identifier or contract number.</param>
+    /// <param name="category">The category of the insurance policy.</param>
+    /// <param name="insuredParty">The name of the insured person, vehicle, or asset.</param>
+    /// <param name="startDate">The date when policy coverage begins.</param>
+    /// <param name="renewalDate">The optional renewal date of the policy.</param>
+    /// <param name="deductible">The optional deductible amount applicable to claims.</param>
+    /// <param name="notes">Optional notes or terms regarding the policy.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="insurer"/> or <paramref name="insuredParty"/> is null or whitespace, or when <paramref name="renewalDate"/> is earlier than <paramref name="startDate"/>.</exception>
     public void UpdateDetails(
         string insurer,
         string? policyNumber,
@@ -138,6 +165,12 @@ public class InsurancePolicy
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Updates the premium amount and billing frequency of the insurance policy.
+    /// </summary>
+    /// <param name="newPremium">The new recurring premium cost.</param>
+    /// <param name="newFrequency">The new payment frequency.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="newPremium"/> is null or has an amount less than or equal to zero.</exception>
     public void UpdatePremium(Money newPremium, PaymentFrequency newFrequency)
     {
         if (newPremium is null || newPremium.Amount <= 0)
@@ -150,24 +183,37 @@ public class InsurancePolicy
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Cancels the insurance policy and records the update timestamp.
+    /// </summary>
     public void Cancel()
     {
         Status = InsurancePolicyStatus.Cancelled;
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Marks the insurance policy as expired and records the update timestamp.
+    /// </summary>
     public void Expire()
     {
         Status = InsurancePolicyStatus.Expired;
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Reactivates the insurance policy back to active status and records the update timestamp.
+    /// </summary>
     public void Reactivate()
     {
         Status = InsurancePolicyStatus.Active;
         UpdatedAt = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Calculates the estimated monthly equivalent cost of the insurance premium based on its payment frequency.
+    /// </summary>
+    /// <returns>The calculated monthly premium cost rounded to two decimal places.</returns>
     public decimal CalculateMonthlyCost()
     {
         return Frequency switch
@@ -180,6 +226,10 @@ public class InsurancePolicy
         };
     }
 
+    /// <summary>
+    /// Calculates the annualized total cost of the insurance premium based on its payment frequency.
+    /// </summary>
+    /// <returns>The calculated annual premium cost.</returns>
     public decimal CalculateAnnualCost()
     {
         return Frequency switch

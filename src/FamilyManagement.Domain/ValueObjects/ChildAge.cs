@@ -1,5 +1,14 @@
 namespace FamilyManagement.Domain.ValueObjects;
 
+/// <summary>
+/// Represents the calculated age breakdown of a child across various time units.
+/// </summary>
+/// <param name="Years">The full years component of the age.</param>
+/// <param name="Months">The remaining months component of the age.</param>
+/// <param name="Days">The remaining days component of the age.</param>
+/// <param name="TotalMonths">The total cumulative age in whole months.</param>
+/// <param name="TotalWeeks">The total cumulative age in whole weeks.</param>
+/// <param name="TotalDays">The total cumulative age in days.</param>
 public record ChildAge(
     int Years,
     int Months,
@@ -8,6 +17,9 @@ public record ChildAge(
     int TotalWeeks,
     int TotalDays)
 {
+    /// <summary>
+    /// Gets a human-readable formatted representation of the age adapted to the child's stage.
+    /// </summary>
     public string Formatted
     {
         get
@@ -32,6 +44,12 @@ public record ChildAge(
         }
     }
 
+    /// <summary>
+    /// Calculates the age breakdown for a child given their date of birth and a target reference date.
+    /// </summary>
+    /// <param name="dateOfBirth">The child's birth date.</param>
+    /// <param name="asOfDate">The reference date to calculate the age as of.</param>
+    /// <returns>A <see cref="ChildAge"/> representing the elapsed time breakdown.</returns>
     public static ChildAge Calculate(DateTime dateOfBirth, DateTime asOfDate)
     {
         if (asOfDate < dateOfBirth)

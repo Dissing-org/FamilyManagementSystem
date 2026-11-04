@@ -34,6 +34,16 @@ public class MileageLogEntry
         CreatedAt = createdAt;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="MileageLogEntry"/> for tracking a vehicle's odometer reading over time.
+    /// </summary>
+    /// <param name="vehicleId">The identifier of the vehicle.</param>
+    /// <param name="recordedDate">The date and time when the mileage was recorded.</param>
+    /// <param name="mileageKm">The odometer reading in kilometers.</param>
+    /// <param name="notes">Optional notes or remarks regarding the entry.</param>
+    /// <returns>A new <see cref="MileageLogEntry"/> instance.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="vehicleId"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="mileageKm"/> is negative, or when <paramref name="recordedDate"/> is in the future.</exception>
     public static MileageLogEntry Create(
         VehicleId vehicleId,
         DateTime recordedDate,

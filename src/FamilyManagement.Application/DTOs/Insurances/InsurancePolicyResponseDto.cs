@@ -2,6 +2,9 @@ using FamilyManagement.Domain.Entities;
 
 namespace FamilyManagement.Application.DTOs.Insurances;
 
+/// <summary>
+/// Data transfer object representing an insurance policy and its calculated costs.
+/// </summary>
 public record InsurancePolicyResponseDto(
     Guid Id,
     string Insurer,
@@ -21,6 +24,11 @@ public record InsurancePolicyResponseDto(
     DateTime CreatedAt,
     DateTime? UpdatedAt)
 {
+    /// <summary>
+    /// Creates an <see cref="InsurancePolicyResponseDto"/> from an <see cref="InsurancePolicy"/> domain entity.
+    /// </summary>
+    /// <param name="policy">The insurance policy domain entity to map from.</param>
+    /// <returns>A populated <see cref="InsurancePolicyResponseDto"/> instance.</returns>
     public static InsurancePolicyResponseDto FromDomain(InsurancePolicy policy)
     {
         return new InsurancePolicyResponseDto(

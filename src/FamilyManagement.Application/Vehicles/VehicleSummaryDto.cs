@@ -2,6 +2,9 @@ using FamilyManagement.Domain.Entities;
 
 namespace FamilyManagement.Application.Vehicles;
 
+/// <summary>
+/// Data transfer object representing a comprehensive summary of a vehicle, including maintenance schedules and alerts.
+/// </summary>
 public record VehicleSummaryDto(
     VehicleDto Vehicle,
     int LatestMileageKm,
@@ -19,6 +22,14 @@ public record VehicleSummaryDto(
     int TotalMileageLogsCount,
     decimal TotalMaintenanceCost)
 {
+    /// <summary>
+    /// Creates a <see cref="VehicleSummaryDto"/> from vehicle data, mileage logs, and service records.
+    /// </summary>
+    /// <param name="vehicle">The vehicle domain entity.</param>
+    /// <param name="mileageLogs">The list of mileage log entries for the vehicle.</param>
+    /// <param name="serviceRecords">The list of service records for the vehicle.</param>
+    /// <param name="asOfDate">The reference date to evaluate due dates against; defaults to UTC now if omitted.</param>
+    /// <returns>A populated <see cref="VehicleSummaryDto"/> instance with evaluated service schedules and alerts.</returns>
     public static VehicleSummaryDto Create(
         Vehicle vehicle,
         List<MileageLogEntry> mileageLogs,

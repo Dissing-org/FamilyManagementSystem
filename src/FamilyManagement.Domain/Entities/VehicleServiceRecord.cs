@@ -51,6 +51,21 @@ public class VehicleServiceRecord
         CreatedAt = createdAt;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="VehicleServiceRecord"/> instance representing a maintenance or repair event for a vehicle.
+    /// </summary>
+    /// <param name="vehicleId">The identifier of the vehicle that was serviced.</param>
+    /// <param name="serviceDate">The date and time when the service was performed.</param>
+    /// <param name="mileageKm">The vehicle mileage in kilometers at the time of service.</param>
+    /// <param name="type">The category or type of service performed.</param>
+    /// <param name="title">A short descriptive title for the service.</param>
+    /// <param name="workshop">The optional name or location of the workshop/mechanic that performed the service.</param>
+    /// <param name="cost">The optional financial cost of the service.</param>
+    /// <param name="notes">Optional notes or work descriptions regarding the service.</param>
+    /// <param name="receiptId">The optional identifier of an associated receipt document.</param>
+    /// <returns>A new <see cref="VehicleServiceRecord"/> instance.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="vehicleId"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="title"/> is null or whitespace, when <paramref name="mileageKm"/> is negative, when <paramref name="serviceDate"/> is in the future, or when <paramref name="cost"/> is negative.</exception>
     public static VehicleServiceRecord Create(
         VehicleId vehicleId,
         DateTime serviceDate,

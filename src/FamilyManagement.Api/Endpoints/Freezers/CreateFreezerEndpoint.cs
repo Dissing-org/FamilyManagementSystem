@@ -5,6 +5,9 @@ using FamilyManagement.Application.UseCases.Freezers.Commands;
 
 namespace FamilyManagement.Api.Endpoints.Freezers;
 
+/// <summary>
+/// Request payload for creating a new freezer unit.
+/// </summary>
 public class CreateFreezerRequest
 {
     public string Name { get; set; } = string.Empty;
@@ -12,8 +15,14 @@ public class CreateFreezerRequest
     public int DisplayOrder { get; set; } = 0;
 }
 
+/// <summary>
+/// Validator for freezer creation requests.
+/// </summary>
 public class CreateFreezerValidator : Validator<CreateFreezerRequest>
 {
+    /// <summary>
+    /// Initializes validation rules for creating a new freezer.
+    /// </summary>
     public CreateFreezerValidator()
     {
         RuleFor(x => x.Name)
@@ -25,15 +34,25 @@ public class CreateFreezerValidator : Validator<CreateFreezerRequest>
     }
 }
 
+/// <summary>
+/// Endpoint that creates a new freezer unit.
+/// </summary>
 public class CreateFreezerEndpoint : Endpoint<CreateFreezerRequest, FreezerDto>
 {
     private readonly CreateFreezerCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateFreezerEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler used to process freezer creation.</param>
     public CreateFreezerEndpoint(CreateFreezerCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route mapping and OpenAPI specification for the endpoint.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/freezers");
@@ -44,6 +63,12 @@ public class CreateFreezerEndpoint : Endpoint<CreateFreezerRequest, FreezerDto>
         });
     }
 
+    /// <summary>
+    /// Handles the request to create a new freezer unit.
+    /// </summary>
+    /// <param name="req">The freezer creation request.</param>
+    /// <param name="ct">Cancellation token for the asynchronous operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task HandleAsync(CreateFreezerRequest req, CancellationToken ct)
     {
         try

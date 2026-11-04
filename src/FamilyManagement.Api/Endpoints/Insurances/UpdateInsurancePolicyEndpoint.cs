@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FamilyManagement.Application.DTOs.Insurances;
 using FamilyManagement.Application.UseCases.Insurances.Commands;
 using FamilyManagement.Domain.Enums;
@@ -23,15 +23,25 @@ public class UpdateInsurancePolicyRequest
     public string? Notes { get; set; }
 }
 
+/// <summary>
+/// Endpoint for updating an existing insurance policy.
+/// </summary>
 public class UpdateInsurancePolicyEndpoint : Endpoint<UpdateInsurancePolicyRequest, InsurancePolicyResponseDto>
 {
     private readonly UpdateInsurancePolicyCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateInsurancePolicyEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler for updating insurance policies.</param>
     public UpdateInsurancePolicyEndpoint(UpdateInsurancePolicyCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route and OpenAPI metadata for updating an insurance policy.
+    /// </summary>
     public override void Configure()
     {
         Put("/api/insurances/{id}");
@@ -42,6 +52,12 @@ public class UpdateInsurancePolicyEndpoint : Endpoint<UpdateInsurancePolicyReque
         });
     }
 
+    /// <summary>
+    /// Handles the HTTP PUT request to update an existing insurance policy.
+    /// </summary>
+    /// <param name="req">The request payload containing updated insurance policy details.</param>
+    /// <param name="ct">The cancellation token to observe.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public override async Task HandleAsync(UpdateInsurancePolicyRequest req, CancellationToken ct)
     {
         try

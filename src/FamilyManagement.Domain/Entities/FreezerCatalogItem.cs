@@ -41,6 +41,15 @@ public class FreezerCatalogItem
         LastUsedAt = DateTime.SpecifyKind(lastUsedAt, DateTimeKind.Utc);
     }
 
+    /// <summary>
+    /// Creates a new <see cref="FreezerCatalogItem"/> for autocompleting and templating frequently stored freezer items.
+    /// </summary>
+    /// <param name="name">The name of the catalog item.</param>
+    /// <param name="defaultCategory">The default category suggested for this item.</param>
+    /// <param name="defaultUnit">The default measurement unit suggested for this item.</param>
+    /// <param name="defaultMinimumQuantity">The optional default minimum threshold for low-stock warnings.</param>
+    /// <returns>A new <see cref="FreezerCatalogItem"/> instance.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="name"/> is null, whitespace, or exceeds 150 characters, or when <paramref name="defaultMinimumQuantity"/> is negative.</exception>
     public static FreezerCatalogItem Create(
         string name,
         FreezerCategory defaultCategory,
@@ -75,6 +84,13 @@ public class FreezerCatalogItem
             now);
     }
 
+    /// <summary>
+    /// Updates the default catalog categorization, unit of measure, and optional minimum stock quantity.
+    /// </summary>
+    /// <param name="category">The updated default category.</param>
+    /// <param name="unit">The updated default measurement unit.</param>
+    /// <param name="minimumQuantity">The updated optional default minimum quantity threshold.</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="minimumQuantity"/> is negative.</exception>
     public void UpdateDefaults(FreezerCategory category, FreezerUnit unit, decimal? minimumQuantity = null)
     {
         if (minimumQuantity.HasValue && minimumQuantity.Value < 0)

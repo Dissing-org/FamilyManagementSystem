@@ -1,10 +1,16 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 
 namespace FamilyManagement.Api.Endpoints.Insurances;
 
+/// <summary>
+/// Validator for <see cref="CreateInsurancePolicyRequest"/>.
+/// </summary>
 public class CreateInsurancePolicyValidator : Validator<CreateInsurancePolicyRequest>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateInsurancePolicyValidator"/> class and configures validation rules.
+    /// </summary>
     public CreateInsurancePolicyValidator()
     {
         RuleFor(x => x.Insurer)

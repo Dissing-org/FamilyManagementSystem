@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FamilyManagement.Application.DTOs.Insurances;
 using FamilyManagement.Application.UseCases.Insurances.Commands;
 using FamilyManagement.Domain.Enums;
@@ -22,15 +22,25 @@ public class CreateInsurancePolicyRequest
     public string? Notes { get; set; }
 }
 
+/// <summary>
+/// Endpoint for creating a new family insurance policy.
+/// </summary>
 public class CreateInsurancePolicyEndpoint : Endpoint<CreateInsurancePolicyRequest, InsurancePolicyResponseDto>
 {
     private readonly CreateInsurancePolicyCommandHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateInsurancePolicyEndpoint"/> class.
+    /// </summary>
+    /// <param name="handler">The command handler for creating insurance policies.</param>
     public CreateInsurancePolicyEndpoint(CreateInsurancePolicyCommandHandler handler)
     {
         _handler = handler;
     }
 
+    /// <summary>
+    /// Configures the route and OpenAPI metadata for creating an insurance policy.
+    /// </summary>
     public override void Configure()
     {
         Post("/api/insurances");
@@ -41,6 +51,12 @@ public class CreateInsurancePolicyEndpoint : Endpoint<CreateInsurancePolicyReque
         });
     }
 
+    /// <summary>
+    /// Handles the HTTP POST request to create a new insurance policy.
+    /// </summary>
+    /// <param name="req">The request payload containing insurance policy details.</param>
+    /// <param name="ct">The cancellation token to observe.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public override async Task HandleAsync(CreateInsurancePolicyRequest req, CancellationToken ct)
     {
         var command = new CreateInsurancePolicyCommand(
