@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject IAuthSessionService AuthSession
 @inject FreezerApiClient FreezerApi
+@inject GasApiClient GasApi
 
 <div class="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
     
@@ -323,6 +324,41 @@
                         </div>
                     </div>
 
+                    <!-- 6. Gas Telemetry -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs hover:border-slate-300 transition-colors">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                                </svg>
+                                @L["Home.GasTracking"]
+                            </span>
+                            <a href="gas" class="text-xs font-semibold text-amber-600 hover:underline">@L["Home.GasLink"] &rarr;</a>
+                        </div>
+                        <div class="flex items-baseline justify-between mt-1">
+                            @if (_gasSummary is not null && _gasSummary.RecentReadings is not null && _gasSummary.RecentReadings.Count > 0)
+                            {
+                                <div>
+                                    <span class="text-2xl font-black text-slate-900">@_gasSummary.CurrentMonthUsageM3.ToString("N1")</span>
+                                    <span class="text-xs text-slate-500 ml-1">m³</span>
+                                </div>
+                                <span class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-full">
+                                    @_gasSummary.CurrentMonthProjectedCostDkk.ToString("N0") kr. @L["Home.PerMonthShort"]
+                                </span>
+                            }
+                            else
+                            {
+                                <div>
+                                    <span class="text-sm font-semibold text-slate-500">@L["Home.NoGasReadings"]</span>
+                                </div>
+                                <a href="gas" class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-full hover:bg-amber-100">
+                                    @L["Gas.LogReading"] &rarr;
+                                </a>
+                            }
+                        </div>
+                    </div>
+
                 </div>
             </div>
         }
@@ -355,6 +391,7 @@
     private List<ChildProfileModel> _children = new();
     private List<VehicleDto> _vehicles = new();
     private FreezerDashboardDto? _freezerDashboard;
+    private GasDashboardSummaryDto? _gasSummary;
     private bool _isLoading = true;
 
     private bool _showUploadReceiptModal = false;
@@ -389,8 +426,9 @@
             var childrenTask = ChildApi.ListChildrenAsync();
             var vehiclesTask = VehicleApi.GetVehiclesAsync();
             var freezerTask = FreezerApi.GetDashboardAsync();
+            var gasTask = GasApi.GetDashboardSummaryAsync();
 
-            await Task.WhenAll(receiptsTask, merchantsTask, insuranceTask, childrenTask, vehiclesTask, freezerTask);
+            await Task.WhenAll(receiptsTask, merchantsTask, insuranceTask, childrenTask, vehiclesTask, freezerTask, gasTask);
 
             _receipts = await receiptsTask;
             _merchants = await merchantsTask;
@@ -398,6 +436,7 @@
             _children = await childrenTask;
             _vehicles = await vehiclesTask;
             _freezerDashboard = await freezerTask;
+            _gasSummary = await gasTask;
         }
         catch
         {

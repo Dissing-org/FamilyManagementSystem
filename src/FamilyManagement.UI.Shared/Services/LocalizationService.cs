@@ -147,6 +147,11 @@ public sealed class LocalizationService : ILocalizationService
             ["Home.ItemsFrozen"] = "varer på frost",
             ["Home.ExpiringOrLow"] = "{0} udløber snart / lav beholdning",
             ["Home.AllFrozenFresh"] = "Alt på frost er frisk",
+            ["Home.GasTracking"] = "Gasforbrug & OK Gaspris",
+            ["Home.GasLink"] = "Åbn gasoverblik",
+            ["Home.GasM3ThisMonth"] = "{0:N1} m³ denne md.",
+            ["Home.GasProjectedCost"] = "{0:N0} kr. forventet",
+            ["Home.NoGasReadings"] = "Ingen målerstande endnu",
 
             // Gas Tracking & Pricing
             ["Gas.Subtitle"] = "Gasforbrug, målerstande og forventede omkostninger baseret på OK's gaspriser",
