@@ -198,6 +198,11 @@ public sealed class LocalizationService : ILocalizationService
             ["Gas.Settings.SyncNow"] = "Hent dagspris fra OK",
             ["Gas.Settings.Syncing"] = "Henter...",
             ["Gas.Settings.Disclaimer"] = "OK Gas Variabelpris opdateres månedligt. Statsafgifter og Evida-tariffer tilføjes automatisk for at matche din reelle gasregning.",
+            ["Gas.Settings.SaveFailed"] = "Kunne ikke gemme prisindstillingerne.",
+            ["Gas.Settings.ValidationNegative"] = "Gaspriser og abonnement kan ikke være negative.",
+            ["Gas.Modal.ReadingNegative"] = "Målerstand kan ikke være negativ.",
+            ["Gas.Modal.UpdateFailed"] = "Kunne ikke opdatere målerstanden. Prøv igen.",
+            ["Gas.Modal.SaveFailed"] = "Kunne ikke gemme målerstanden. Prøv igen.",
 
             // Receipts
             ["Receipts.Subtitle"] = "Arkiveret i Google Drev",
