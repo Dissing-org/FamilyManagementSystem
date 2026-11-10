@@ -1,0 +1,96 @@
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <!-- Current Month Usage -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">@L["Gas.CurrentMonthUsage"]</span>
+            <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                </svg>
+            </span>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-slate-900">
+                @(Summary != null ? $"{Summary.CurrentMonthUsageM3:N1}" : "—")
+            </span>
+            <span class="text-sm font-semibold text-slate-500">m³</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">
+            @DateTime.Now.ToString("MMMM yyyy")
+        </p>
+    </div>
+
+    <!-- Projected Cost -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">@L["Gas.ProjectedCost"]</span>
+            <span class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </span>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-sky-700">
+                @(Summary != null ? $"{Summary.CurrentMonthProjectedCostDkk:N0}" : "—")
+            </span>
+            <span class="text-sm font-semibold text-slate-500">kr.</span>
+        </div>
+        <p class="text-xs text-sky-600/80 font-medium mt-1 flex items-center gap-1">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+            @L["Gas.ProjectedBadge"] run-rate
+        </p>
+    </div>
+
+    <!-- Daily Average -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">@L["Gas.DailyAverage"]</span>
+            <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+            </span>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-slate-900">
+                @(Summary != null ? $"{Summary.DailyAverageM3:N2}" : "—")
+            </span>
+            <span class="text-sm font-semibold text-slate-500">m³/dag</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">
+            @(Summary != null && Summary.DailyAverageM3 > 0 ? $"~{Summary.DailyAverageM3 * Summary.EffectiveRatePerM3:N1} kr./dag" : "—")
+        </p>
+    </div>
+
+    <!-- Effective OK Gas Rate -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">@L["Gas.EffectivePrice"]</span>
+            <button @onclick="OnOpenPricingSettings" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md" title="@L["Gas.PricingSettings"]">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-slate-900">
+                @(Summary != null ? $"{Summary.EffectiveRatePerM3:N2}" : "—")
+            </span>
+            <span class="text-sm font-semibold text-slate-500">kr./m³</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-slate-500 mt-1">
+            <span>OK: @(Summary != null ? $"{Summary.CommodityPricePerM3:N2}" : "—") + Afgifter: @(Summary != null ? $"{Summary.DistributionTaxPerM3:N2}" : "—")</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public GasDashboardSummaryDto? Summary { get; set; }
+    [Parameter] public EventCallback OnOpenPricingSettings { get; set; }
+}

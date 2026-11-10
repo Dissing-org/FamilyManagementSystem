@@ -83,6 +83,9 @@ public static class SqliteSchemaInitializer
             await EnsureTableExistsAsync(connection, logger, "ChildProfiles", ChildDevelopmentDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "Vehicles", VehiclesDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "Freezers", FreezersDdl, ct);
+            await EnsureTableExistsAsync(connection, logger, "GasReadings", GasReadingsDdl, ct);
+            await EnsureTableExistsAsync(connection, logger, "GasPriceSnapshots", GasPriceSnapshotsDdl, ct);
+            await EnsureTableExistsAsync(connection, logger, "GasPricingSettings", GasPricingSettingsDdl, ct);
             await EnsureTableExistsAsync(connection, logger, "FreezerCatalogItems", FreezerCatalogItemsDdl, ct);
             await EnsureCatalogNormalizedNameColumnAsync(connection, logger, ct);
             await SeedCatalogFromFreezerItemsIfEmptyAsync(connection, logger, ct);
@@ -290,6 +293,43 @@ public static class SqliteSchemaInitializer
         );
         CREATE INDEX "IX_FreezerCatalogItems_Name" ON "FreezerCatalogItems" ("Name");
         CREATE UNIQUE INDEX "IX_FreezerCatalogItems_NormalizedName" ON "FreezerCatalogItems" ("NormalizedName");
+        """;
+
+    private const string GasReadingsDdl = """
+        CREATE TABLE "GasReadings" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_GasReadings" PRIMARY KEY,
+            "RecordedDate" TEXT NOT NULL,
+            "ReadingM3" TEXT NOT NULL,
+            "Notes" TEXT NULL,
+            "CreatedAt" TEXT NOT NULL,
+            "UpdatedAt" TEXT NULL
+        );
+        CREATE INDEX "IX_GasReadings_RecordedDate" ON "GasReadings" ("RecordedDate");
+        """;
+
+    private const string GasPriceSnapshotsDdl = """
+        CREATE TABLE "GasPriceSnapshots" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_GasPriceSnapshots" PRIMARY KEY,
+            "Year" INTEGER NOT NULL,
+            "Month" INTEGER NOT NULL,
+            "CommodityPricePerM3" TEXT NOT NULL,
+            "DistributionTaxPerM3" TEXT NOT NULL,
+            "MonthlySubscription" TEXT NOT NULL,
+            "FetchedAt" TEXT NOT NULL,
+            "IsManuallyOverridden" INTEGER NOT NULL
+        );
+        CREATE UNIQUE INDEX "IX_GasPriceSnapshots_Year_Month" ON "GasPriceSnapshots" ("Year", "Month");
+        """;
+
+    private const string GasPricingSettingsDdl = """
+        CREATE TABLE "GasPricingSettings" (
+            "Id" TEXT NOT NULL CONSTRAINT "PK_GasPricingSettings" PRIMARY KEY,
+            "CommodityPricePerM3" TEXT NOT NULL,
+            "DistributionTaxPerM3" TEXT NOT NULL,
+            "MonthlySubscription" TEXT NOT NULL,
+            "LastSyncedAt" TEXT NULL,
+            "UpdatedAt" TEXT NOT NULL
+        );
         """;
 
     private static async Task EnsureCatalogNormalizedNameColumnAsync(

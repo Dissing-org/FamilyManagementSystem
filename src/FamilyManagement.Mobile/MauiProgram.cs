@@ -41,6 +41,7 @@ public static class MauiProgram
 		builder.Services.AddScoped<ChildApiClient>();
 		builder.Services.AddScoped<VehicleApiClient>();
 		builder.Services.AddScoped<FreezerApiClient>();
+		builder.Services.AddScoped<GasApiClient>();
 		builder.Services.AddScoped<IAuthSessionService, AuthSessionService>();
 
 		return builder.Build();

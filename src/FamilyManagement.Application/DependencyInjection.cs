@@ -65,6 +65,15 @@ public static class DependencyInjection
         services.AddScoped<UpsertFreezerCatalogItemCommandHandler>();
         services.AddScoped<DeleteFreezerCatalogItemCommandHandler>();
 
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Commands.LogGasReadingCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Commands.UpdateGasReadingCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Commands.DeleteGasReadingCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Commands.UpdateGasPricingSettingsCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Commands.SyncOkGasPriceCommandHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Queries.GetGasDashboardQueryHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Queries.GetGasReadingsQueryHandler>();
+        services.AddScoped<FamilyManagement.Application.UseCases.Gas.Queries.GetGasPricingSettingsQueryHandler>();
+
         return services;
     }
 }

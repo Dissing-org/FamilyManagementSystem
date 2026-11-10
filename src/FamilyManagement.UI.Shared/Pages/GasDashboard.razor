@@ -1,0 +1,236 @@
+@page "/gas"
+@using FamilyManagement.UI.Shared.Components
+@using FamilyManagement.UI.Shared.Models
+@using FamilyManagement.UI.Shared.Services
+@inject GasApiClient GasApi
+
+<div class="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
+    <AppHeader CurrentSectionSubtitle="@L["Gas.Subtitle"]" OnSettingsSaved="LoadDataAsync">
+        <ActionContent>
+            <div class="flex items-center gap-2">
+                <button @onclick="OpenPricingModal" 
+                        class="inline-flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200/80 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl shadow-xs transition-all"
+                        title="@L["Gas.PricingSettings"]">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="hidden sm:inline">@L["Gas.PricingSettings"]</span>
+                </button>
+
+                <button @onclick="OpenLogModal" 
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>@L["Gas.LogReading"]</span>
+                </button>
+            </div>
+        </ActionContent>
+    </AppHeader>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        @if (_loading)
+        {
+            <div class="py-24 text-center">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-amber-600 border-t-transparent"></div>
+                <p class="mt-4 text-sm font-medium text-slate-500">@L["Common.Loading"]</p>
+            </div>
+        }
+        else if (_summary == null || _summary.RecentReadings.Count == 0)
+        {
+            <!-- Empty state -->
+            <div class="max-w-lg mx-auto bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-10 text-center shadow-xs my-12">
+                <div class="w-20 h-20 rounded-3xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900">@L["Gas.EmptyTitle"]</h2>
+                <p class="text-sm text-slate-500 mt-2 mb-8 leading-relaxed">
+                    @L["Gas.EmptySubtitle"]
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button @onclick="OpenLogModal" class="w-full sm:w-auto py-3 px-6 bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm rounded-xl shadow-xs transition-all">
+                        @L["Gas.RegisterFirst"]
+                    </button>
+                    <button @onclick="OpenPricingModal" class="w-full sm:w-auto py-3 px-6 bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-sm rounded-xl transition-all">
+                        @L["Gas.PricingSettings"]
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- KPI Summary Cards -->
+            <GasHeaderCard Summary="_summary" OnOpenPricingSettings="OpenPricingModal" />
+
+            <!-- Responsive SVG Monthly Chart -->
+            <GasMonthlyChart Series="_summary.MonthlySeries" />
+
+            <!-- Readings History Table -->
+            <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+                <div class="p-5 border-b border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-base font-bold text-slate-900">@L["Gas.HistoryTitle"]</h4>
+                        <p class="text-xs text-slate-500">@L["Gas.HistorySubtitle"]</p>
+                    </div>
+                    <button @onclick="OpenLogModal" class="px-3 py-1.5 bg-amber-50 text-amber-800 border border-amber-200/60 rounded-xl text-xs font-bold hover:bg-amber-100 transition-colors">
+                        + @L["Gas.LogReading"]
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-bold border-b border-slate-200/80">
+                            <tr>
+                                <th class="px-5 py-3.5">@L["Gas.TableDate"]</th>
+                                <th class="px-5 py-3.5">@L["Gas.TableReading"]</th>
+                                <th class="px-5 py-3.5">@L["Gas.TableDelta"]</th>
+                                <th class="px-5 py-3.5">@L["Gas.TableCost"]</th>
+                                <th class="px-5 py-3.5">@L["Gas.TableNotes"]</th>
+                                <th class="px-5 py-3.5 text-right">@L["Common.Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach (var reading in _summary.RecentReadings)
+                            {
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <td class="px-5 py-3.5 font-semibold text-slate-900 whitespace-nowrap">
+                                        @L.FormatDate(reading.RecordedDate, "d. MMM yyyy")
+                                    </td>
+                                    <td class="px-5 py-3.5 font-mono font-bold text-slate-800">
+                                        @($"{reading.ReadingM3:N2} m³")
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        @if (reading.DeltaM3.HasValue)
+                                        {
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/60">
+                                                @($"+{reading.DeltaM3.Value:N2} m³")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-xs text-slate-400 italic">Start</span>
+                                        }
+                                    </td>
+                                    <td class="px-5 py-3.5 font-semibold text-slate-700">
+                                        @if (reading.EstimatedCostDkk.HasValue)
+                                        {
+                                            <span>@($"{reading.EstimatedCostDkk.Value:N0} kr.")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-slate-400">—</span>
+                                        }
+                                    </td>
+                                    <td class="px-5 py-3.5 text-slate-500 text-xs max-w-xs truncate">
+                                        @(string.IsNullOrWhiteSpace(reading.Notes) ? "—" : reading.Notes)
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1">
+                                            <button @onclick="() => EditReading(reading)" 
+                                                    class="p-1.5 text-slate-400 hover:text-sky-600 rounded-lg hover:bg-slate-100 transition-colors"
+                                                    title="@L["Common.Edit"]">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                                </svg>
+                                            </button>
+                                            <button @onclick="() => DeleteReadingAsync(reading.Id)" 
+                                                    class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                                                    title="@L["Common.Delete"]">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </main>
+
+    <!-- Modals -->
+    @if (_showLogModal)
+    {
+        <LogGasReadingModal ReadingToEdit="_readingToEdit"
+                            OnSaved="HandleReadingSavedAsync"
+                            OnClose="() => _showLogModal = false" />
+    }
+
+    @if (_showPricingModal)
+    {
+        <GasPricingSettingsModal OnSaved="HandlePricingSavedAsync"
+                                 OnClose="() => _showPricingModal = false" />
+    }
+</div>
+
+@code {
+    private GasDashboardSummaryDto? _summary;
+    private bool _loading = true;
+    private bool _showLogModal;
+    private bool _showPricingModal;
+    private GasReadingDto? _readingToEdit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _loading = true;
+        try
+        {
+            _summary = await GasApi.GetDashboardSummaryAsync();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void OpenLogModal()
+    {
+        _readingToEdit = null;
+        _showLogModal = true;
+    }
+
+    private void EditReading(GasReadingDto reading)
+    {
+        _readingToEdit = reading;
+        _showLogModal = true;
+    }
+
+    private async Task DeleteReadingAsync(Guid id)
+    {
+        var ok = await GasApi.DeleteReadingAsync(id);
+        if (ok)
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private void OpenPricingModal()
+    {
+        _showPricingModal = true;
+    }
+
+    private async Task HandleReadingSavedAsync()
+    {
+        _showLogModal = false;
+        await LoadDataAsync();
+    }
+
+    private async Task HandlePricingSavedAsync()
+    {
+        _showPricingModal = false;
+        await LoadDataAsync();
+    }
+}

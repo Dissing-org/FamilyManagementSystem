@@ -18,6 +18,9 @@ public class ReceiptDbContext : DbContext
     public DbSet<FreezerItem> FreezerItems => Set<FreezerItem>();
     public DbSet<FreezerTransaction> FreezerTransactions => Set<FreezerTransaction>();
     public DbSet<FreezerCatalogItem> FreezerCatalogItems => Set<FreezerCatalogItem>();
+    public DbSet<GasReading> GasReadings => Set<GasReading>();
+    public DbSet<GasPriceSnapshot> GasPriceSnapshots => Set<GasPriceSnapshot>();
+    public DbSet<GasPricingSettings> GasPricingSettings => Set<GasPricingSettings>();
 
     public ReceiptDbContext(DbContextOptions<ReceiptDbContext> options) : base(options)
     {

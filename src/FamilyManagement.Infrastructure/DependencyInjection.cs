@@ -39,6 +39,14 @@ public static class DependencyInjection
         services.AddScoped<IFreezerRepository, FreezerRepository>();
         services.AddScoped<IFreezerItemRepository, FreezerItemRepository>();
         services.AddScoped<IFreezerCatalogRepository, FreezerCatalogRepository>();
+        services.AddScoped<IGasReadingRepository, GasReadingRepository>();
+        services.AddScoped<IGasPricingRepository, GasPricingRepository>();
+
+        services.AddHttpClient<IOkGasPriceScraper, FamilyManagement.Infrastructure.Services.OkGasPriceScraper>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        });
 
         services.Configure<GoogleDriveOptions>(
             configuration.GetSection(GoogleDriveOptions.SectionName));
